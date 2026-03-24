@@ -9,6 +9,7 @@
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     <style>
@@ -41,7 +42,7 @@
             
             --glow-subtle: drop-shadow(0 0 8px var(--accent-blue-glow));
             --glow-medium: drop-shadow(0 0 20px var(--accent-blue-glow));
-            --glow-intense: drop_shadow(0 0 40px var(--accent-blue-glow));
+            --glow-intense: drop-shadow(0 0 40px var(--accent-blue-glow));
             
             --backdrop: backdrop-filter: blur(20px) saturate(150%);
 
@@ -106,6 +107,96 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                         inset 0 0 20px rgba(0, 217, 255, 0.05);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        /* Navigation Progress Bar */
+        .nav-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+            z-index: 999;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00D9FF, #22FF22, #FF5555, #00D9FF);
+            background-size: 200% 100%;
+            width: 0%;
+            animation: gradientShift 8s ease infinite;
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+        }
+
+        /* Navigation Dots */
+        .nav-dots {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(0, 217, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot:hover {
+            background: rgba(0, 217, 255, 0.5);
+            transform: scale(1.3);
+            box-shadow: 0 0 20px rgba(0, 217, 255, 0.6);
+        }
+
+        .nav-dot.active {
+            background: #00D9FF;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.8);
+            transform: scale(1.5);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--accent-blue);
+            font-size: 12px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 1s forwards;
+            z-index: 50;
+            pointer-events: none;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        .scroll-indicator svg {
+            width: 20px;
+            height: 20px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .scroll-indicator.hidden {
+            opacity: 0 !important;
+            pointer-events: none;
         }
 
         .text-glow {
@@ -475,12 +566,33 @@
 <body>
     <a href="#hero" class="skip-link">Skip to main content</a>
 
+    <!-- NAVIGATION -->
+    <nav class="nav-progress" aria-label="Page progress">
+        <div class="progress-bar"></div>
+        <div class="nav-dots">
+            <button class="nav-dot" data-section="hero" aria-label="Go to Hero" title="Start"></button>
+            <button class="nav-dot" data-section="learning" aria-label="Go to Learning" title="Learning"></button>
+            <button class="nav-dot" data-section="debugging" aria-label="Go to Debugging" title="Debugging"></button>
+            <button class="nav-dot" data-section="deadline" aria-label="Go to Deadline" title="Deadline"></button>
+            <button class="nav-dot" data-section="shipping" aria-label="Go to Shipping" title="Shipping"></button>
+            <button class="nav-dot" data-section="reflection" aria-label="Go to Reflection" title="Reflection"></button>
+        </div>
+    </nav>
+
+    <!-- SCROLL INDICATOR -->
+    <div class="scroll-indicator">
+        <span class="scroll-text">Scroll to explore</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="12 5 12 15 19 8"></polyline>
+        </svg>
+    </div>
+
     <!-- HERO SECTION -->
     <section id="hero" data-section="hero">
         <span class="hero-badge">The Developer's Journey</span>
         <h1>From <span class="hl">Hello World</span> to <span class="hl">Shipped</span></h1>
         <p>A developer's journey is not just about code. It's about curiosity, frustration, breakthroughs, and the moment it all finally works.</p>
-        <button class="cta-btn" data-next="learning">Start Coding →</button>
+        <button class="cta-btn" id="hero-cta">Start Coding →</button>
         <div class="bracket left">{</div>
         <div class="bracket right">}</div>
         <div class="grid-bg"></div>
@@ -773,23 +885,24 @@
     <div class="animated-blob blob-2"></div>
 
     <script>
-        gsap.registerPlugin(ScrollTrigger, TextPlugin);
+        gsap.registerPlugin(ScrollTrigger, TextPlugin, ScrollToPlugin);
 
-        // --- CONFIG & CONSTANTS ---
-        const CONFIG = {
-            BUG_COUNT: 20,
-            COMMIT_GRAPH_CELLS: 100,
-            ERROR_ANIMATION_DELAY: 300,
-            PARTICLE_COUNT_DESKTOP: 400,
-            PARTICLE_COUNT_MOBILE: 200,
-            CONFETTI_GRAVITY: 0.5,
-            RESTART_SCROLL_DURATION: 2
-        };
+        // ===== SAFE QUERY HELPERS =====
+        function safeQuery(selector) {
+            try {
+                const el = document.querySelector(selector);
+                if (!el) console.warn(`⚠️ Not found: ${selector}`);
+                return el;
+            } catch (e) {
+                console.error(`❌ Query error: ${selector}`, e);
+                return null;
+            }
+        }
+        function safeQueryAll(selector) {
+            try { return document.querySelectorAll(selector); } catch (e) { console.error(`❌ QueryAll error: ${selector}`, e); return []; }
+        }
 
-        // --- UTILS ---
-        const getCSSVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-
-        // --- DATA ---
+        // ===== DATA & CONFIG =====
         const milestoneCode = [
             `console.log("Hello, World!");`,
             `const root = document.getElementById('root');\nroot.innerHTML = '<h1>Hello!</h1>';`,
@@ -798,560 +911,261 @@
             `export default function App() {\n  return (\n    <Layout>\n      <Navbar />\n      <HeroContent />\n    </Layout>\n  );\n}`
         ];
 
-        // --- PHASE 4: PERFORMANCE & POLISH ---
-        const performanceMetrics = { animationFrameRate: 60 };
-        let frameCount = 0, lastTime = performance.now();
-        function measureFPS() {
-            frameCount++; const currentTime = performance.now();
-            if (currentTime >= lastTime + 1000) {
-                performanceMetrics.animationFrameRate = frameCount; frameCount = 0; lastTime = currentTime;
-                if(performanceMetrics.animationFrameRate < 40) console.warn("Performance drop detected:", performanceMetrics.animationFrameRate);
-            }
-            requestAnimationFrame(measureFPS);
-        }
-        measureFPS();
-
-        function setupLazyAnimations() {
-            if (!('IntersectionObserver' in window)) return;
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('animate-active'); observer.unobserve(entry.target); } });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('[data-lazy]').forEach(el => observer.observe(el));
-        }
-        setupLazyAnimations();
-
-        // ADVANTAGE 2: MICRO-INTERACTIONS
-        function setupMicroInteractions() {
-            document.querySelectorAll('button, .cta-btn, .ship-btn').forEach(btn => {
-                btn.addEventListener('mouseenter', () => gsap.to(btn, { duration: 0.2, scale: 1.05, ease: "power2.out" }));
-                btn.addEventListener('mouseleave', () => gsap.to(btn, { duration: 0.2, scale: 1, ease: "power2.in" }));
-                btn.addEventListener('mousedown', () => gsap.to(btn, { duration: 0.1, scale: 0.95 }));
-                btn.addEventListener('mouseup', () => gsap.to(btn, { duration: 0.1, scale: 1.05 }));
-            });
-
-            // Hover Ripple Effect for interactive elements
-            document.querySelectorAll('.premium-card, .t-node').forEach(el => {
-                el.addEventListener('mouseenter', (e) => {
-                    const ripple = document.createElement('span');
-                    ripple.style.cssText = `position: absolute; width: 10px; height: 10px; background: rgba(0, 217, 255, 0.2); border-radius: 50%; pointer-events: none; z-index: 1; transform: translate(-50%, -50%);`;
-                    el.appendChild(ripple);
-                    const rect = el.getBoundingClientRect();
-                    ripple.style.left = `${e.clientX - rect.left}px`;
-                    ripple.style.top = `${e.clientY - rect.top}px`;
-                    gsap.to(ripple, { width: 400, height: 400, opacity: 0, duration: 0.6, onComplete: () => ripple.remove() });
-                });
-            });
-        }
-        setupMicroInteractions();
-
-        // --- HERO ANIMATIONS ---
-        const heroTl = gsap.timeline({ delay: 0.2 });
-        heroTl.to('.hero-badge', { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" })
-              .to('#hero h1', { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.3")
-              .to('#hero p', { opacity: 1, duration: 0.8, ease: "power2.out" }, "-=0.5")
-              .fromTo('.cta-btn', { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "elastic.out(1, 0.5)" }, "-=0.3");
-
-        gsap.to('.grid-bg', {
-            y: -100,
-            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 }
-        });
-
-        document.querySelector('.cta-btn').addEventListener('click', () => {
-            document.getElementById('learning').scrollIntoView({ behavior: 'smooth' });
-        });
-
-        // --- PHASE 2: PARALLAX & STAGGER REVEALS ---
-        function setupGlobalAnimations() {
-            // Staggered reveals for elements with data-stagger
-            document.querySelectorAll('.t-node, .next-card, .stat-item, .reflection-cycle > div').forEach(el => {
-                el.setAttribute('data-stagger', 'true');
-            });
-
-            gsap.utils.toArray('[data-stagger]').forEach((element, index) => {
-                gsap.from(element, {
-                    scrollTrigger: {
-                        trigger: element,
-                        start: 'top 92%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    duration: 0.8,
-                    opacity: 0,
-                    y: 30,
-                    x: (index % 2 === 0) ? -20 : 20,
-                    ease: 'power2.out',
-                    delay: (index % 3) * 0.1
-                });
-            });
-
-            // Section Title Choreography
-            gsap.utils.toArray('.section-title, #hero h1, .debug-title').forEach(title => {
-                gsap.from(title, {
-                    scrollTrigger: {
-                        trigger: title,
-                        start: 'top 85%',
-                        toggleActions: 'play none none reverse'
-                    },
-                    duration: 1.2,
-                    opacity: 0,
-                    letterSpacing: '-0.05em',
-                    y: 30,
-                    ease: 'power3.out'
-                });
-            });
-        }
-        setupGlobalAnimations();
-
-        // --- LEARNING ANIMATIONS ---
-        const codeElement = document.querySelector('.ide-code-content');
-        
-        // IDE PANEL 3D PARALLAX (Phase 2.1)
-        gsap.to('.ide-panel', {
-            scrollTrigger: {
-                trigger: '#learning',
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 1,
-                onUpdate: (self) => {
-                    gsap.set('.ide-panel', {
-                        y: self.getVelocity() * -0.05, // Subtle velocity parallax
-                        rotationX: self.progress * 8,   // 3D Tilt
-                        z: self.progress * 100         // Move towards viewer
-                    });
-                }
-            }
-        });
-        milestonesArr.forEach((m, index) => {
-            gsap.to(m, {
-                opacity: 1, y: 0,
-                scrollTrigger: {
-                    trigger: m, start: "top 80%", toggleActions: "play none none reverse",
-                    onEnter: () => updateCode(index)
-                }
-            });
-
-            // Milestone Card Interactions
-            m.addEventListener('mouseenter', () => {
-                gsap.to(m, { 
-                    duration: 0.3,
-                    borderColor: 'rgba(0, 217, 255, 0.6)',
-                    boxShadow: '0 16px 64px rgba(0, 217, 255, 0.25), inset 0 0 30px rgba(0, 217, 255, 0.1)',
-                    y: -8
-                });
-                gsap.to(m.querySelector('.m-icon'), { scale: 1.2, duration: 0.3 });
-            });
-            
-            m.addEventListener('mouseleave', () => {
-                gsap.to(m, { duration: 0.3, borderColor: 'var(--border-color)', boxShadow: 'none', y: 0 });
-                gsap.to(m.querySelector('.m-icon'), { scale: 1, duration: 0.3 });
-            });
-
-            // Milestone Stats Toggle
-            m.addEventListener('click', () => {
-                m.classList.toggle('expanded');
-                gsap.fromTo(m, { scale: 1 }, { scale: 1.02, duration: 0.2, yoyo: true, repeat: 1 });
-            });
-        });
-
-        function updateCode(index) {
-            gsap.to(codeElement, {
-                duration: 0.5,
-                text: milestoneCode[index],
-                ease: "none",
-                onComplete: () => {
-                    // Simple syntax highlight re-application
-                    let html = codeElement.innerText;
-                    html = html.replace(/\b(const|let|function|export|default|return|import)\b/g, '<span class="kwd">$1</span>');
-                    html = html.replace(/(\".*?\"|'.*?')/g, '<span class="str">$1</span>');
-                    html = html.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
-                    html = html.replace(/(\/\/.*)/g, '<span class="cmt">$1</span>');
-                    html = html.replace(/\b(console|log|useState|getElementById|onInit)\b/g, '<span class="fn">$1</span>');
-                    codeElement.innerHTML = html;
-                }
-            });
-            // Highlight the card
-            milestonesArr.forEach((mm, i) => mm.style.borderColor = (i === index) ? 'var(--accent-blue)' : 'var(--border-color)');
-        }
-
-        document.querySelector('.ide-panel').addEventListener('click', () => {
-            document.querySelector('.ide-modal').style.display = 'flex';
-        });
-        document.querySelector('.btn-close').addEventListener('click', () => {
-            document.querySelector('.ide-modal').style.display = 'none';
-        });
-
-        // --- DEBUGGING DATA ---
-        const brokenCodeString = `<span class="kwd">const</span> <span class="var">userNmae</span> = <span class="str">"Alex"</span>;\n\n<span class="kwd">function</span> <span class="fn">greet</span>() {\n  <span class="kwd">const</span> <span class="var">message</span> = <span class="str">"Hello, "</span> + userNmae;\n  <span class="fn">console</span>.<span class="fn">log</span>(message)\n  <span class="kwd">return</span> message;\n}\n\n<span class="fn">greet</span>();`;
-        
-        const debugErrors = [
-            "Uncaught ReferenceError: 'userNmae' is not defined",
-            "Missing semicolon on line 5",
-            "Variable 'userNmae' declared but never assigned correctly",
-            "Potential memory leak in recursion loop",
-            "Unexpected token: ';'"
-        ];
-
-        const fixedOldCode = `<span class="kwd">const</span> <span class="var removed">userNmae</span> = <span class="str">"Alex"</span>;\n<span class="kwd">function</span> <span class="fn">greet</span>() {\n  <span class="kwd">const</span> <span class="var">message</span> = <span class="str">"Hello, "</span> + <span class="var removed">userNmae</span>;\n  <span class="fn">console</span>.<span class="fn">log</span>(message)\n}`;
-        const fixedNewCode = `<span class="kwd">const</span> <span class="var added">userName</span> = <span class="str">"Alex"</span>;\n<span class="kwd">function</span> <span class="fn">greet</span>() {\n  <span class="kwd">const</span> <span class="var added">message</span> = <span class="str">"Hello, "</span> + <span class="var added">userName</span>;\n  <span class="fn">console</span>.<span class="fn">log</span>(message<span class="added">;</span>)\n  <span class="kwd">return</span> <span class="var added">message</span>;\n}`;
-
-        // Populate Debug Content
-        document.querySelector('.broken-code-content').innerHTML = brokenCodeString;
-        document.querySelector('.diff-old-content').innerHTML = fixedOldCode;
-        document.querySelector('.diff-new-content').innerHTML = fixedNewCode;
-
-        // --- DEBUGGING SCROLL REVEALS ---
-        gsap.set('.debug-zone-b, .debug-zone-c', { opacity: 0, y: 50, pointerEvents: 'none' });
-        
-        const debugTl = gsap.timeline({
-            scrollTrigger: {
-                trigger: "#debugging",
-                start: "top top", end: "+=1500", // 150vh
-                pin: true, scrub: 0.5
-            }
-        });
-
-        debugTl.to('.debug-zone-a', { opacity: 0, y: -50, duration: 1 })
-               .to('.debug-zone-b', { opacity: 1, y: 0, pointerEvents: 'auto', duration: 1 })
-               .to('.debug-zone-b', { opacity: 0.2, y: -30, delay: 1, duration: 1 }) // Fade back slightly
-               .to('.debug-zone-c', { opacity: 1, y: 0, pointerEvents: 'auto', duration: 1 });
-
-        // BUG CANVAS MAGNIFICATION (Phase 2.1)
-        gsap.to('#bug-canvas', {
-            scrollTrigger: {
-                trigger: '.debug-zone-b',
-                start: 'top 80%',
-                end: 'center 40%',
-                scrub: 1
-            },
-            scale: 1.1,
-            filter: 'drop-shadow(0 0 30px rgba(255, 85, 85, 0.4))'
-        });
-
-        // Error Console Logic (Zone A)
-        const consoleEl = document.querySelector('.console-errors');
-        ScrollTrigger.create({
-            trigger: ".debug-zone-a", start: "center center",
-            onEnter: () => {
-                if(consoleEl.children.length > 0) return;
-                debugErrors.forEach((err, i) => {
-                    setTimeout(() => {
-                        const div = document.createElement('div');
-                        div.className = 'console-error';
-                        div.innerText = `> ${err}`;
-                        consoleEl.appendChild(div);
-                    }, i * CONFIG.ERROR_ANIMATION_DELAY);
-                });
-            }
-        });
-
-        // Debug Toggle
-        const debugBtn = document.querySelector('.debug-toggle');
-        debugBtn.addEventListener('click', () => {
-            debugBtn.classList.toggle('active');
-            if(debugBtn.classList.contains('active')) {
-                debugBtn.innerText = "Debug Mode: SOLVED";
-                gsap.to('.debug-zone-a, .debug-zone-b', { filter: 'grayscale(1)', opacity: 0.1, duration: 0.5 });
-                gsap.to('.debug-zone-c', { opacity: 1, scale: 1, filter: 'grayscale(0)', zIndex: 50, duration: 0.5 });
-            } else {
-                debugBtn.innerText = "Hint: Toggle Debug Mode";
-                gsap.to('.debug-zone-a, .debug-zone-b', { filter: 'grayscale(0)', opacity: 1, duration: 0.5 });
-                gsap.to('.debug-zone-c', { opacity: 0.2, scale: 0.95, filter: 'grayscale(1)', zIndex: 1, duration: 0.5 });
-            }
-        });
-
-        // --- DEBUGGING: BUG SWARM ---
-        const canvas = document.getElementById('bug-canvas');
-        const ctx = canvas.getContext('2d');
-        let bugs = [];
-        let bugsSquashed = 0;
-        let isBugPaused = false;
-
-        function resizeCanvas() {
-            const rect = canvas.parentElement.getBoundingClientRect();
-            canvas.width = rect.width || 800; canvas.height = 300;
-        }
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(resizeCanvas, 150);
-        });
-        resizeCanvas();
-
-        class Bug {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = 6;
-                this.t = Math.random() * 100;
-                this.speed = Math.random() * 1 + 0.5;
-            }
-            update() {
-                this.t += 0.05;
-                this.x += Math.sin(this.t) * this.speed;
-                this.y += Math.cos(this.t * 0.7) * this.speed;
-                if (this.x < 0) this.x = canvas.width;
-                if (this.x > canvas.width) this.x = 0;
-                if (this.y < 0) this.y = canvas.height;
-                if (this.y > canvas.height) this.y = 0;
-            }
-            draw() {
-                ctx.fillStyle = '#111';
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = 'red';
-                ctx.fillRect(this.x - 2, this.y - 2, 1.5, 1.5);
-                ctx.fillRect(this.x + 1, this.y - 2, 1.5, 1.5);
-            }
-        }
-
-        function initBugs() {
-            bugs = []; for (let i = 0; i < CONFIG.BUG_COUNT; i++) bugs.push(new Bug());
-        }
-        initBugs();
-
-        let isBugAnimating = false;
-
-        function animateBugs() {
-            if(isBugPaused || !isBugAnimating) return;
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            bugs.forEach(bug => { bug.update(); bug.draw(); });
-            requestAnimationFrame(animateBugs);
-        }
-        
-        ScrollTrigger.create({
-            trigger: "#debugging", start: "top bottom", end: "bottom top",
-            onEnter: () => { isBugAnimating = true; animateBugs(); },
-            onLeave: () => { isBugAnimating = false; },
-            onEnterBack: () => { isBugAnimating = true; animateBugs(); },
-            onLeaveBack: () => { isBugAnimating = false; }
-        });
-
-        canvas.addEventListener('mousedown', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            bugs = bugs.filter(bug => {
-                const dist = Math.hypot(bug.x - mouseX, bug.y - mouseY);
-                if (dist < 20) {
-                    bugsSquashed++;
-                    document.getElementById('bugs-found').innerText = Math.min(bugsSquashed, 15);
-                    if(bugsSquashed === 15) {
-                        document.querySelector('.zone-label').innerText = "All bugs squashed! Fix applied.";
-                        document.querySelector('.zone-label').style.color = "var(--success-green)";
+        // ===== HERO CTA BUTTON =====
+        function setupHeroCTA() {
+            const ctaBtn = safeQuery('#hero-cta');
+            if (ctaBtn) {
+                ctaBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const learningSection = safeQuery('#learning');
+                    if (learningSection) {
+                        gsap.to(window, { scrollTo: { y: learningSection, offsetY: 50 }, duration: 1.2, ease: "power2.inOut" });
                     }
-                    return false;
+                });
+            }
+        }
+
+        // ===== IDE MODAL HANDLERS =====
+        function setupIdeModal() {
+            const idePanel = safeQuery('.ide-panel');
+            const ideModal = safeQuery('.ide-modal');
+            const btnClose = safeQuery('.btn-close');
+            if (!idePanel || !ideModal || !btnClose) return;
+            idePanel.addEventListener('click', (e) => {
+                e.stopPropagation();
+                ideModal.style.display = 'flex';
+                gsap.from(ideModal, { opacity: 0, duration: 0.3 });
+            });
+            btnClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                gsap.to(ideModal, { opacity: 0, duration: 0.3, onComplete: () => { ideModal.style.display = 'none'; ideModal.style.opacity = '1'; } });
+            });
+            ideModal.addEventListener('click', (e) => { if (e.target === ideModal) btnClose.click(); });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ideModal.style.display !== 'none') btnClose.click(); });
+        }
+
+        // ===== MILESTONE CARDS =====
+        function setupMilestones() {
+            const milestonesArr = safeQueryAll('.milestone');
+            const codeElement = safeQuery('.ide-code-content');
+            
+            milestonesArr.forEach((m, index) => {
+                gsap.to(m, {
+                    scrollTrigger: {
+                        trigger: m, start: "top 85%", toggleActions: "play none none reverse",
+                        onEnter: () => updateCode(index)
+                    }
+                });
+
+                m.addEventListener('mouseenter', () => {
+                    gsap.to(m, { duration: 0.3, borderColor: 'rgba(0, 217, 255, 0.8)', boxShadow: '0 16px 64px rgba(0, 217, 255, 0.3), inset 0 0 30px rgba(0, 217, 255, 0.1)', y: -12 });
+                    gsap.to(m.querySelector('.m-icon'), { scale: 1.25, duration: 0.3, ease: "back.out" });
+                });
+                
+                m.addEventListener('mouseleave', () => {
+                    gsap.to(m, { duration: 0.3, borderColor: 'rgba(255, 255, 255, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(0, 217, 255, 0.05)', y: 0 });
+                    gsap.to(m.querySelector('.m-icon'), { scale: 1, duration: 0.3, ease: "back.out" });
+                });
+
+                m.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const stats = m.querySelector('.m-stats');
+                    if (!stats) return;
+                    m.classList.toggle('expanded');
+                    if (m.classList.contains('expanded')) {
+                        gsap.to(stats, { opacity: 1, maxHeight: 200, duration: 0.4, ease: "power2.out" });
+                        gsap.to(m, { scale: 1.02, duration: 0.3 });
+                    } else {
+                        gsap.to(stats, { opacity: 0, maxHeight: 0, duration: 0.4, ease: "power2.in" });
+                        gsap.to(m, { scale: 1, duration: 0.3 });
+                    }
+                });
+            });
+
+            function updateCode(index) {
+                if (!codeElement) return;
+                gsap.to(codeElement, {
+                    duration: 0.5, text: milestoneCode[index], ease: "none",
+                    onComplete: () => {
+                        let html = codeElement.innerText;
+                        html = html.replace(/\b(const|let|function|export|default|return|import)\b/g, '<span class="kwd">$1</span>');
+                        html = html.replace(/(\".*?\"|'.*?')/g, '<span class="str">$1</span>');
+                        html = html.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+                        html = html.replace(/(\/\/.*)/g, '<span class="cmt">$1</span>');
+                        html = html.replace(/\b(console|log|useState|getElementById|onInit)\b/g, '<span class="fn">$1</span>');
+                        codeElement.innerHTML = html;
+                    }
+                });
+                milestonesArr.forEach((mm, i) => mm.style.borderColor = (i === index) ? 'var(--accent-blue)' : 'rgba(255, 255, 255, 0.1)');
+            }
+        }
+
+        // ===== SHIP BUTTON & CELEBRATION =====
+        function setupShipping() {
+            const shipBtn = safeQuery('.ship-btn');
+            const successModal = safeQuery('.success-modal');
+            const btnCloseModal = safeQuery('.btn-close-modal');
+            if (!shipBtn || !successModal || !btnCloseModal) return;
+            
+            shipBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const celebCanvas = safeQuery('#celebration-canvas');
+                if (celebCanvas) {
+                    const celebSystem = new ParticleSystem(celebCanvas);
+                    celebSystem.init(window.innerWidth < 768 ? 150 : 350);
+                    celebSystem.draw();
                 }
-                return true;
-            });
-        });
-
-        // --- DEADLINE: TIMELINE & COFFEE ---
-        // TIMELINE 3D PERSPECTIVE (Phase 2.1)
-        gsap.to('.timeline-container', {
-            scrollTrigger: {
-                trigger: '#deadline',
-                start: 'top 60%',
-                end: 'bottom 40%',
-                scrub: 1
-            },
-            perspective: 1000,
-            rotationY: 10
-        });
-
-        gsap.to('.timeline-line-active', {
-            strokeDashoffset: 0,
-            scrollTrigger: { trigger: ".timeline-container", start: "top center", end: "bottom center", scrub: 1 }
-        });
-
-        const timelineNodes = document.querySelectorAll('.t-node');
-        timelineNodes.forEach((node, i) => {
-            gsap.to(node, {
-                scrollTrigger: { trigger: node, start: "top 80%", toggleActions: "play none none reverse" },
-                opacity: 1, x: 0, duration: 0.5, delay: i * 0.1,
-                onEnter: () => {
-                    node.classList.add('active');
-                    if(i === 2) document.getElementById('deadline').classList.add('heartbeat'); // Heartbeat on Day -1
-                },
-                onLeaveBack: () => {
-                    if(i === 2) document.getElementById('deadline').classList.remove('heartbeat');
-                }
-            });
-            node.addEventListener('click', () => {
-                node.classList.toggle('expanded');
-                gsap.fromTo(node, { scale: 1 }, { scale: 1.05, duration: 0.2, yoyo: true, repeat: 1 });
-            });
-        });
-
-        // Coffee Cups
-        const cups = document.querySelectorAll('.cup');
-        const caffeineBar = document.querySelector('.caffeine-bar');
-        const caffeineText = document.querySelector('.caffeine-text');
-
-        gsap.to('.coffee-section', {
-            scrollTrigger: {
-                trigger: '#deadline', start: "top center", end: "bottom center", scrub: 1,
-                onUpdate: (self) => {
-                    const progress = Math.floor(self.progress * 100);
-                    caffeineBar.style.width = `${progress}%`;
-                    caffeineText.innerText = `${progress}%`;
-                    const cupIndex = Math.floor(self.progress * 5);
-                    cups.forEach((cup, i) => {
-                        if(i < cupIndex) cup.classList.add('active');
-                        else cup.classList.remove('active');
+                gsap.to(successModal, { 
+                    opacity: 1, y: 0, duration: 0.5, ease: "back.out",
+                    onStart: () => { successModal.classList.add('show'); successModal.style.pointerEvents = 'auto'; }
+                });
+                const statUsers = safeQuery('#stat-users');
+                if (statUsers) {
+                    const counter = { val: 0 };
+                    gsap.to(counter, { 
+                        val: 1247, duration: 2.5, ease: "power2.out",
+                        onUpdate: () => statUsers.innerText = Math.floor(counter.val).toLocaleString()
                     });
                 }
-            }
-        });
+                gsap.to(shipBtn, { opacity: 0.5, pointerEvents: 'none', duration: 0.3 });
+            });
 
-        // Commits stream
-        const commitBox = document.getElementById('commits');
-        const commitMsgs = [
-            "fix: resolved memory leak", 
-            "feat: added loading spinner", 
-            "refactor: cleaned up legacy code", 
-            "chore: updated dependencies",
-            "style: fixed responsive padding",
-            "test: added unit tests for auth"
-        ];
-        let commitInterval = null;
-        ScrollTrigger.create({
-            trigger: "#deadline",
-            start: "top bottom",
-            onEnter: () => {
-                if(commitInterval) return;
-                commitInterval = setInterval(() => {
-                    const div = document.createElement('div');
-                    div.style.fontSize = "11px";
-                    div.style.color = "var(--text-muted)";
-                    div.style.marginBottom = "4px";
-                    div.innerHTML = `<span style="color:var(--accent-blue)">[Commit]</span> ${commitMsgs[Math.floor(Math.random() * commitMsgs.length)]}`;
-                    commitBox.prepend(div);
-                    if(commitBox.children.length > 8) commitBox.lastChild.remove();
-                }, 1500);
-            },
-            onLeave: () => { clearInterval(commitInterval); commitInterval = null; },
-            onEnterBack: () => {
-                if(commitInterval) return;
-                commitInterval = setInterval(() => {
-                    const div = document.createElement('div');
-                    div.style.fontSize = "11px";
-                    div.style.color = "var(--text-muted)";
-                    div.style.marginBottom = "4px";
-                    div.innerHTML = `<span style="color:var(--accent-blue)">[Commit]</span> ${commitMsgs[Math.floor(Math.random() * commitMsgs.length)]}`;
-                    commitBox.prepend(div);
-                    if(commitBox.children.length > 8) commitBox.lastChild.remove();
-                }, 1500);
-            },
-            onLeaveBack: () => { clearInterval(commitInterval); commitInterval = null; }
-        });
-
-        // --- SHIPPING & CELEBRATION ---
-        // Generate Commit Graph
-        const graphGrid = document.getElementById('commit-graph-grid');
-        for (let i = 0; i < CONFIG.COMMIT_GRAPH_CELLS; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'graph-cell';
-            const lv = Math.floor(Math.random() * 5);
-            if(lv > 0) cell.classList.add(`lv${lv}`);
-            graphGrid.appendChild(cell);
+            btnCloseModal.addEventListener('click', (e) => {
+                gsap.to(successModal, { opacity: 0, y: 50, duration: 0.4, ease: "power2.in", onComplete: () => { successModal.classList.remove('show'); successModal.style.pointerEvents = 'none'; } });
+            });
         }
-        gsap.to('.graph-cell', {
-            opacity: 1, scale: 1, duration: 0.2, stagger: { each: 0.01, from: "start" },
-            scrollTrigger: { trigger: ".commit-graph-container", start: "top 90%" }
-        });
-        gsap.to('#growth-curve', {
-            strokeDashoffset: 0, duration: 2, ease: "power1.inOut",
-            scrollTrigger: { trigger: ".commit-graph-container", start: "top 70%" }
-        });
+
+        // ===== REFLECTION & REFRESH =====
+        function setupReflection() {
+            const restartBtn = safeQuery('#restart-btn');
+            const toTopBtn = safeQuery('#to-top');
+            if (restartBtn) restartBtn.addEventListener('click', (e) => { e.preventDefault(); gsap.to(window, { scrollTo: { y: 0 }, duration: 1.5, ease: "power2.inOut" }); });
+            if (toTopBtn) toTopBtn.addEventListener('click', (e) => { e.preventDefault(); gsap.to(window, { scrollTo: { y: 0 }, duration: 1.2, ease: "power2.inOut" }); });
+        }
+
+        // ===== DEBUG TOGGLE =====
+        function setupDebugToggle() {
+            const debugBtn = safeQuery('.debug-toggle');
+            if (!debugBtn) return;
+            let active = false;
+            debugBtn.addEventListener('click', (e) => {
+                active = !active;
+                if (active) {
+                    debugBtn.innerText = "Debug Mode: SOLVED";
+                    debugBtn.classList.add('active');
+                    gsap.to('.debug-zone-a, .debug-zone-b', { filter: 'grayscale(1)', opacity: 0.15, duration: 0.5 });
+                    gsap.to('.debug-zone-c', { opacity: 1, scale: 1, filter: 'grayscale(0)', zIndex: 50, duration: 0.5 });
+                } else {
+                    debugBtn.innerText = "Hint: Toggle Debug Mode";
+                    debugBtn.classList.remove('active');
+                    gsap.to('.debug-zone-a, .debug-zone-b', { filter: 'grayscale(0)', opacity: 1, duration: 0.5 });
+                    gsap.to('.debug-zone-c', { opacity: 0.2, scale: 0.95, filter: 'grayscale(1)', zIndex: 1, duration: 0.5 });
+                }
+            });
+        }
+
+        // ===== NAVIGATION SYSTEM =====
+        function setupNavigation() {
+            const dots = safeQueryAll('.nav-dot');
+            const sections = safeQueryAll('[data-section]');
+            const progressBar = safeQuery('.progress-bar');
+            const scrollInd = safeQuery('.scroll-indicator');
+            if (!dots.length) return;
+            window.addEventListener('scroll', () => {
+                const wh = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (window.pageYOffset / wh) * 100;
+                if (progressBar) gsap.to(progressBar, { width: `${scrollPercent}%`, duration: 0.1 });
+                let cur = '';
+                sections.forEach(s => { if (window.pageYOffset >= s.offsetTop - 300) cur = s.getAttribute('data-section'); });
+                dots.forEach(d => { d.classList.remove('active'); if (d.getAttribute('data-section') === cur) d.classList.add('active'); });
+                if (scrollInd) scrollInd.classList.toggle('hidden', window.pageYOffset > 100);
+            }, { passive: true });
+            dots.forEach(d => {
+                d.addEventListener('click', (e) => {
+                    const s = d.getAttribute('data-section');
+                    const target = safeQuery(`[data-section="${s}"]`);
+                    if (target) gsap.to(window, { scrollTo: { y: target, offsetY: 50 }, duration: 1.2, ease: "power2.inOut" });
+                });
+            });
+        }
+
+        // ===== PREMIUM ANIMATIONS (Part 2) =====
+        function initPremiumAnimations() {
+            // Timeline choreography
+            gsap.utils.toArray('.t-node').forEach((node, i) => {
+                gsap.from(node, {
+                    opacity: 0, x: -50, scale: 0.8, duration: 0.6,
+                    scrollTrigger: { trigger: node, start: "top 85%", toggleActions: "play none none reverse" }
+                });
+            });
+            // 3D Parallax for IDE
+            gsap.to('.ide-panel', {
+                scrollTrigger: { trigger: '#learning', start: 'top top', end: 'bottom top', scrub: 1 },
+                onUpdate: (self) => { gsap.set('.ide-panel', { y: self.getVelocity() * -0.05, rotationX: self.progress * 8, z: self.progress * 100 }); }
+            });
+            // Bug canvas magnification
+            gsap.to('#bug-canvas', {
+                scrollTrigger: { trigger: '.debug-zone-b', start: 'top 80%', end: 'center 40%', scrub: 1 },
+                scale: 1.1, filter: 'drop-shadow(0 0 30px rgba(255, 85, 85, 0.4))'
+            });
+        }
+
+        // ===== CLASSES & SYSTEMS =====
+        class Bug {
+            constructor(c) { this.canvas = c; this.x = Math.random() * c.width; this.y = Math.random() * c.height; this.size = 6; this.t = Math.random() * 100; this.speed = Math.random() * 1 + 0.5; }
+            update() { this.t += 0.05; this.x += Math.sin(this.t) * this.speed; this.y += Math.cos(this.t * 0.7) * this.speed; if (this.x < 0) this.x = this.canvas.width; if (this.x > this.canvas.width) this.x = 0; if (this.y < 0) this.y = this.canvas.height; if (this.y > this.canvas.height) this.y = 0; }
+            draw(ctx) { ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = 'red'; ctx.fillRect(this.x - 2, this.y - 2, 1.5, 1.5); ctx.fillRect(this.x + 1, this.y - 2, 1.5, 1.5); }
+        }
 
         class ParticleSystem {
-            constructor(canvas) { this.canvas = canvas; this.ctx = canvas.getContext('2d'); this.particles = []; this.isActive = false; }
-            init(count) {
-                this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight;
-                this.particles = []; for (let i = 0; i < count; i++) { this.particles.push({ x: this.canvas.width / 2, y: this.canvas.height / 2, sx: Math.random() * 28 - 14, sy: Math.random() * -30 - 5, size: Math.random() * 10 + 4, color: `hsl(${Math.random() * 360}, 90%, 60%)`, rotation: Math.random() * 360, rSpeed: Math.random() * 20 - 10 }); }
-                this.isActive = true;
-            }
-            draw() {
-                if (!this.isActive) return;
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                let activeCount = 0;
-                this.particles.forEach(p => {
-                    p.x += p.sx; p.y += p.sy; p.sy += CONFIG.CONFETTI_GRAVITY;
-                    if(p.y < this.canvas.height) { activeCount++; p.rotation += p.rSpeed; this.ctx.save(); this.ctx.translate(p.x, p.y); this.ctx.rotate(p.rotation * Math.PI / 180); this.ctx.fillStyle = p.color; this.ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); this.ctx.restore(); }
+            constructor(c) { this.canvas = c; this.ctx = c.getContext('2d'); this.particles = []; this.isActive = false; }
+            init(count) { this.canvas.width = window.innerWidth; this.canvas.height = window.innerHeight; this.particles = []; for (let i = 0; i < count; i++) { this.particles.push({ x: this.canvas.width / 2, y: this.canvas.height / 2, sx: Math.random() * 28 - 14, sy: Math.random() * -30 - 5, size: Math.random() * 10 + 4, color: `hsl(${Math.random() * 360}, 90%, 60%)`, rotation: Math.random() * 360, rSpeed: Math.random() * 20 - 10 }); } this.isActive = true; }
+            draw() { if (!this.isActive) return; this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); let activeCount = 0; this.particles.forEach(p => { p.x += p.sx; p.y += p.sy; p.sy += 0.5; if(p.y < this.canvas.height) { activeCount++; p.rotation += p.rSpeed; this.ctx.save(); this.ctx.translate(p.x, p.y); this.ctx.rotate(p.rotation * Math.PI / 180); this.ctx.fillStyle = p.color; this.ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); this.ctx.restore(); } }); if(activeCount > 0) requestAnimationFrame(() => this.draw()); else this.isActive = false; }
+        }
+
+        // ===== INIT ALL =====
+        function init() {
+            console.log('🔧 Launching Frontend Odyssey Engine...');
+            setupHeroCTA();
+            setupIdeModal();
+            setupMilestones();
+            setupShipping();
+            setupReflection();
+            setupDebugToggle();
+            setupNavigation();
+            initPremiumAnimations();
+            
+            // Bug Game
+            const canvas = safeQuery('#bug-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let bugs = [];
+                for (let i = 0; i < 20; i++) bugs.push(new Bug(canvas));
+                let isBugAnimating = false;
+                function loop() { if(!isBugAnimating) return; ctx.clearRect(0, 0, canvas.width, canvas.height); bugs.forEach(b => { b.update(); b.draw(ctx); }); requestAnimationFrame(loop); }
+                ScrollTrigger.create({ trigger: "#debugging", onEnter: () => { isBugAnimating = true; loop(); }, onLeave: () => { isBugAnimating = false; } });
+                canvas.addEventListener('mousedown', (e) => {
+                    const rect = canvas.getBoundingClientRect();
+                    const mx = e.clientX - rect.left; const my = e.clientY - rect.top;
+                    bugs = bugs.filter(b => { if (Math.hypot(b.x - mx, b.y - my) < 20) { document.getElementById('bugs-found').innerText = parseInt(document.getElementById('bugs-found').innerText) + 1; return false; } return true; });
                 });
-                if(activeCount > 0) requestAnimationFrame(() => this.draw()); else this.isActive = false;
             }
-        }
 
-        const shipBtn = document.querySelector('.ship-btn');
-        const successModal = document.querySelector('.success-modal');
-        const celebCanvas = document.getElementById('celebration-canvas');
-        const celebSystem = new ParticleSystem(celebCanvas);
-
-        shipBtn.addEventListener('click', () => {
-            celebSystem.init(window.innerWidth < 768 ? CONFIG.PARTICLE_COUNT_MOBILE : CONFIG.PARTICLE_COUNT_DESKTOP);
-            celebSystem.draw();
-            successModal.classList.add('show');
-            const counter = { val: 0 };
-            gsap.to(counter, { 
-                val: 1247, duration: 2.5, ease: "power2.out",
-                onUpdate: () => document.getElementById('stat-users').innerText = Math.floor(counter.val).toLocaleString() 
-            });
-            shipBtn.style.opacity = '0'; shipBtn.style.pointerEvents = 'none';
-        });
-
-        document.querySelector('.btn-close-modal').addEventListener('click', () => successModal.classList.remove('show'));
-        document.getElementById('to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-        // --- REFLECTION & RESTART ---
-        document.getElementById('restart-btn').addEventListener('click', () => {
-             gsap.to(window, { scrollTo: 0, duration: CONFIG.RESTART_SCROLL_DURATION, ease: "power2.inOut" });
-        });
-
-        // --- KONAMI CODE EASTER EGG ---
-        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        let konamiIndex = 0;
-        document.addEventListener('keydown', (e) => {
-            if(e.key === konamiCode[konamiIndex]) { konamiIndex++; if(konamiIndex === konamiCode.length) { activateEasterEgg(); konamiIndex = 0; } } else { konamiIndex = 0; }
-        });
-        function activateEasterEgg() {
-            document.body.style.filter = 'invert(1)'; setTimeout(() => document.body.style.filter = 'invert(0)', 1000);
-            const msg = document.createElement('div'); msg.textContent = '🎮 Secret Mode Activated!';
-            msg.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--success-green); color: var(--bg-dark); padding: 24px 48px; border-radius: 12px; font-size: 20px; font-weight: 700; z-index: 1000; box-shadow: 0 0 50px var(--success-green-glow);';
-            document.body.appendChild(msg); setTimeout(() => msg.remove(), 2000);
-        }
-
-        // --- ACCESSIBILITY: MODAL ESCAPE ---
-        document.addEventListener('keydown', (e) => {
-            if(e.key === 'Escape') {
-                document.querySelector('.ide-modal').style.display = 'none';
-                document.querySelector('.success-modal').classList.remove('show');
-            }
-        });
-
-        // --- PHASE 3: SVG DIVIDER ANIMATION ---
-        function initSVGDividers() {
-            gsap.utils.toArray('.divider-path').forEach(path => {
-                const length = path.getTotalLength();
-                if(length === 0) {
-                    setTimeout(() => initSVGDividers(), 150);
-                    return;
-                }
-                gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
-                gsap.to(path, {
-                    strokeDashoffset: 0,
-                    scrollTrigger: { trigger: path.closest('section'), start: "top 90%", end: "bottom 10%", scrub: 1 }
+            // SVG Dividers
+            const initSVGDividers = () => {
+                gsap.utils.toArray('.divider-path').forEach(path => {
+                    const length = path.getTotalLength();
+                    if(length === 0) { setTimeout(initSVGDividers, 150); return; }
+                    gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
+                    gsap.to(path, { strokeDashoffset: 0, scrollTrigger: { trigger: path.closest('section'), start: "top 90%", end: "bottom 10%", scrub: 1 } });
                 });
-            });
-        }
-        window.addEventListener('load', initSVGDividers);
+            };
+            window.addEventListener('load', initSVGDividers);
 
-        // EXTRA POLISH: STOP BLOBS AFTER 95% SCROLL
-        ScrollTrigger.create({
-            trigger: "body",
-            onUpdate: (self) => {
-                if(self.progress > 0.95) gsap.to(['.blob-1', '.blob-2'], { opacity: 0, duration: 1 });
-                else gsap.to(['.blob-1', '.blob-2'], { opacity: 1, duration: 1 });
-            }
-        });
+            console.log('✅ ALL SYSTEMS GO');
+        }
+
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
