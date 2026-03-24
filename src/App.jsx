@@ -78,7 +78,7 @@ function App() {
     
     // Simulate deploy then scroll to production section
     setTimeout(() => {
-        scrollTo("#production-deployed");
+        scrollTo("#production");
     }, 1500);
   };
 

@@ -52,7 +52,7 @@ const CaffeineCommitsSection = () => {
   };
 
   return (
-    <section id="caffeine-commits" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s5)', maxWidth: '1200px', margin: '0 auto' }}>
+    <section id="caffeine" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s5)', maxWidth: '1200px', margin: '0 auto' }}>
       <div className="caffeine-sidebar" style={{ textAlign: 'center' }}>
         <h4 style={{ textTransform: 'uppercase', letterSpacing: '2px', opacity: 0.5, marginBottom: '20px' }}>Caffeine Level</h4>
         <div className="coffee-section premium-card" style={{ padding: 'var(--s4)' }}>

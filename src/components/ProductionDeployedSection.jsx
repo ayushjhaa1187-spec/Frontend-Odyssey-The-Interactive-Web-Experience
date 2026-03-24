@@ -48,7 +48,7 @@ const ProductionDeployedSection = ({ onShipAgain }) => {
   };
 
   return (
-    <section id="production-deployed" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <section id="production" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <h2 className="section-title success" style={{ textAlign: 'center' }}>Production Deployed!</h2>
       <p style={{ maxWidth: '600px', margin: '0 auto var(--s5)', textAlign: 'center', opacity: 0.8, fontSize: '18px' }}>Your application is now globally distributed and serving live traffic.</p>
       

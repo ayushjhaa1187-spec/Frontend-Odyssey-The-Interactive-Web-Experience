@@ -106,7 +106,7 @@ const BugsSection = ({ onAllSmashed }) => {
   };
 
   return (
-    <section id="debugging" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', background: 'linear-gradient(180deg, rgba(255,85,85,0.05), transparent)' }}>
+    <section id="bugs" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', background: 'linear-gradient(180deg, rgba(255,85,85,0.05), transparent)' }}>
       <h2 className="section-title danger" style={{ textAlign: 'center' }}>THEN CAME THE BUGS...</h2>
       
       <div className="debug-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s3)', maxWidth: '1200px', margin: '0 auto' }}>
