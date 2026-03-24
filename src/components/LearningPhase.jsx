@@ -68,12 +68,12 @@ const LearningPhase = () => {
   }, []);
 
   const updateCode = (index) => {
-    const codeContent = codeBoxRef.current;
-    if (!codeContent) return;
-    gsap.to(codeContent, {
-      duration: 0.5,
-      text: { value: milestoneCode[index], delimiter: "" },
-      ease: "none"
+    const codeArea = codeBoxRef.current;
+    if (!codeArea) return;
+    gsap.to(codeArea, {
+      duration: 0.8,
+      value: milestoneCode[index],
+      ease: "power2.out"
     });
   };
 
@@ -89,13 +89,36 @@ const LearningPhase = () => {
               <span className="dot dot-r" /> <span className="dot dot-y" /> <span className="dot dot-g" />
               <span className="ide-title" style={{ fontSize: '12px', opacity: 0.5, marginLeft: '10px' }}>app.js</span>
           </div>
-          <div className="ide-content" style={{ display: 'grid', gridTemplateColumns: '40px 1fr', height: 'calc(100% - 40px)', fontFamily: 'var(--font-code)', fontSize: '14px' }}>
+          <div className="ide-content" style={{ display: 'grid', gridTemplateColumns: '40px 1fr', height: 'calc(100% - 40px)', fontFamily: 'var(--font-code)', fontSize: '14px', position: 'relative' }}>
             <div className="ide-lines" style={{ padding: '20px 0', textAlign: 'center', opacity: 0.2, borderRight: '1px solid var(--border-color)' }}>
               {Array.from({length: 15}).map((_, i) => <div key={i}>{i+1}</div>)}
             </div>
-            <pre style={{ padding: '20px', margin: 0, color: 'var(--accent-blue)', whiteSpace: 'pre' }}>
-              <code ref={codeBoxRef}>{`// Scroll down to begin...`}</code>
-            </pre>
+            <textarea 
+                ref={codeBoxRef} 
+                defaultValue={`// Your code will appear here...`} 
+                spellCheck="false"
+                style={{ 
+                    padding: '20px', margin: 0, color: 'var(--accent-blue)', background: 'transparent', 
+                    border: 'none', width: '100%', height: '100%', resize: 'none', outline: 'none', 
+                    whiteSpace: 'pre', fontFamily: 'inherit', fontSize: 'inherit' 
+                }}
+            />
+            <button 
+                className="btn-run" 
+                onClick={() => {
+                    const code = codeBoxRef.current.value;
+                    try {
+                        const res = eval(code.replace('//', ''));
+                        if (res !== undefined) alert(`Output: ${res}`);
+                        else alert("Code executed successfully!");
+                    } catch(e) {
+                        alert(`Error: ${e.message}`);
+                    }
+                }}
+                style={{ position: 'absolute', bottom: '20px', right: '20px', padding: '8px 16px', background: 'var(--success-green)', color: '#000', fontSize: '10px', fontWeight: '800', borderRadius: '4px', zIndex: 10 }}
+            >
+                RUN ▶
+            </button>
           </div>
         </div>
       </aside>

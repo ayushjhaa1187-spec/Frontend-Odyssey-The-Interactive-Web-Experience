@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 
-const EurekaSection = () => {
-  const [debugMode, setDebugMode] = useState(false);
+const EurekaSection = ({ debugMode, setDebugMode }) => {
   const sectionRef = useRef(null);
   const [isFlipped, setIsFlipped] = useState(false);
 
@@ -38,14 +37,14 @@ const EurekaSection = () => {
       <h2 className="section-title success" style={{ textAlign: 'center' }}>Eureka! It works! 🎉</h2>
       
       <div className="diff-view" style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) minmax(300px, 1fr)', gap: 'var(--s4)', maxWidth: '1200px', width: '100%', marginBottom: 'var(--s5)' }}>
-        <div className="diff-old premium-card" onClick={() => setIsFlipped(!isFlipped)} style={{ padding: '24px', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}>
+        <div className="diff-old premium-card" onClick={() => setIsFlipped(!isFlipped)} style={{ padding: '24px', position: 'relative', overflow: 'hidden', cursor: 'pointer', border: debugMode ? '1px solid red' : '1px solid rgba(255,255,255,0.1)' }}>
             <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--danger-red)', color: '#000', padding: '4px 12px', fontSize: '10px', fontWeight: '800' }}>{isFlipped ? 'CLICK TO RESET' : 'BEFORE'}</div>
             <pre style={{ margin: 0, fontSize: '13px', fontFamily: 'var(--font-code)', whiteSpace: 'pre-wrap' }}>
                 {isFlipped ? `// Optimization details applied\n// Memory overhead reduced 40%` : `function calculate(p, t) {\n  let tot = p + t;\n  return tot.toFixed(2);\n}`}
             </pre>
         </div>
 
-        <div className="diff-new premium-card" style={{ padding: '24px', position: 'relative', overflow: 'hidden', border: '1px solid var(--success-green)' }}>
+        <div className="diff-new premium-card" style={{ padding: '24px', position: 'relative', overflow: 'hidden', border: debugMode ? '1px solid var(--success-green)' : '1px solid var(--success-green)' }}>
             <div style={{ position: 'absolute', top: 0, right: 0, background: 'var(--success-green)', color: '#000', padding: '4px 12px', fontSize: '10px', fontWeight: '800' }}>AFTER</div>
             <pre style={{ margin: 0, fontSize: '13px', fontFamily: 'var(--font-code)', whiteSpace: 'pre-wrap' }}>{`const calculate = (price, tax) => {\n  const res = (price + tax).toFixed(2);\n  return \`Total: \$\\{res\\}\`;\n};`}</pre>
         </div>

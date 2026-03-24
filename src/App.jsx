@@ -18,6 +18,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, TextPlugin);
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [debugMode, setDebugMode] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -104,12 +105,16 @@ function App() {
       <HeroSection onStartClick={() => scrollTo("#learning")} />
       <LearningPhase />
       <BugsSection onAllSmashed={() => scrollTo("#eureka")} />
-      <EurekaSection />
+      <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} />
       <DeadlineSection />
       <CaffeineCommitsSection />
       <ShippingPhaseSection onShip={handleShip} />
       <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} />
       <LoopSection onRestart={() => scrollTo("#hero")} onBackToTop={() => scrollTo("#hero")} />
+
+      {debugMode && (
+          <div className="global-debug-grid" style={{ position: 'fixed', inset: 0, zIndex: 10000, pointerEvents: 'none', background: 'radial-gradient(circle, rgba(0,217,255,0.05) 1px, transparent 1px)', backgroundSize: '40px 40px', border: '2px solid rgba(0,217,255,0.1)' }}></div>
+      )}
 
       <div className="animated-blob blob-1"></div>
       <div className="animated-blob blob-2"></div>
