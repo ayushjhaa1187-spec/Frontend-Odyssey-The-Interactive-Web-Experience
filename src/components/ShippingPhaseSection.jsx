@@ -19,14 +19,23 @@ const ShippingPhaseSection = ({ onShip }) => {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-        // Log reveal on scroll
-        gsap.to(sectionRef.current, {
-            scrollTrigger: {
+        // Log reveal on scroll (Scroll-linked)
+        logs.forEach((_, i) => {
+            ScrollTrigger.create({
                 trigger: sectionRef.current,
-                start: "top center",
-                onEnter: () => startLogreveal(),
-                once: true
-            }
+                start: `top+=${i * 100} center`,
+                onEnter: () => setVisibleLogs(prev => logs.slice(0, i + 1)),
+                onLeaveBack: () => setVisibleLogs(prev => logs.slice(0, i))
+            });
+        });
+
+        // Pin shipping section
+        ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: "top top",
+            end: `+=${logs.length * 100}`,
+            pin: true,
+            scrub: 1
         });
     }, sectionRef);
 
@@ -92,7 +101,7 @@ const ShippingPhaseSection = ({ onShip }) => {
   };
 
   return (
-    <section id="shipping" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <section id="shipping" ref={sectionRef} className="section section-reveal" style={{ padding: 'var(--s5) var(--s4)', display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh', justifyContent: 'center' }}>
       <h2 className="section-title success" style={{ textAlign: 'center' }}>Shipping Phase</h2>
       <div className="shipping-container" style={{ maxWidth: '800px', width: '100%', marginBottom: 'var(--s4)' }}>
         <h4 style={{ textTransform: 'uppercase', fontSize: '12px', opacity: 0.5, marginBottom: '20px' }}>Production Activity Log</h4>

@@ -48,10 +48,10 @@ const LearningPhase = () => {
         });
       });
 
-      // Smooth revealing of milestones
+      // Smooth revealing of milestones with alternating sides
       gsap.utils.toArray('.milestone').forEach((m, i) => {
         gsap.fromTo(m, 
-          { opacity: 0, x: i % 2 === 0 ? -50 : 50 },
+          { opacity: 0, x: i % 2 === 0 ? -100 : 100 },
           { 
             opacity: 1, x: 0, duration: 1, 
             scrollTrigger: {
@@ -82,7 +82,7 @@ const LearningPhase = () => {
   };
 
   return (
-    <section id="learning" ref={sectionRef} style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'var(--s5)', padding: 'var(--s5) var(--s4)', position: 'relative' }}>
+    <section id="learning" ref={sectionRef} className="section section-reveal" style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 'var(--s5)', padding: 'var(--s5) var(--s4)', position: 'relative' }}>
       <aside className="ide-panel-wrapper" style={{ height: '100%' }}>
         <div className="ide-panel premium-card" style={{ height: '500px', width: '100%', overflow: 'hidden', padding: 0 }} onClick={() => setShowModal(true)}>
           <div className="ide-titlebar" style={{ background: 'rgba(255,255,255,0.05)', padding: '12px 16px', display: 'flex', gap: '8px', borderBottom: '1px solid var(--border-color)' }}>

@@ -42,8 +42,14 @@ function App() {
                 trigger: "body",
                 start: "top top",
                 end: "bottom bottom",
-                scrub: 0.3
+                scrub: 0.5
             }
+        });
+
+        // Section Reveal Batch
+        ScrollTrigger.batch(".section-reveal", {
+            onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.15, overwrite: true, duration: 1, ease: "power4.out" }),
+            onLeaveBack: batch => gsap.to(batch, { opacity: 0.2, y: 20, overwrite: true })
         });
 
         // Background Gradient Shifts
