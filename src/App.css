@@ -569,6 +569,10 @@ body {
     background: rgba(255, 92, 184, 0.15);
 }
 
+.control-label-short {
+    display: none;
+}
+
 @media (max-width: 768px) {
     .control-dock.top-right {
         top: 20px;
@@ -584,5 +588,8 @@ body {
     }
     .control-label-full {
         display: none;
+    }
+    .control-label-short {
+        display: inline;
     }
 }
