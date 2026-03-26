@@ -47,9 +47,21 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
 
     const isMobile = window.innerWidth < 768;
 
+    let mouse = { x: -1000, y: -1000 };
+    const handleMouse = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    };
+    canvas.addEventListener('mousemove', handleMouse);
+    canvas.addEventListener('touchstart', (e) => handleMouse(e.touches[0]));
+
     class Bug {
       constructor(id) {
         this.id = id;
+        this.vx = (Math.random() - 0.5) * 8;
+        this.vy = (Math.random() - 0.5) * 8;
+        this.friction = 0.98;
         this.reset();
       }
       reset() {
@@ -57,8 +69,6 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
         this.y = Math.random() * canvas.height;
         this.icon = bugIcons[Math.floor(Math.random() * bugIcons.length)];
         this.size = Math.random() * 10 + (isMobile ? 30 : 20);
-        this.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
-        this.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
         this.opacity = 1;
         this.isSmashed = false;
         this.rotation = Math.random() * Math.PI * 2;
@@ -66,11 +76,35 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
       }
       update() {
         if (this.isSmashed) return;
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.rotation += 0.05;
-        if (this.x < 20 || this.x > canvas.width - 20) this.speedX *= -1;
-        if (this.y < 20 || this.y > canvas.height - 20) this.speedY *= -1;
+
+        // Repulsion from mouse
+        const dx = this.x - mouse.x;
+        const dy = this.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+           const force = (150 - dist) / 150;
+           this.vx += (dx / dist) * force * 2;
+           this.vy += (dy / dist) * force * 2;
+        }
+
+        this.vx *= this.friction;
+        this.vy *= this.friction;
+
+        // Random jitter force
+        this.vx += (Math.random() - 0.5) * 1.5;
+        this.vy += (Math.random() - 0.5) * 1.5;
+
+        this.x += this.vx;
+        this.y += this.vy;
+        
+        // Rotation based on movement
+        this.rotation = Math.atan2(this.vy, this.vx) + Math.PI / 2;
+
+        // Boundary Bounce
+        if (this.x < 30) { this.x = 30; this.vx *= -1; }
+        if (this.x > canvas.width - 30) { this.x = canvas.width - 30; this.vx *= -1; }
+        if (this.y < 30) { this.y = 30; this.vy *= -1; }
+        if (this.y > canvas.height - 30) { this.y = canvas.height - 30; this.vy *= -1; }
       }
       draw() {
         ctx.save();

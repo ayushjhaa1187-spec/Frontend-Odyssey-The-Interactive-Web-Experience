@@ -7,6 +7,8 @@ import { TextPlugin } from 'gsap/TextPlugin';
 import './App.css';
 import narration from './content/narrationMessages';
 import { useKeyboardNavigation, useGestureNavigation } from './hooks/useNavigation';
+import { useNarrator } from './hooks/useNarrator';
+import AuraBackground from './components/AuraBackground';
 
 import HeroSection from './components/HeroSection';
 import LearningPhase from './components/LearningPhase';
@@ -92,15 +94,17 @@ const MentorDialog = ({ onClose }) => {
             <p style={{ fontSize: '13px', lineHeight: '1.8', marginBottom: '30px', color: 'var(--text-secondary)' }}>
                 "The code is but a shadow of your intent. Focus on the flow, and the bugs will dissipate like morning mist. Commit often, but think twice before merging. And always, always take a coffee break."
             </p>
-            <button
-              ref={closeBtnRef}
-              className="pill active"
-              onClick={onClose}
-              aria-label="Close mentor terminal"
-              style={{ padding: '10px 30px', cursor: 'pointer' }}
-            >
-              CLOSE_TERMINAL
-            </button>
+            <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+              <button
+                ref={closeBtnRef}
+                className="pill active"
+                onClick={onClose}
+                aria-label="Close mentor terminal"
+                style={{ padding: '10px 30px', cursor: 'pointer' }}
+              >
+                CLOSE_TERMINAL
+              </button>
+            </div>
         </div>
     </div>
   );
@@ -119,18 +123,39 @@ function App() {
   const [caffeineLevel, setCaffeineLevel] = useState(1);
   const [showMentor, setShowMentor] = useState(false);
   const [typedChars, setTypedChars] = useState("");
-  const [loopCount, setLoopCount] = useState(0);
-  const [sectionsVisited, setSectionsVisited] = useState(new Set(['hero']));
-  const [legendUnlocked, setLegendUnlocked] = useState(false);
+  const [zenMode, setZenMode] = useState(false);
+  const [loopCount, setLoopCount] = useState(() => {
+    return parseInt(localStorage.getItem('odyssey-loop-count') || '0');
+  });
+  const [sectionsVisited, setSectionsVisited] = useState(() => {
+    const saved = localStorage.getItem('odyssey-sections-visited');
+    return saved ? new Set(JSON.parse(saved)) : new Set(['hero']);
+  });
+  const [legendUnlocked, setLegendUnlocked] = useState(() => {
+    return localStorage.getItem('odyssey-legend-unlocked') === 'true';
+  });
   const mentorTriggerRef = useRef(null);
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
   const loaderRef = useRef(null);
 
+  // Persistence Effect
+  useEffect(() => {
+     localStorage.setItem('odyssey-loop-count', loopCount);
+     localStorage.setItem('odyssey-sections-visited', JSON.stringify(Array.from(sectionsVisited)));
+     localStorage.setItem('odyssey-legend-unlocked', legendUnlocked);
+     localStorage.setItem('odyssey-zen-mode', zenMode);
+  }, [loopCount, sectionsVisited, legendUnlocked, zenMode]);
+
+  const { speak, enabled: narrationEnabled, toggle: toggleNarration } = useNarrator();
+
   const announce = useCallback((msg) => {
     setLiveMessage(""); // Clear first to force re-announcement
-    setTimeout(() => setLiveMessage(msg), 50);
-  }, []);
+    setTimeout(() => {
+        setLiveMessage(msg);
+        speak(msg); // Truly "going further" with Voice Narration
+    }, 50);
+  }, [speak]);
 
   // Narrate section changes + track visits + update theme color
   useEffect(() => {
@@ -487,7 +512,43 @@ function App() {
           </div>
       )}
 
-      {/* Sections */}
+      {/* Aura Background - Generative & Emotional */}
+      <AuraBackground 
+        activeSection={activeSection} 
+        emotionColor={emotionalArc[activeSection]?.color || '#00B8D4'} 
+      />
+
+      {/* Narrative Voice Control */}
+      <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 1000, display: 'flex', gap: '8px' }}>
+          <button
+            onClick={toggleNarration}
+            className="mono"
+            aria-label={narrationEnabled ? "Disable narrator voice" : "Enable narrator voice"}
+            style={{ 
+                background: narrationEnabled ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
+                color: narrationEnabled ? '#000' : 'var(--accent-blue)',
+                border: 'none', borderRadius: '4px', fontSize: '9px', padding: '6px 12px',
+                cursor: 'pointer', transition: 'all 0.3s', fontWeight: 'bold'
+            }}
+          >
+            [VOICE: {narrationEnabled ? 'ON' : 'OFF'}]
+          </button>
+          <button
+            onClick={() => setZenMode(!zenMode)}
+            className="mono"
+            aria-label={zenMode ? "Disable zen mode" : "Enable zen mode"}
+            style={{ 
+                background: zenMode ? 'var(--accent-pink)' : 'var(--bg-tertiary)',
+                color: zenMode ? '#000' : 'var(--accent-pink)',
+                border: 'none', borderRadius: '4px', fontSize: '9px', padding: '6px 12px',
+                cursor: 'pointer', transition: 'all 0.3s', fontWeight: 'bold'
+            }}
+          >
+            [ZEN: {zenMode ? 'ON' : 'OFF'}]
+          </button>
+      </div>
+
+      {/* ... Existing Section Layout ... */}
       <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
       <LearningPhase judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
       <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />

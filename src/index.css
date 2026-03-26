@@ -238,3 +238,29 @@ input:focus-visible {
     display: none !important;
   }
 }
+/* Zen Mode - Minimalist Narrated Experience */
+.zen-mode .card, 
+.zen-mode .section-header h2,
+.zen-mode .pill {
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.zen-mode .aura-container circle {
+  opacity: 0.1;
+  filter: blur(100px);
+}
+
+.zen-mode .section-subtitle,
+.zen-mode aside,
+.zen-mode .judge-badge,
+.zen-mode .scroll-indicator {
+  opacity: 0.3;
+}
+
+.zen-mode .cta-btn {
+  border: 1px solid var(--accent-blue) !important;
+  background: transparent !important;
+  color: var(--accent-blue) !important;
+}
