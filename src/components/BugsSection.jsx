@@ -94,8 +94,16 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
     };
 
     const animate = () => {
+      const activeBugs = bugsRef.current.filter(b => !b.isSmashed);
+      
+      // Stop animation loop when all bugs are smashed
+      if (activeBugs.length === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+      
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      bugsRef.current.forEach(bug => {
+      activeBugs.forEach(bug => {
         bug.update();
         bug.draw();
       });
@@ -162,13 +170,24 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
         
         <div className="section-grid" style={{ position: 'relative' }}>
             {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-30px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: INTERACTIVE_GAME_1]</div>}
-            <div className="bug-game card" style={{ padding: 0, borderStyle: 'dashed', borderColor: 'var(--warning-red)', background: 'rgba(255,75,75,0.01)' }}>
+            <div 
+                className="bug-game card" 
+                role="application"
+                aria-label="Interactive bug squashing game"
+                aria-describedby="bug-game-desc"
+                style={{ padding: 0, borderStyle: 'dashed', borderColor: 'var(--warning-red)', background: 'rgba(255,75,75,0.01)' }}
+            >
+                <div id="bug-game-desc" className="sr-only">
+                    There are {bugsRef.current.length} total bugs crawling across the screen. 
+                    Currently {bugsRef.current.length - bugsSmashed} bugs remain. 
+                    {judgeMode ? 'In judge mode, use Tab to cycle through each bug and Enter to squash it.' : 'Click bugs to squash them.'}
+                </div>
                 <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
                         <span className="pill active" style={{ borderColor: 'var(--warning-red)', color: 'var(--warning-red)', background: 'var(--warning-red-glow)', fontSize: '10px' }}>
-                            BUGS: <span aria-label={`${bugsRef.current.length - bugsSmashed} bugs remaining`}>{bugsRef.current.length - bugsSmashed}</span>
+                            BUGS: <span aria-hidden="true">{bugsRef.current.length - bugsSmashed}</span>
                         </span>
-                        <div className="mono" style={{ fontSize: '10px', opacity: 0.6, letterSpacing: '1px' }}>{bugs.instructions}</div>
+                        <div className="mono" style={{ fontSize: '10px', opacity: 0.6, letterSpacing: '1px' }} aria-hidden="true">{bugs.instructions}</div>
                     </div>
                     {bugsSmashed > 0 && bugsSmashed < bugsRef.current.length && (
                         <button 

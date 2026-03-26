@@ -66,9 +66,14 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
             <p className="section-subtitle">{production.subtitle} <span className="pill active" style={{ marginLeft: '10px' }}>LIVE</span></p>
         </div>
         
-        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--space-4)' }} role="group" aria-label="Production Metrics">
+        <div id="production-metrics-desc" className="sr-only">
+            Live production dashboard showing application health. 
+            Includes a real-time counter of online users, 99.9% uptime confirmation, 
+            and a 0% error rate report.
+        </div>
+        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--space-4)' }} role="region" aria-label="Production Metrics Dashboard" aria-describedby="production-metrics-desc">
             <div className="card" style={{ textAlign: 'center', borderColor: 'var(--success-green)' }}>
-                <span className="mono stat-users" style={{ display: 'block', fontSize: 'var(--font-xl)', fontWeight: '800', color: 'var(--success-green)' }} aria-live="polite">{usersOnline}</span>
+                <span className="mono stat-users" style={{ display: 'block', fontSize: 'var(--font-xl)', fontWeight: '800', color: 'var(--success-green)' }} aria-live="polite" aria-label={`Current unique users: ${usersOnline}`}>{usersOnline}</span>
                 <span style={{ fontSize: 'var(--font-xs)', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px' }}>{production.metrics[0].label}</span>
             </div>
             <div className="card" style={{ textAlign: 'center' }}>
@@ -81,7 +86,10 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
             </div>
         </div>
 
-        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        <div id="ship-again-desc" className="sr-only">
+            Final stage control. Selecting this will cycle the story back to the initial grind phase to begin a new feature iteration.
+        </div>
+        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
             {production.cards.map((c, i) => (
                 <div 
                     key={i} 
@@ -90,11 +98,13 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
                     onKeyDown={i === 2 ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onShipAgain(); } } : null}
                     tabIndex={i === 2 ? 0 : undefined}
                     role={i === 2 ? 'button' : undefined}
-                    aria-label={i === 2 ? 'Ship again. Start the deployment loop over.' : undefined}
+                    aria-label={i === 2 ? 'Initiate new iteration' : undefined}
+                    aria-describedby={i === 2 ? 'ship-again-desc' : undefined}
                     style={{ 
                         textAlign: 'center', cursor: i === 2 ? 'pointer' : 'default',
                         borderColor: i === 2 ? 'var(--accent-blue)' : 'var(--border-color)',
-                        background: i === 2 ? 'rgba(0,209,255,0.02)' : 'var(--bg-card)'
+                        background: i === 2 ? 'rgba(0,209,255,0.02)' : 'var(--bg-card)',
+                        padding: 'var(--space-3)'
                     }}
                 >
                     <div style={{ fontSize: '40px', marginBottom: '15px' }} aria-hidden="true">{c.icon}</div>

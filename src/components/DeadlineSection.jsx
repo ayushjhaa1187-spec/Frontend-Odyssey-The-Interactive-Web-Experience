@@ -4,6 +4,13 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { deadline } = devLifeStory;
 
+const developerWisdom = [
+  { quote: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+  { quote: "Make it work, make it right, make it fast — in that order.", author: "Kent Beck" },
+  { quote: "There are two hard things in computer science: cache invalidation, naming things, and off-by-one errors.", author: "Phil Karlton" },
+  { quote: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" }
+];
+
 const DeadlineSection = ({ judgeMode }) => {
   const sectionRef = useRef(null);
   const containerRef = useRef(null);
@@ -81,6 +88,17 @@ const DeadlineSection = ({ judgeMode }) => {
                     }} 
                 />
             </div>
+            
+            <aside className="developer-wisdom card" style={{ maxWidth: '350px', margin: '20px auto 0', padding: '15px', background: 'var(--bg-card)', borderStyle: 'solid', borderColor: 'var(--bg-tertiary)', textAlign: 'left' }}>
+              <blockquote style={{ margin: 0 }}>
+                <p style={{ fontSize: '11px', color: 'var(--text-secondary)', fontStyle: 'italic', marginBottom: '8px' }}>
+                  "{developerWisdom[activeStep % developerWisdom.length].quote}"
+                </p>
+                <footer className="mono" style={{ fontSize: '9px', color: 'var(--accent-blue)', textAlign: 'right' }}>
+                  — {developerWisdom[activeStep % developerWisdom.length].author}
+                </footer>
+              </blockquote>
+            </aside>
         </div>
         
         <div className="scrolly-card-container" style={{ position: 'relative', height: '350px', width: '100%', maxWidth: '500px', margin: '60px auto 0' }}>

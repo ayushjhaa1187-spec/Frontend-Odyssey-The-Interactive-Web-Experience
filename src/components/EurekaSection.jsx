@@ -12,6 +12,7 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [duckPos, setDuckPos] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [debugChoice, setDebugChoice] = useState(null);
 
   useEffect(() => {
     let ctx = gsap.context((self) => {
@@ -110,16 +111,24 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
             <p className="section-subtitle">{eureka.subtitle} (Drag the duck over Legacy code if stuck)</p>
         </div>
         
-        <div className="section-grid">
+        <div className="section-grid" role="region" aria-label="Code comparison: Legacy vs Optimized">
+            <div id="legacy-card-desc" className="sr-only">
+               {isFlipped 
+                 ? "Legacy JavaScript with errors. The rubber duck's wisdom has revealed the optimization path." 
+                 : "Legacy JavaScript code with inefficiencies. Drag the rubber duck here to debug or use the choices below."}
+            </div>
             <div 
                 ref={legacyCardRef}
                 className="diff-card card mono" 
                 onClick={triggerSparkle} 
+                role="region"
+                aria-label="Legacy Code"
+                aria-describedby="legacy-card-desc"
                 style={{ padding: '0', cursor: 'pointer', borderStyle: 'solid', borderColor: 'var(--warning-red)', transition: 'all 0.3s' }}
             >
                 <div style={{ background: 'var(--warning-red)', color: '#000', padding: '10px 20px', fontSize: '10px', fontWeight: '800', display: 'flex', justifyContent: 'space-between' }}>
                     <span>LEGACY.JS</span>
-                    <span className="pill" style={{ background: '#fff', color: '#000', fontSize: '8px', border: 'none' }}>CLICK TO DEBUG</span>
+                    <span className="pill" style={{ background: '#fff', color: '#000', fontSize: '8px', border: 'none' }} aria-hidden="true">CLICK TO DEBUG</span>
                 </div>
                 <div style={{ padding: '24px', fontSize: '13px', background: 'rgba(255,0,0,0.02)' }}>
                     <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>
@@ -128,14 +137,14 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
                 </div>
             </div>
 
-            <div className="diff-card card mono" style={{ padding: '0', borderColor: 'var(--success-green)', background: 'rgba(0,255,148,0.02)', boxShadow: '0 0 30px rgba(0,255,148,0.05)' }}>
+            <div className="diff-card card mono" style={{ padding: '0', borderColor: 'var(--success-green)', background: 'rgba(0,255,148,0.02)', boxShadow: '0 0 30px rgba(0,255,148,0.05)' }} role="region" aria-label="Optimized Modern Code">
                 <div style={{ background: 'var(--success-green)', color: '#000', padding: '10px 20px', fontSize: '10px', fontWeight: '800' }}>
                     <span>MODERN.JS (OPTIMIZED)</span>
                 </div>
                 <div style={{ padding: '24px', fontSize: '13px' }}>
                     <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`const calculate = (price, tax) => {\n  const res = (price + tax).toFixed(2);\n  return \`Total: \$\\{res\\}\`;\n};`}</pre>
                 </div>
-                <div style={{ position: 'absolute', top: '10px', right: '10px', animation: 'float 3s infinite ease-in-out' }}>⭐</div>
+                <div style={{ position: 'absolute', top: '10px', right: '10px', animation: 'float 3s infinite ease-in-out' }} aria-hidden="true">⭐</div>
             </div>
         </div>
 
@@ -167,6 +176,61 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
             <p className="mono" style={{ marginBottom: '20px', color: 'var(--success-green)', fontWeight: '700', fontSize: 'var(--font-sm)' }}>
                 ⚡ 42% Performance Boost detected. Clean code applied.
             </p>
+
+            {/* Branching Narrative Choice */}
+            {!debugChoice ? (
+              <div className="card" style={{ maxWidth: '500px', margin: '0 auto var(--space-3)', padding: 'var(--space-3)', borderStyle: 'dashed', borderColor: 'var(--accent-blue)' }}>
+                <p className="mono" style={{ fontSize: '11px', marginBottom: '15px', color: 'var(--text-secondary)' }}>
+                  [DECISION_POINT] Choose your debugging approach:
+                </p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                  <button
+                    className="pill touch-target"
+                    onClick={() => { setDebugChoice('rubber-duck'); if (announce) announce('You chose rubber duck debugging. Classic.'); }}
+                    aria-label="Debug by consulting the rubber duck"
+                    style={{ padding: '12px 8px', fontSize: '10px' }}
+                  >
+                    <span aria-hidden="true">🦆</span> Rubber Duck
+                  </button>
+                  <button
+                    className="pill touch-target"
+                    onClick={() => { setDebugChoice('debugger'); if (announce) announce('You chose the browser debugger. Efficient.'); }}
+                    aria-label="Debug using browser developer tools"
+                    style={{ padding: '12px 8px', fontSize: '10px' }}
+                  >
+                    <span aria-hidden="true">🔍</span> Debugger
+                  </button>
+                  <button
+                    className="pill touch-target"
+                    onClick={() => { setDebugChoice('stackoverflow'); if (announce) announce('You chose Stack Overflow. A timeless move.'); }}
+                    aria-label="Debug by searching Stack Overflow"
+                    style={{ padding: '12px 8px', fontSize: '10px' }}
+                  >
+                    <span aria-hidden="true">🌐</span> Stack Overflow
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="card mono" style={{ maxWidth: '500px', margin: '0 auto var(--space-3)', padding: 'var(--space-2)', fontSize: '11px', borderColor: 'var(--success-green)', borderStyle: 'solid', color: 'var(--text-secondary)' }}>
+                {debugChoice === 'rubber-duck' && (
+                  <p>"You explained the problem to the duck. Halfway through, you realised the variable was never initialised. The duck said nothing — but its silence spoke volumes."</p>
+                )}
+                {debugChoice === 'debugger' && (
+                  <p>"Step-by-step, breakpoint-by-breakpoint, you traced the flow. The bug hid in a closure three layers deep. You cornered it. It had nowhere to run."</p>
+                )}
+                {debugChoice === 'stackoverflow' && (
+                  <p>"The top answer from 2019 was marked [duplicate]. The linked answer was deleted. You scrolled to page 3. There, a lone comment with 2 upvotes saved your career."</p>
+                )}
+                <button 
+                  className="mono" 
+                  onClick={() => setDebugChoice(null)}
+                  style={{ marginTop: '10px', fontSize: '9px', color: 'var(--accent-blue)', background: 'none', border: 'none', textDecoration: 'underline', cursor: 'pointer' }}
+                  aria-label="Choose a different debugging approach"
+                >
+                  [TRY_ANOTHER_PATH]
+                </button>
+              </div>
+            )}
             
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <span className="text-secondary" style={{ fontSize: 'var(--font-sm)' }}>{eureka.hint}</span>

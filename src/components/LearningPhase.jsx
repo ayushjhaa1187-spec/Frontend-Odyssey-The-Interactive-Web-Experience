@@ -121,11 +121,12 @@ const LearningPhase = ({ judgeMode }) => {
                 </div>
             </aside>
 
-            <main className="milestone-list" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <ul className="milestone-list" style={{ display: 'flex', listStyle: 'none', padding: 0, margin: 0, flexDirection: 'column', gap: 'var(--space-2)' }} aria-label="Development milestones">
                 {milestones.map((m, i) => (
-                    <div 
+                    <li 
                         key={i}
                         className={`milestone milestone-${i} card ${expandedIndex === i ? 'active' : ''}`} 
+                        aria-current={expandedIndex === i ? 'step' : undefined}
                         style={{ 
                             borderColor: expandedIndex === i ? 'var(--accent-blue)' : 'var(--border-color)',
                             background: expandedIndex === i ? 'rgba(0, 209, 255, 0.05)' : 'var(--bg-card)',
@@ -134,16 +135,16 @@ const LearningPhase = ({ judgeMode }) => {
                         }}
                     >
                         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-                            <div className="mono" style={{ fontSize: '28px', opacity: expandedIndex === i ? 1 : 0.3 }}>{m.icon}</div>
+                            <div className="mono" style={{ fontSize: '28px', opacity: expandedIndex === i ? 1 : 0.3 }} aria-hidden="true">{m.icon}</div>
                             <div style={{ flex: 1 }}>
                                 <h4 style={{ color: expandedIndex === i ? 'var(--accent-blue)' : 'inherit', marginBottom: '4px', fontSize: '15px' }}>{m.title}</h4>
                                 <p style={{ fontSize: '12px', opacity: 0.6, maxWidth: '400px' }}>{m.desc}</p>
                             </div>
-                            {expandedIndex === i && <div className="mono" style={{ fontSize: '10px', color: 'var(--success-green)', animation: 'pulse 1s infinite' }}>[COMPLETED]</div>}
+                            {expandedIndex === i && <div className="mono" style={{ fontSize: '10px', color: 'var(--success-green)', animation: 'pulse 1s infinite' }} aria-hidden="true">[COMPLETED]</div>}
                         </div>
-                    </div>
+                    </li>
                 ))}
-            </main>
+            </ul>
         </div>
       </div>
     </section>

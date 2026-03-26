@@ -109,14 +109,19 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
                     className="dev-avatar" 
                     role="img"
                     aria-label={`Developer avatar showing state: ${levels[level].label}`}
-                    title="Coffee to LOC: 1:150"
+                    id="caffeine-avatar-desc"
                     style={{ fontSize: 'clamp(60px, 15vw, 100px)', marginBottom: '25px', userSelect: 'none', cursor: 'help' }}
                 >
-                    {level === 0 ? '😴' : (level === 3 ? '🤪' : '👨‍💻')}
+                    <span aria-hidden="true">{level === 0 ? '😴' : (level === 3 ? '🤪' : '👨‍💻')}</span>
                 </div>
                 
                 <h4 className="mono" id="caffeine-heading" style={{ textTransform: 'uppercase', fontSize: 'var(--font-xs)', letterSpacing: '2px', opacity: 0.6 }}>CAFFEINE PROTOCOL</h4>
-                <div className="mono" style={{ fontSize: '9px', opacity: 0.5, marginBottom: '20px', letterSpacing: '1px' }}>{caffeine.instructions}</div>
+                <div id="caffeine-meter-desc" className="sr-only">
+                    Adjusting the caffeine meter increases the developer's typing speed and system throughput. 
+                    At LEGENDARY level, the entire screen jitters and productivity reaches unstable heights.
+                    Current state: {levels[level].label} with a {levels[level].boost} times efficiency boost.
+                </div>
+                <div className="mono" style={{ fontSize: '10px', opacity: 0.5, marginBottom: '20px', letterSpacing: '1px' }} aria-hidden="true">{caffeine.instructions}</div>
                 <div style={{ position: 'relative' }}>
                     <div className="fuel-buttons" 
                          role="radiogroup" 

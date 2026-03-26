@@ -93,9 +93,14 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
         </div>
       </div>
 
+      <div id="hero-mantra-desc" className="sr-only">
+        An interactive code snippet representing the developer's mantra. 
+        Clicking this or pressing Enter will cycle through different humorous or insightful 
+        developer quotes and code snippets.
+      </div>
       <div 
         ref={codeBoxRef} 
-        className="mono"
+        className="mono" 
         onClick={() => {
             const jokes = hero.jokes;
             gsap.to(codeBoxRef.current, { text: { value: jokes[Math.floor(Math.random() * jokes.length)], delimiter: "" }, duration: 0.8, ease: "power2.out" });
@@ -108,7 +113,8 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
         }}
         role="button"
         tabIndex="0"
-        aria-label="Interactive code quote. Press enter to see another."
+        aria-label="Interactive developer mantra"
+        aria-describedby="hero-mantra-desc"
         style={{ 
           position: 'absolute', bottom: '10%', left: '50%', transform: 'translateX(-50%)', 
           opacity: 0, fontSize: 'var(--font-xs)', color: 'var(--text-muted)', 
@@ -118,7 +124,8 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
       >
         {hero.initCode}
       </div>
-      {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 20 }}>[REQ: INTERACTIVE_ELEMENT_1]</div>}
+      {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 20 }} aria-hidden="true">[REQ: INTERACTIVE_ELEMENT_1]</div>}
+      <div className="scroll-indicator" aria-hidden="true" />
     </section>
   );
 };

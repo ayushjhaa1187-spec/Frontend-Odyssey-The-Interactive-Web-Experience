@@ -96,11 +96,17 @@ const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
                 <div ref={rocketRef} style={{ fontSize: '100px', marginBottom: '40px', display: 'inline-block', filter: 'drop-shadow(0 0 20px var(--success-green-glow))' }}>🚀</div>
                 
                 <div style={{ position: 'relative', zIndex: 10 }}>
+                    <div id="shipping-btn-desc" className="sr-only">
+                        This large button triggers the final production deployment phase. 
+                        Once clicked, you will see a simulated terminal output showing build logs, 
+                        and the central rocket icon will launch upwards to signify the project going live.
+                    </div>
                     <button 
                     className={`cta-btn ${isShipping ? 'disabled' : ''}`} 
                     onClick={handleShipClick} 
                     disabled={isShipping}
                     aria-label={isShipping ? "Deploying project" : "Ship project to production"}
+                    aria-describedby="shipping-btn-desc"
                     style={{ 
                         padding: '24px 64px', background: 'var(--success-green)', border: 'none', 
                         borderRadius: 'var(--radius-full)', color: '#000', fontSize: 'var(--font-lg)', 
@@ -112,7 +118,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
                     >
                     {isShipping ? "LAUNCHING..." : shipping.btn}
                     </button>
-                    {!isShipping && <div className="mono" style={{ marginTop: '20px', fontSize: '11px', color: 'var(--success-green)', animation: 'pulse 1s infinite' }}>[READY TO SHIP]</div>}
+                    {!isShipping && <div className="mono" style={{ marginTop: '20px', fontSize: '11px', color: 'var(--success-green)', animation: 'pulse 1s infinite' }} aria-hidden="true">[READY TO SHIP]</div>}
                 </div>
 
                 {/* Engine Flame effect when shipping */}

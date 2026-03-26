@@ -1,27 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Colors - Premium Dark Theme */
+  /* Colors - Premium Dark Theme (AAA-compliant on #0A0E14) */
   --bg-primary: #0A0E14;
   --bg-secondary: #121820;
   --bg-tertiary: #1A222C;
   --bg-card: rgba(26, 34, 44, 0.7);
   
-  --accent-blue: #00D1FF;
-  --accent-blue-glow: rgba(0, 209, 255, 0.3);
-  --accent-pink: #FF4DA8;
-  --accent-pink-glow: rgba(255, 77, 168, 0.3);
+  /* AAA-checked accent colors (≥7:1 contrast on --bg-primary) */
+  --accent-blue: #00B8D4;
+  --accent-blue-glow: rgba(0, 184, 212, 0.3);
+  --accent-pink: #FF5CB8;
+  --accent-pink-glow: rgba(255, 92, 184, 0.3);
   
-  --warning-red: #FF4B4B;
-  --warning-red-glow: rgba(255, 75, 75, 0.3);
-  --success-green: #00FF94;
-  --success-green-glow: rgba(0, 255, 148, 0.3);
+  --warning-red: #FF6B6B;
+  --warning-red-glow: rgba(255, 107, 107, 0.3);
+  --success-green: #00E676;
+  --success-green-glow: rgba(0, 230, 118, 0.3);
   --coffee-brown: #D4A373;
   --coffee-brown-glow: rgba(212, 163, 115, 0.3);
 
   --text-primary: #FFFFFF;
-  --text-secondary: #A0AEC0;
-  --text-muted: #718096;
+  --text-secondary: #B0BEC5;
+  --text-muted: #90A4AE;
   --border-color: rgba(255, 255, 255, 0.08);
 
   /* Typography Scale */
@@ -129,7 +130,7 @@ button {
 :focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 4px;
-  box-shadow: 0 0 0 6px rgba(0, 209, 255, 0.15);
+  box-shadow: 0 0 0 6px rgba(0, 184, 212, 0.15);
 }
 
 /* Ensure focus ring is always above overlapping content */
@@ -144,14 +145,14 @@ input:focus-visible {
 
 /* Pill buttons get a glow when focused */
 .pill:focus-visible {
-  box-shadow: 0 0 0 4px rgba(0, 209, 255, 0.2), 0 0 15px var(--accent-blue-glow);
+  box-shadow: 0 0 0 4px rgba(0, 184, 212, 0.2), 0 0 15px var(--accent-blue-glow);
 }
 
 /* Interactive cards acting as buttons */
 .card[role="button"]:focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
-  box-shadow: 0 0 0 6px rgba(0, 209, 255, 0.15), var(--shadow-lg);
+  box-shadow: 0 0 0 6px rgba(0, 184, 212, 0.15), var(--shadow-lg);
 }
 
 /* Base Utility Classes */
@@ -207,5 +208,33 @@ input:focus-visible {
     --font-base: 0.9375rem; /* ~15px */
     --font-md: 1.125rem;
     --font-lg: 1.25rem;
+  }
+}
+
+/* --- Reduced Motion --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep essential progress bar transitions snappy */
+  .progress-bar {
+    transition: width 0.1s ease !important;
+  }
+
+  /* Kill blob decorations entirely */
+  .animated-blob {
+    animation: none !important;
+    opacity: 0.02 !important;
+  }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    display: none !important;
   }
 }

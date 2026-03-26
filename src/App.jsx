@@ -6,6 +6,7 @@ import { TextPlugin } from 'gsap/TextPlugin';
 
 import './App.css';
 import narration from './content/narrationMessages';
+import { useKeyboardNavigation, useGestureNavigation } from './hooks/useNavigation';
 
 import HeroSection from './components/HeroSection';
 import LearningPhase from './components/LearningPhase';
@@ -30,6 +31,23 @@ const sections = [
     { id: 'production', label: 'Life' },
     { id: 'loop', label: 'Repeat' }
 ];
+
+const emotionalArc = {
+  hero: { emotion: 'hope', color: '#00B8D4' },
+  learning: { emotion: 'overwhelm', color: '#FFD600' },
+  bugs: { emotion: 'frustration', color: '#FF6B6B' },
+  eureka: { emotion: 'triumph', color: '#00E676' },
+  deadline: { emotion: 'panic', color: '#FF5CB8' },
+  caffeine: { emotion: 'determination', color: '#00B8D4' },
+  shipping: { emotion: 'anxiety', color: '#FF5CB8' },
+  production: { emotion: 'pride', color: '#00E676' },
+  loop: { emotion: 'acceptance', color: '#B0BEC5' }
+};
+
+const CHARACTER = {
+  name: 'Alex Chen',
+  role: 'Junior Full-Stack Engineer'
+};
 
 const loadingJokes = [
     "Downloading more RAM...",
@@ -102,6 +120,8 @@ function App() {
   const [showMentor, setShowMentor] = useState(false);
   const [typedChars, setTypedChars] = useState("");
   const [loopCount, setLoopCount] = useState(0);
+  const [sectionsVisited, setSectionsVisited] = useState(new Set(['hero']));
+  const [legendUnlocked, setLegendUnlocked] = useState(false);
   const mentorTriggerRef = useRef(null);
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
@@ -112,12 +132,70 @@ function App() {
     setTimeout(() => setLiveMessage(msg), 50);
   }, []);
 
-  // Narrate section changes using centralised copy
+  // Narrate section changes + track visits + update theme color
   useEffect(() => {
     if (!loading && narration.sectionEnter[activeSection]) {
         announce(narration.sectionEnter[activeSection]);
+        
+        // Update emotional color
+        const theme = emotionalArc[activeSection];
+        if (theme) {
+          document.documentElement.style.setProperty('--accent-blue', theme.color);
+          document.documentElement.style.setProperty('--accent-blue-glow', `${theme.color}4D`); // 30% alpha
+        }
+
+        setSectionsVisited(prev => {
+          const next = new Set(prev);
+          next.add(activeSection);
+          return next;
+        });
     }
   }, [activeSection, loading, announce]);
+
+  // Focus management during scroll journey
+  useEffect(() => {
+    if (loading) return;
+    
+    // Find the active section element
+    const sectionEl = document.getElementById(activeSection);
+    if (!sectionEl) return;
+
+    // Find first interactive element (ignoring skip links)
+    const focusTarget = sectionEl.querySelector(
+      'button:not(.skip-link), [role="button"], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    
+    if (focusTarget) {
+      // Delay focus shift to allow entry transition to finish (matches duration in sections)
+      const timer = setTimeout(() => {
+        // Only move focus if the user isn't already focused on something in this section
+        if (!sectionEl.contains(document.activeElement)) {
+          focusTarget.focus();
+        }
+      }, 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [activeSection, loading]);
+
+  // Meta console log
+  useEffect(() => {
+    console.log(
+      `%c🚀 Frontend Odyssey v2.0 - Character: ${CHARACTER.name}\n%cYou are inside a developer's journey.\nEvery scroll triggers their memories…\n%cTry: type "mentor" or "help" anywhere.`,
+      'font-size: 18px; color: #00B8D4; font-weight: bold;',
+      'font-size: 12px; color: #B0BEC5;',
+      'font-size: 11px; color: #90A4AE; font-style: italic;'
+    );
+  }, []);
+
+  // Easter egg: unlock legend mode when all 9 sections visited
+  useEffect(() => {
+    if (sectionsVisited.size === sections.length && !legendUnlocked) {
+      setLegendUnlocked(true);
+      announce("Secret unlocked: Legend Mode. You visited every section.");
+      console.log('%c🔓 LEGEND MODE ACTIVATED', 'color: #00E676; font-size: 16px; font-weight: bold;');
+      document.body.classList.add('legend-mode');
+    }
+  }, [sectionsVisited, legendUnlocked, announce]);
 
   // Initialize modes from URL params
   useEffect(() => {
@@ -278,13 +356,32 @@ function App() {
     return () => ctx.revert();
   }, [loading, motionEnabled]);
 
-  const scrollTo = (target) => {
+  const scrollTo = useCallback((target) => {
     gsap.to(window, {
         duration: 2,
         scrollTo: { y: target, autoKill: false },
-        ease: "expo.inOut" // Premium easing
+        ease: "expo.inOut"
     });
-  };
+  }, []);
+
+  // Keyboard navigation: PageUp/Down, Home/End, 1-9
+  useKeyboardNavigation(sections, scrollTo, announce);
+
+  // Mobile gesture navigation: swipe left/right between sections
+  useGestureNavigation({
+    onSwipeLeft: useCallback(() => {
+      const idx = sections.findIndex(s => s.id === activeSection);
+      const next = Math.min(idx + 1, sections.length - 1);
+      scrollTo(`#${sections[next].id}`);
+      announce(`Swiped to ${sections[next].label}.`);
+    }, [activeSection, scrollTo, announce]),
+    onSwipeRight: useCallback(() => {
+      const idx = sections.findIndex(s => s.id === activeSection);
+      const prev = Math.max(idx - 1, 0);
+      scrollTo(`#${sections[prev].id}`);
+      announce(`Swiped to ${sections[prev].label}.`);
+    }, [activeSection, scrollTo, announce])
+  });
 
   const handleShip = () => {
     if (debugMode) console.log("SHIP IT! Executing production deploy...");
