@@ -20,6 +20,7 @@ import CaffeineCommitsSection from './components/CaffeineCommitsSection';
 import ShippingPhaseSection from './components/ShippingPhaseSection';
 import ProductionDeployedSection from './components/ProductionDeployedSection';
 import LoopSection from './components/LoopSection';
+import ControlDock from './components/ControlDock';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, TextPlugin);
 
@@ -441,6 +442,31 @@ function App() {
     }, [activeSection, scrollTo, announce])
   });
 
+  const toggleVoice = useCallback(() => {
+    const next = !narrationEnabled;
+    toggleNarration();
+    // Small delay to allow state to propagate before announcement if needed, 
+    // but here we just use the 'next' value for immediate feedback.
+    announce(narration.voiceToggled(next));
+  }, [narrationEnabled, toggleNarration, announce]);
+
+  const toggleZen = useCallback(() => {
+    const next = !zenMode;
+    setZenMode(next);
+    announce(narration.zenToggled(next));
+  }, [zenMode, announce]);
+
+  const toggleMotion = useCallback(() => {
+    const next = !motionEnabled;
+    setMotionEnabled(next);
+    announce(narration.motionToggled(next));
+  }, [motionEnabled, announce]);
+
+  const openHelp = useCallback(() => {
+    announce(narration.helpOpened);
+    alert("HINT: Try scrolling, dragging sliders, or clicking the floating bugs. If things look stuck, use the ?judge=true parameter for requirement labels.");
+  }, [announce]);
+
   const handleShip = () => {
     if (debugMode) console.log("SHIP IT! Executing production deploy...");
     // The ShippingPhaseSection will call this, but we'll add a short delay for its internal animation
@@ -473,15 +499,15 @@ function App() {
           </div>
       )}
 
-      {/* Caffeine Global Effects Layer */}
+      {/* Caffeine Global Effects Layer - Moved to background for cleaner UI */}
       <div 
         className="caffeine-overlay" 
         style={{ 
-            position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1000,
+            position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: -1,
             transition: 'all 0.5s ease',
-            opacity: caffeineLevel >= 3 ? 0.3 : 0,
-            background: 'radial-gradient(circle, transparent 40%, rgba(255, 77, 168, 0.1) 100%)',
-            boxShadow: caffeineLevel >= 3 ? 'inset 0 0 100px var(--accent-pink-glow)' : 'none'
+            opacity: caffeineLevel >= 3 ? 0.15 : 0,
+            background: 'radial-gradient(circle, transparent 40%, rgba(255, 77, 168, 0.05) 100%)',
+            boxShadow: caffeineLevel >= 4 ? 'inset 0 0 150px var(--accent-pink-glow)' : 'none'
         }} 
       />
       <a href="#main-story-content" className="skip-link">Skip to main content</a>
@@ -548,37 +574,19 @@ function App() {
       <AuraBackground 
         activeSection={activeSection} 
         emotionColor={emotionalArc[activeSection]?.color || '#00B8D4'} 
+        caffeineLevel={caffeineLevel}
       />
 
-      {/* Narrative Voice Control */}
-      <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: 1000, display: 'flex', gap: '8px' }}>
-          <button
-            onClick={toggleNarration}
-            className="mono"
-            aria-label={narrationEnabled ? "Disable narrator voice" : "Enable narrator voice"}
-            style={{ 
-                background: narrationEnabled ? 'var(--accent-blue)' : 'var(--bg-tertiary)',
-                color: narrationEnabled ? '#000' : 'var(--accent-blue)',
-                border: 'none', borderRadius: '4px', fontSize: '9px', padding: '6px 12px',
-                cursor: 'pointer', transition: 'all 0.3s', fontWeight: 'bold'
-            }}
-          >
-            [VOICE: {narrationEnabled ? 'ON' : 'OFF'}]
-          </button>
-          <button
-            onClick={() => setZenMode(!zenMode)}
-            className="mono"
-            aria-label={zenMode ? "Disable zen mode" : "Enable zen mode"}
-            style={{ 
-                background: zenMode ? 'var(--accent-pink)' : 'var(--bg-tertiary)',
-                color: zenMode ? '#000' : 'var(--accent-pink)',
-                border: 'none', borderRadius: '4px', fontSize: '9px', padding: '6px 12px',
-                cursor: 'pointer', transition: 'all 0.3s', fontWeight: 'bold'
-            }}
-          >
-            [ZEN: {zenMode ? 'ON' : 'OFF'}]
-          </button>
-      </div>
+      {/* Unified Experience Control System */}
+      <ControlDock 
+        voiceEnabled={narrationEnabled}
+        onToggleVoice={toggleVoice}
+        zenMode={zenMode}
+        onToggleZen={toggleZen}
+        motionEnabled={motionEnabled}
+        onToggleMotion={toggleMotion}
+        onOpenHelp={openHelp}
+      />
 
       {/* ... Existing Section Layout ... */}
       <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
@@ -603,28 +611,7 @@ function App() {
           />
       )}
 
-      {/* Motion Toggle */}
-      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10006, display: 'flex', gap: '10px' }}>
-          <button 
-            onClick={() => {
-                const next = !motionEnabled;
-                setMotionEnabled(next);
-                announce(narration.motionToggled(next));
-            }}
-            className="mono"
-            aria-pressed={motionEnabled}
-            aria-label="Toggle motion. Disables background bobbing and decorative animations."
-            title="Disables background bobbing and decorative motion"
-            style={{ 
-                background: 'rgba(5,7,10,0.8)', color: motionEnabled ? 'var(--accent-blue)' : 'var(--text-secondary)',
-                border: `1px solid ${motionEnabled ? 'var(--accent-blue)' : 'var(--border-color)'}`,
-                padding: '6px 12px', fontSize: '9px', borderRadius: '40px', cursor: 'pointer',
-                backdropFilter: 'blur(10px)', transition: 'all 0.3s'
-            }}
-          >
-            MOTION: {motionEnabled ? 'ON' : 'OFF'}
-          </button>
-      </div>
+      {/* Motion Toggle removed - now in ControlDock */}
 
       <footer style={{ padding: 'var(--space-4) 0', borderTop: '1px solid var(--border-color)', textAlign: 'center', opacity: 0.6 }}>
           <div className="container">
@@ -633,13 +620,9 @@ function App() {
               </div>
               <div style={{ fontSize: '11px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
                   <span>© 2026 FRONTEND ODYSSEY</span>
-                  <button 
-                    onClick={() => alert("HINT: Try scrolling, dragging sliders, or clicking the floating bugs. If things look stuck, use the ?judge=true parameter for requirement labels.")}
-                    style={{ textDecoration: 'underline', cursor: 'help', color: 'var(--accent-blue)' }}
-                    className="mono"
-                  >
-                    [HAVING_TROUBLE?]
-                  </button>
+                  <span className="mono" style={{ opacity: 0.5 }}>
+                      [SUPPORT_READY]
+                  </span>
               </div>
           </div>
       </footer>

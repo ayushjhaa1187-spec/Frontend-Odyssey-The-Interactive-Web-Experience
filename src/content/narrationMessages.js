@@ -49,8 +49,11 @@ const narrationMessages = {
   mentorOpened:     "Mentor terminal opened. Sage advice incoming.",
   mentorClosed:     "Mentor terminal closed.",
 
-  // Motion toggle
-  motionToggled:    (on) => `Motion ${on ? "enabled" : "disabled"}.`,
+  // Experience toggles
+  voiceToggled:     (on) => `Voice Narration ${on ? "enabled" : "disabled"}.`,
+  zenToggled:       (on) => `Zen Mode ${on ? "enabled" : "disabled"}.`,
+  motionToggled:    (on) => `Motion effects ${on ? "enabled" : "disabled"}.`,
+  helpOpened:       "Help and Accessibility panel opened.",
 };
 
 export default narrationMessages;
