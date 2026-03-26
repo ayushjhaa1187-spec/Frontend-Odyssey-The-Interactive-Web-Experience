@@ -4,7 +4,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { loop } = devLifeStory;
 
-const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
+const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce }) => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -36,6 +36,11 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
     return () => ctx.revert();
   }, []);
 
+  const handleRestart = () => {
+    if (announce) announce("Restarting the journey. Moving back to hero section. The loop continues.");
+    onRestart && onRestart();
+  };
+
   return (
     <section id="loop" ref={sectionRef} className="section theme-pink">
       <div className="section-inner" style={{ textAlign: 'center', position: 'relative' }}>
@@ -59,7 +64,8 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
             <h3 style={{ marginBottom: '20px' }}>{loop.footerMsg}</h3>
             <button 
                 className="cta-btn pill active" 
-                onClick={onRestart}
+                onClick={handleRestart}
+                aria-label="Restart Journey. Go back to the beginning."
                 style={{ 
                     padding: '20px 60px', background: 'var(--accent-pink)', border: 'none', 
                     borderRadius: 'var(--radius-full)', color: 'white', fontSize: 'var(--font-lg)', fontWeight: '800', 
@@ -68,17 +74,18 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
             >
                 {loop.btn}
             </button>
-            <div style={{ marginTop: '30px', opacity: 0.4, fontSize: 'var(--font-xs)' }} className="mono">
+            <div style={{ marginTop: '30px', opacity: 0.4, fontSize: 'var(--font-xs)' }} className="mono" aria-hidden="true">
                 {loop.jokes[Math.floor(Math.random() * loop.jokes.length)]}
             </div>
         </div>
 
         <footer style={{ marginTop: 'var(--space-6)', paddingTop: 'var(--space-4)', borderTop: '1px solid var(--border-color)', opacity: 0.5 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px' }}>
                 <span className="mono" style={{ fontSize: '12px' }}>&copy; 2026 Frontend Odyssey | Built with GSAP & Blood, Sweat, Tears</span>
                 <button 
                   onClick={onBackToTop} 
                   className="mono"
+                  aria-label="Scroll back to top of the page"
                   style={{ fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', color: 'var(--accent-pink)', letterSpacing: '1px', background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   Back to top ↑

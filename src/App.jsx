@@ -47,9 +47,27 @@ function App() {
   const [insaneMode, setInsaneMode] = useState(false);
   const [judgeMode, setJudgeMode] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [liveMessage, setLiveMessage] = useState("");
+  const [motionEnabled, setMotionEnabled] = useState(true);
+  const [caffeineLevel, setCaffeineLevel] = useState(1);
+  const [showMentor, setShowMentor] = useState(false);
+  const [typedChars, setTypedChars] = useState("");
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
   const loaderRef = useRef(null);
+
+  const announce = (msg) => {
+    setLiveMessage(""); // Clear first to force re-announcement
+    setTimeout(() => setLiveMessage(msg), 50);
+  };
+
+  // Narrate section changes
+  useEffect(() => {
+    if (!loading) {
+        const section = sections.find(s => s.id === activeSection);
+        if (section) announce(`Entering ${section.label} section: ${section.id.toUpperCase()}`);
+    }
+  }, [activeSection, loading]);
 
   // Initialize modes from URL params
   useEffect(() => {
@@ -98,9 +116,27 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const handleKeyDown = (e) => {
+        // Build up typed string to check for keywords
+        const newTyped = (typedChars + e.key.toLowerCase()).slice(-6);
+        setTypedChars(newTyped);
+        
+        if (newTyped.includes("mentor") || newTyped.slice(-4).includes("help")) {
+            setShowMentor(true);
+            announce("Mentor Terminal activated. Sage advice incoming.");
+            setTypedChars(""); // reset
+        }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [typedChars]);
+
+  useEffect(() => {
     if (loading) return;
 
     let ctx = gsap.context(() => {
+        // Initial reveal
+        gsap.set('.app-container', { opacity: 1 });
         // Global Progress Bar
         gsap.to('.progress-bar', {
             width: "100%",
@@ -144,8 +180,8 @@ function App() {
         const isMobile = window.innerWidth < 768;
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Background Blobs Floating - only on desktop and if motion is preferred
-        if (!isMobile && !prefersReducedMotion) {
+        // Background Blobs Floating - only on desktop and if motion is enabled
+        if (!isMobile && !prefersReducedMotion && motionEnabled) {
             gsap.to(self.selector('.blob-1'), {
                 x: "random(-100, 100)",
                 y: "random(-100, 100)",
@@ -165,13 +201,15 @@ function App() {
         }
 
         // Bobbing Scroll Indicator
-        gsap.to(self.selector('.mouse'), {
-            y: 8,
-            duration: 1.5,
-            repeat: -1,
-            yoyo: true,
-            ease: "power1.inOut"
-        });
+        if (motionEnabled && !prefersReducedMotion) {
+            gsap.to(self.selector('.mouse'), {
+                y: 8,
+                duration: 1.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "power1.inOut"
+            });
+        }
 
         // Hide scroll indicator on scroll
         gsap.to('.scroll-indicator', {
@@ -187,7 +225,7 @@ function App() {
     }, scrollRef);
 
     return () => ctx.revert();
-  }, [loading]);
+  }, [loading, motionEnabled]);
 
   const scrollTo = (target) => {
     gsap.to(window, {
@@ -229,7 +267,28 @@ function App() {
   }
 
   return (
-    <div className="app-container" ref={scrollRef}>
+    <div className={`app-container level-${caffeineLevel}`} ref={scrollRef}>
+      {/* Caffeine Global Effects Layer */}
+      <div 
+        className="caffeine-overlay" 
+        style={{ 
+            position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 1000,
+            transition: 'all 0.5s ease',
+            opacity: caffeineLevel >= 3 ? 0.3 : 0,
+            background: 'radial-gradient(circle, transparent 40%, rgba(255, 77, 168, 0.1) 100%)',
+            boxShadow: caffeineLevel >= 3 ? 'inset 0 0 100px var(--accent-pink-glow)' : 'none'
+        }} 
+      />
+      <a href="#main-story-content" className="skip-link">Skip to main content</a>
+      <div 
+        className="sr-only" 
+        aria-live="polite" 
+        aria-atomic="true"
+        style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}
+      >
+        {liveMessage}
+      </div>
+
       {/* Global Elements */}
       <div className="nav-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Reading Progress Bar">
         <div className="progress-bar"></div>
@@ -281,15 +340,57 @@ function App() {
       )}
 
       {/* Sections */}
-      <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} />
-      <LearningPhase judgeMode={judgeMode} />
-      <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} />
-      <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} judgeMode={judgeMode} />
-      <DeadlineSection judgeMode={judgeMode} />
-      <CaffeineCommitsSection judgeMode={judgeMode} />
-      <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} />
-      <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} />
-      <LoopSection onRestart={() => scrollTo("#hero")} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} />
+      <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <LearningPhase judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <DeadlineSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <CaffeineCommitsSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} onLevelChange={setCaffeineLevel} />
+      <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <LoopSection onRestart={() => scrollTo("#hero")} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+
+      {/* Mentor Terminal Easter Egg */}
+      {showMentor && (
+          <div 
+            style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+            role="dialog"
+            aria-labelledby="mentor-title"
+          >
+              <div className="card mono" style={{ maxWidth: '400px', border: '1px solid var(--accent-blue)', background: '#05070a', padding: '30px', textAlign: 'center' }}>
+                  <h3 id="mentor-title" style={{ color: 'var(--accent-blue)', marginBottom: '20px', fontSize: '14px' }}>[MENTOR_TERMINAL_V1.0]</h3>
+                  <p style={{ fontSize: '13px', lineHeight: '1.8', marginBottom: '30px', color: 'var(--text-secondary)' }}>
+                      "The code is but a shadow of your intent. Focus on the flow, and the bugs will dissipate like morning mist. Remember: Commit often, but think twice before merging. And always, always take a coffee break."
+                  </p>
+                  <button 
+                    className="pill active" 
+                    onClick={() => setShowMentor(false)}
+                    style={{ padding: '10px 30px', cursor: 'pointer' }}
+                  >
+                    CLOSE_TERMINAL
+                  </button>
+              </div>
+          </div>
+      )}
+
+      {/* Motion Toggle */}
+      <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10006, display: 'flex', gap: '10px' }}>
+          <button 
+            onClick={() => {
+                setMotionEnabled(!motionEnabled);
+                announce(`Motion ${!motionEnabled ? 'enabled' : 'disabled'}`);
+            }}
+            className="mono"
+            style={{ 
+                background: 'rgba(5,7,10,0.8)', color: motionEnabled ? 'var(--accent-blue)' : 'var(--text-secondary)',
+                border: `1px solid ${motionEnabled ? 'var(--accent-blue)' : 'var(--border-color)'}`,
+                padding: '6px 12px', fontSize: '9px', borderRadius: '40px', cursor: 'pointer',
+                backdropFilter: 'blur(10px)', transition: 'all 0.3s'
+            }}
+          >
+            MOTION: {motionEnabled ? 'ON' : 'OFF'}
+          </button>
+      </div>
 
       <footer style={{ padding: 'var(--space-4) 0', borderTop: '1px solid var(--border-color)', textAlign: 'center', opacity: 0.6 }}>
           <div className="container">

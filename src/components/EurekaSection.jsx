@@ -4,9 +4,13 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { eureka } = devLifeStory;
 
-const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
+const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
   const sectionRef = useRef(null);
+  const legacyCardRef = useRef(null);
+  const duckRef = useRef(null);
   const [isFlipped, setIsFlipped] = useState(false);
+  const [duckPos, setDuckPos] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     let ctx = gsap.context((self) => {
@@ -55,17 +59,63 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
     }
   };
 
+  const handlePointerDown = (e) => {
+      setIsDragging(true);
+      e.currentTarget.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e) => {
+      if (!isDragging) return;
+      
+      const newX = duckPos.x + e.movementX;
+      const newY = duckPos.y + e.movementY;
+      setDuckPos({ x: newX, y: newY });
+
+      // Collision check with legacy card
+      const cardRect = legacyCardRef.current?.getBoundingClientRect();
+      const duckRect = duckRef.current?.getBoundingClientRect();
+      
+      if (cardRect && duckRect) {
+          const isColliding = !(
+              duckRect.right < cardRect.left || 
+              duckRect.left > cardRect.right || 
+              duckRect.bottom < cardRect.top || 
+              duckRect.top > cardRect.bottom
+          );
+          
+          if (isColliding && !isFlipped) {
+              setIsFlipped(true);
+              if (announce) announce("Eureka! Rubber duck explains the bug. Clean code applied!");
+          }
+      }
+  };
+
+  const handlePointerUp = (e) => {
+      setIsDragging(false);
+      e.currentTarget.releasePointerCapture(e.pointerId);
+  };
+
+  const askDuck = () => {
+      setIsFlipped(true);
+      if (announce) announce("Consulting rubber duck... explanation revealed.");
+  };
+
   return (
     <section id="eureka" ref={sectionRef} className="section theme-green">
       <div className="section-inner" style={{ position: 'relative' }}>
         {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: DEBUG_MODE_TOGGLE]</div>}
         <div className="section-header">
             <h2 className="section-title">{eureka.headline}</h2>
-            <p className="section-subtitle">{eureka.subtitle}</p>
+            <p className="section-subtitle">{eureka.subtitle} (Drag the duck over Legacy code if stuck)</p>
         </div>
         
         <div className="section-grid">
-            <div className="diff-card card mono" onClick={triggerSparkle} style={{ padding: '0', cursor: 'pointer', borderStyle: 'solid', borderColor: 'var(--warning-red)', transition: 'all 0.3s' }}>
+            <div 
+                ref={legacyCardRef}
+                className="diff-card card mono" 
+                onClick={triggerSparkle} 
+                style={{ padding: '0', cursor: 'pointer', borderStyle: 'solid', borderColor: 'var(--warning-red)', transition: 'all 0.3s' }}
+            >
                 <div style={{ background: 'var(--warning-red)', color: '#000', padding: '10px 20px', fontSize: '10px', fontWeight: '800', display: 'flex', justifyContent: 'space-between' }}>
                     <span>LEGACY.JS</span>
                     <span className="pill" style={{ background: '#fff', color: '#000', fontSize: '8px', border: 'none' }}>CLICK TO DEBUG</span>
@@ -75,7 +125,6 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
                         {isFlipped ? eureka.messages.join('\n') : `function calculate(p, t) {\n  let tot = p + t;\n  return tot.toFixed(2);\n}`}
                     </pre>
                 </div>
-                {isFlipped && <div style={{ position: 'absolute', bottom: '10px', right: '10px', fontSize: '10px', opacity: 0.4 }}>Reset via click</div>}
             </div>
 
             <div className="diff-card card mono" style={{ padding: '0', borderColor: 'var(--success-green)', background: 'rgba(0,255,148,0.02)', boxShadow: '0 0 30px rgba(0,255,148,0.05)' }}>
@@ -89,12 +138,36 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
             </div>
         </div>
 
+        {/* Draggable Rubber Duck */}
+        <div 
+          ref={duckRef}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          role="img"
+          aria-label="Rubber duck for debugging. Drag over legacy code to understand it."
+          style={{ 
+              position: 'absolute', 
+              top: '50px', 
+              right: '20px', 
+              fontSize: '40px', 
+              cursor: isDragging ? 'grabbing' : 'grab',
+              userSelect: 'none',
+              touchAction: 'none',
+              transform: `translate(${duckPos.x}px, ${duckPos.y}px)`,
+              zIndex: 100,
+              filter: 'drop-shadow(0 0 10px rgba(255,255,0,0.3))'
+          }}
+        >
+            🦆
+        </div>
+
         <div className="message-container" style={{ marginTop: 'var(--space-4)', textAlign: 'center' }}>
             <p className="mono" style={{ marginBottom: '20px', color: 'var(--success-green)', fontWeight: '700', fontSize: 'var(--font-sm)' }}>
                 ⚡ 42% Performance Boost detected. Clean code applied.
             </p>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
                 <span className="text-secondary" style={{ fontSize: 'var(--font-sm)' }}>{eureka.hint}</span>
                 <button 
                   className={`pill active`} 
@@ -102,6 +175,13 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
                   style={{ background: debugMode ? 'var(--success-green)' : 'var(--bg-tertiary)', color: debugMode ? '#000' : 'inherit', border: 'none' }}
                 >
                     {debugMode ? 'DEBUGGER ACTIVE' : 'OPEN DEBUGGER'}
+                </button>
+                <button 
+                  className="pill"
+                  onClick={askDuck}
+                  style={{ border: '1px dashed var(--accent-pink)', color: 'var(--accent-pink)' }}
+                >
+                  ASK RUBBER DUCK
                 </button>
             </div>
 

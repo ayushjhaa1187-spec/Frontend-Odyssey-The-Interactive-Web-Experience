@@ -55,7 +55,7 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
   }, []);
 
   return (
-    <section id="hero" ref={heroRef} className="section hero theme-blue">
+    <section id="main-story-content" ref={heroRef} className="section hero theme-blue">
       <div className="grid-bg" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.03, zIndex: -2 }}></div>
       <div className="bracket left" aria-hidden="true" style={{ position: 'absolute', top: '25%', left: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#123;</div>
       <div className="bracket right" aria-hidden="true" style={{ position: 'absolute', bottom: '25%', right: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#125;</div>

@@ -5,7 +5,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { shipping } = devLifeStory;
 
-const ShippingPhaseSection = ({ onShip, judgeMode }) => {
+const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
   const sectionRef = useRef(null);
   const rocketRef = useRef(null);
   const [logs, setLogs] = useState(shipping.logs);
@@ -40,6 +40,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode }) => {
   const handleShipClick = (e) => {
     if (isShipping) return;
     setIsShipping(true);
+    if (announce) announce("Initiating production deployment. Launching codebase to live servers.");
     
     // 1. Append final logs rapidly
     const finalLogs = ["[INFO] Initiating Final Handshake...", "[SYSTEM] Optimizing Bundles...", "[SUCCESS] Production Deploy Triggered!"];
@@ -58,6 +59,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode }) => {
         duration: 1.5,
         ease: "expo.in",
         onComplete: () => {
+            if (announce) announce("Build shipped successfully! Rocket has reached orbit.");
             onShip && onShip();
             // Reset for next time (even though site restarts)
             setTimeout(() => {
@@ -96,13 +98,15 @@ const ShippingPhaseSection = ({ onShip, judgeMode }) => {
                     <button 
                     className={`cta-btn ${isShipping ? 'disabled' : ''}`} 
                     onClick={handleShipClick} 
+                    disabled={isShipping}
+                    aria-label={isShipping ? "Deploying project" : "Ship project to production"}
                     style={{ 
                         padding: '24px 64px', background: 'var(--success-green)', border: 'none', 
                         borderRadius: 'var(--radius-full)', color: '#000', fontSize: 'var(--font-lg)', 
                         fontWeight: '900', cursor: isShipping ? 'not-allowed' : 'pointer', transition: 'all 0.4s', 
                         boxShadow: '0 20px 50px rgba(0, 255, 148, 0.3)',
                         opacity: isShipping ? 0.5 : 1,
-                        transform: isShipping ? 'scale(0.95)' : (isShipping ? 'scale(1)' : 'scale(1)')
+                        transform: isShipping ? 'scale(0.95)' : 'scale(1)'
                     }}
                     >
                     {isShipping ? "LAUNCHING..." : shipping.btn}
@@ -125,7 +129,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode }) => {
                         <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#30363D' }}></div>
                     </div>
                 </div>
-                <div className="mono" style={{ padding: '24px', fontSize: '12px', height: 'calc(100% - 40px)', overflowY: 'auto', scrollBehavior: 'smooth' }}>
+                <div id="shipping-terminal-output" className="mono" style={{ padding: '24px', fontSize: '12px', height: 'calc(100% - 40px)', overflowY: 'auto', scrollBehavior: 'smooth' }} aria-live="polite">
                     {terminalLogs.map((log, i) => (
                         <div key={i} style={{ color: log.includes('[WARN]') ? 'var(--warning-red)' : (log.includes('[SUCCESS]') ? 'var(--success-green)' : '#C9D1D9'), marginBottom: '10px', opacity: 0.9 }}>
                             <span style={{ opacity: 0.4 }}>$ </span> {log}

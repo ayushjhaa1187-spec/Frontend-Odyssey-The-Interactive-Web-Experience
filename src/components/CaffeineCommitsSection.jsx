@@ -4,7 +4,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { caffeine } = devLifeStory;
 
-const CaffeineCommitsSection = ({ judgeMode }) => {
+const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
   const sectionRef = useRef(null);
   const avatarRef = useRef(null);
   const [level, setLevel] = useState(1); 
@@ -15,6 +15,24 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
     { label: "3 Cups", color: "var(--accent-pink)", boost: 2, icon: "☕☕" },
     { label: "LEGENDARY", color: "var(--accent-blue)", boost: 5, icon: "⚡☕⚡" }
   ];
+
+  const setLevelAndAnnounce = (i) => {
+    setLevel(i);
+    if (onLevelChange) onLevelChange(i);
+    if (announce) announce(`Caffeine level set to ${levels[i].label}. Efficiency boost: ${levels[i].boost * 20}%`);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        const next = (level + 1) % levels.length;
+        setLevelAndAnnounce(next);
+        e.preventDefault();
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        const prev = (level - 1 + levels.length) % levels.length;
+        setLevelAndAnnounce(prev);
+        e.preventDefault();
+    }
+  };
 
   useEffect(() => {
     let ctx = gsap.context((self) => {
@@ -93,15 +111,20 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
                 <h4 className="mono" id="caffeine-heading" style={{ textTransform: 'uppercase', fontSize: 'var(--font-xs)', letterSpacing: '2px', opacity: 0.6 }}>CAFFEINE PROTOCOL</h4>
                 <div className="mono" style={{ fontSize: '9px', opacity: 0.5, marginBottom: '20px', letterSpacing: '1px' }}>{caffeine.instructions}</div>
                 <div style={{ position: 'relative' }}>
-                    <div className="fuel-buttons" role="radiogroup" aria-labelledby="caffeine-heading" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                    <div className="fuel-buttons" 
+                         role="radiogroup" 
+                         aria-labelledby="caffeine-heading" 
+                         onKeyDown={handleKeyDown}
+                         style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                         {levels.map((l, i) => (
                             <button 
                                 key={i} 
-                                onClick={() => setLevel(i)}
+                                onClick={() => setLevelAndAnnounce(i)}
                                 className={`pill touch-target ${level === i ? 'active' : ''}`}
                                 aria-checked={level === i}
                                 role="radio"
-                                aria-label={`Set caffeine level to ${l.label}`}
+                                tabIndex={level === i ? 0 : -1}
+                                aria-label={`${l.label} level. ${l.boost} boost units.`}
                                 style={{ 
                                     padding: '12px', background: level === i ? l.color : 'var(--bg-tertiary)', 
                                     color: level === i ? (i === 3 ? '#fff' : '#000') : 'var(--text-secondary)',
@@ -126,7 +149,7 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
                     </button>
                 </div>
                 {level === 3 && (
-                    <div className="mono" role="alert" aria-live="assertive" style={{ marginTop: '20px', color: 'var(--accent-blue)', animation: 'pulse 1.5s infinite', fontSize: '10px', fontWeight: 'bold' }}>
+                    <div className="mono" role="alert" aria-live="assertive" style={{ marginTop: '20px', color: 'var(--accent-pink)', animation: 'pulse 1.5s infinite', fontSize: '10px', fontWeight: 'bold' }}>
                         [WARNING] SYSTEM ERROR: OVERHEATING_DETECTED
                     </div>
                 )}
@@ -139,7 +162,7 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
                         className="commit-card card" 
                         style={{ 
                             padding: '12px 15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                            borderColor: level === 3 ? 'var(--accent-blue)' : 'var(--border-color)',
+                            borderColor: level === 3 ? 'var(--accent-pink)' : 'var(--border-color)',
                             transition: 'all 0.3s',
                             width: '100%'
                         }}
