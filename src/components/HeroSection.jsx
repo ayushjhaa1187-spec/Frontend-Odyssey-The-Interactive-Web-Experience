@@ -4,7 +4,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { hero } = devLifeStory;
 
-const HeroSection = ({ onStartClick, judgeMode }) => {
+const HeroSection = ({ onStartClick, judgeMode, announce, motionEnabled }) => {
   const heroRef = useRef(null);
   const badgeRef = useRef(null);
   const titleRef = useRef(null);
@@ -17,7 +17,9 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
       const tl = gsap.timeline({
         delay: 0.5,
         onComplete: () => {
-          gsap.to('.scroll-indicator', { opacity: 1, y: 0, duration: 1 });
+          // Target the global main-scroll-indicator instead
+          const mainInd = document.querySelector('.main-scroll-indicator');
+          if (mainInd) gsap.to(mainInd, { opacity: 1, y: 0, duration: 1 });
         }
       });
       
