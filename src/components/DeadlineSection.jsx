@@ -1,95 +1,127 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { devLifeStory } from '../content/devLifeStory';
 
-const DeadlineSection = () => {
+const { deadline } = devLifeStory;
+
+const DeadlineSection = ({ judgeMode }) => {
   const sectionRef = useRef(null);
-  const timelineRef = useRef(null);
-  const [activeStep, setActiveStep] = useState(2);
+  const containerRef = useRef(null);
+  const [activeStep, setActiveStep] = useState(0);
+  const [panicLevel, setPanicLevel] = useState(20);
 
-  const steps = [
-    { title: 'Day -3', sub: 'Final feature merge', icon: '✅', id: 0 },
-    { title: 'Day -2', sub: 'Code review passed', icon: '✅', id: 1 },
-    { title: 'Day -1', sub: 'Performance optimization', icon: '⚡', id: 2 },
-    { title: 'Day 0', sub: 'Production deploy', icon: '⏳', id: 3 },
-    { title: 'Go Live!', sub: 'Deployed to production', icon: '🎯', id: 4 }
-  ];
+  const steps = deadline.steps;
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      // Pinned section
-      gsap.to('.timeline-container', {
-        scrollTrigger: {
+      const isMobile = window.innerWidth < 768;
+      
+      // Pin the section
+      ScrollTrigger.create({
           trigger: sectionRef.current,
           start: "top top",
-          end: "bottom bottom",
+          end: `+=${isMobile ? 1200 : 2000}`,
           pin: true,
-          pinSpacing: false,
-          scrub: 1
-        }
-      });
-
-      // Timeline nodes sequentially reveal on scroll
-      steps.forEach((_, i) => {
-        gsap.fromTo(`.t-node-${i}`, 
-          { opacity: 0.2, x: -30, scale: 0.9 },
-          { 
-            opacity: 1, x: 0, scale: 1, 
-            duration: 0.6,
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: `top center+=${i * 100}`,
-              onEnter: () => setActiveStep(i),
-              onEnterBack: () => setActiveStep(i),
-              toggleActions: "play reverse play reverse"
-            }
+          scrub: 1,
+          onUpdate: (self) => {
+            const index = Math.floor(self.progress * (steps.length - 0.01));
+            setActiveStep(index);
           }
-        );
       });
 
-      // Background gets redder as deadline approaches
-      gsap.to(sectionRef.current, {
-        backgroundColor: "rgba(255, 85, 85, 0.05)",
-        scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top center",
-            end: "bottom bottom",
-            scrub: 1
-        }
-      });
+      // Panic Shake Animation
+      if (panicLevel > 50) {
+          gsap.to(".scrolly-card-container", {
+              x: `random(${-panicLevel/12}, ${panicLevel/12})`,
+              y: `random(${-panicLevel/12}, ${panicLevel/12})`,
+              rotate: `random(${-panicLevel/80}, ${panicLevel/80})`,
+              duration: 0.1,
+              repeat: -1,
+              yoyo: true,
+              ease: "none"
+          });
+          gsap.to("body", { backgroundColor: `rgba(255, 0, 0, ${panicLevel/400})`, duration: 0.3 });
+      } else {
+          gsap.killTweensOf(".scrolly-card-container");
+          gsap.set(".scrolly-card-container", { x: 0, y: 0, rotate: 0 });
+      }
 
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [steps.length, panicLevel]);
 
   return (
-    <section id="deadline" ref={sectionRef} style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--s5)', padding: 'var(--s5) var(--s4)', position: 'relative' }}>
-      <div className="deadline-content" style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}>
-        <h2 className="section-title danger" style={{ fontSize: '18px', textTransform: 'uppercase', letterSpacing: '4px' }}>The deadline is approaching...</h2>
-        <p className="deadline-subtitle" style={{ color: 'var(--danger-red)', fontSize: '24px', fontWeight: '800', marginBottom: 'var(--s5)' }}>3 days left to ship</p>
-        
-        <div className="timeline-container" style={{ position: 'relative', height: 'fit-content' }}>
-            <svg className="timeline-svg" viewBox="0 0 40 600" style={{ position: 'absolute', left: '-40px', top: '0', height: '100%', width: '40px', padding: '10px' }}>
-                <line x1="20" y1="0" x2="20" y2="600" stroke="var(--border-color)" strokeWidth="2" strokeDasharray="5,5" />
-                <path className="timeline-line-active" d="M 20 0 L 20 600" stroke="var(--accent-blue)" strokeWidth="4" strokeLinecap="round" style={{ transition: 'stroke-dashoffset 0.1s', strokeDasharray: '600', strokeDashoffset: 600 - (activeStep * 150) }} />
-            </svg>
-            <div className="timeline-nodes" style={{ display: 'flex', flexDirection: 'column', gap: '40px', textAlign: 'left' }}>
-                {steps.map((s, i) => (
-                    <div 
-                        key={i} 
-                        className={`t-node t-node-${i} premium-card ${activeStep === i ? 'active' : ''} ${i < activeStep ? 'done' : ''}`}
-                        onClick={() => setActiveStep(i)}
-                        style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '20px', transition: 'all 0.3s', maxWidth: '400px', opacity: activeStep >= i ? 1 : 0.3 }}
-                    >
-                        <span className="t-icon" style={{ fontSize: '24px', filter: activeStep === i ? 'drop-shadow(0 0 8px var(--accent-blue-glow))' : 'none' }}>{s.icon}</span>
-                        <div className="t-text">
-                            <strong style={{ display: 'block', fontSize: '18px' }}>{s.title}</strong>
-                            <span style={{ fontSize: '14px', opacity: 0.6 }}>{s.sub}</span>
-                        </div>
-                    </div>
-                ))}
+    <section id="deadline" ref={sectionRef} className="section" style={{ border: 'none', background: 'transparent' }}>
+      <div className="section-inner" ref={containerRef} style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+        <div className="section-header" style={{ position: 'absolute', top: '10vh', left: '0', right: '0', zIndex: 10 }}>
+            {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px' }}>[REQ: PINNED_SCROLLYTELLING]</div>}
+            <h2 className="section-title" style={{ color: '#FF4B4B', textShadow: `0 0 ${panicLevel/2}px rgba(255,75,75,0.4)` }}>{deadline.headline}</h2>
+            
+            <div className="panic-slider-wrapper card" style={{ maxWidth: '350px', margin: '20px auto 0', padding: '12px 20px', background: 'rgba(255,0,0,0.05)', borderStyle: 'dotted' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', position: 'relative' }}>
+                    {judgeMode && <div style={{ position: 'absolute', top: '-25px', right: 0, color: 'var(--accent-pink)', fontSize: '8px' }}>[REQ: INTERACTIVE_ELEMENT_2]</div>}
+                    <label htmlFor="panic-slider" className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }}>PANITY LEVEL:</label>
+                    <span className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }} aria-live="polite">{panicLevel}%</span>
+                </div>
+                <input 
+                    id="panic-slider"
+                    type="range" 
+                    min="0" 
+                    max="100" 
+                    value={panicLevel} 
+                    onChange={(e) => setPanicLevel(parseInt(e.target.value))}
+                    aria-label="Adjust your current developer panic level"
+                    style={{ 
+                        width: '100%', cursor: 'pointer', accentColor: 'var(--warning-red)', 
+                        height: '30px'
+                    }} 
+                />
             </div>
+        </div>
+        
+        <div className="scrolly-card-container" style={{ position: 'relative', height: '350px', width: '100%', maxWidth: '500px', margin: '60px auto 0' }}>
+            {steps.map((s, i) => (
+                <div 
+                    key={i} 
+                    className={`scrolly-card card`}
+                    aria-hidden={activeStep !== i}
+                    style={{ 
+                        position: 'absolute', top: 0, left: 0, right: 0,
+                        borderColor: activeStep === i ? 'var(--warning-red)' : 'var(--border-color)',
+                        padding: 'var(--space-3)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        textAlign: 'center',
+                        transition: 'all 0.6s cubic-bezier(0.23, 1, 0.32, 1)',
+                        opacity: activeStep === i ? 1 : 0,
+                        transform: activeStep === i ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.95)',
+                        pointerEvents: activeStep === i ? 'auto' : 'none'
+                    }}
+                >
+                    <div style={{ fontSize: 'clamp(40px, 12vw, 70px)', marginBottom: '15px' }} aria-hidden="true">
+                        {s.icon}
+                    </div>
+                    <div className="mono" style={{ fontSize: '9px', color: 'var(--warning-red)', marginBottom: '10px', border: '1px solid var(--warning-red)', padding: '2px 8px', borderRadius: '4px' }}>PHASE {i + 1}</div>
+                    <h3 style={{ marginBottom: '8px', fontSize: 'var(--font-lg)' }}>{s.title}</h3>
+                    <p style={{ fontSize: '12px', opacity: 0.8 }}>{s.sub}</p>
+                    
+                    <div style={{ marginTop: '20px', width: '100%', height: '3px', background: 'var(--bg-tertiary)', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div 
+                            style={{ width: activeStep === i ? '100%' : (i < activeStep ? '100%' : '0%'), height: '100%', background: 'var(--warning-red)', transition: 'width 0.5s ease-out' }} 
+                            role="progressbar"
+                            aria-valuenow={activeStep === i ? 100 : 0}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                        />
+                    </div>
+                </div>
+            ))}
+        </div>
+
+        <div className="deadline-timer mono" style={{ position: 'absolute', bottom: '10vh', left: '0', right: '0', textAlign: 'center', fontSize: '11px', opacity: 0.8, color: panicLevel > 80 ? '#FF7B7B' : 'inherit' }} aria-live="assertive">
+            SYSTEM_STRESS_REPORT: {panicLevel > 80 ? "[CRITICAL] FAILING" : (panicLevel > 40 ? "[WARNING] UNSTABLE" : "[INFO] NOMINAL")} | PHASE: {activeStep + 1}
         </div>
       </div>
     </section>

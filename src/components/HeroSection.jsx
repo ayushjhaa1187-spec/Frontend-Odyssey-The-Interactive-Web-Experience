@@ -1,7 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { devLifeStory } from '../content/devLifeStory';
 
-const HeroSection = ({ onStartClick }) => {
+const { hero } = devLifeStory;
+
+const HeroSection = ({ onStartClick, judgeMode }) => {
   const heroRef = useRef(null);
   const badgeRef = useRef(null);
   const titleRef = useRef(null);
@@ -12,94 +15,107 @@ const HeroSection = ({ onStartClick }) => {
   useEffect(() => {
     let ctx = gsap.context(() => {
       const tl = gsap.timeline({
+        delay: 0.5,
         onComplete: () => {
-          gsap.to('.scroll-indicator', { opacity: 1, y: 0, duration: 1, delay: 0.5 });
+          gsap.to('.scroll-indicator', { opacity: 1, y: 0, duration: 1 });
         }
       });
       
-      tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 0.8, ease: "back.out" })
-        .to(titleRef.current, { opacity: 1, y: 0, duration: 1, ease: "power4.out" }, "-=0.4")
-        .to(pRef.current, { opacity: 1, y: 0, duration: 1 }, "-=0.6")
-        .to(btnRef.current, { opacity: 1, scale: 1, duration: 0.6, ease: "back.out(2)" }, "-=0.4")
-        .to(codeBoxRef.current, { opacity: 0.1, duration: 1 }, "-=0.8");
+      tl.to(badgeRef.current, { opacity: 1, y: 0, duration: 1.2, ease: "expo.out" })
+        .to(titleRef.current, { opacity: 1, y: 0, duration: 1.4, ease: "expo.out" }, "-=0.8")
+        .to(pRef.current, { opacity: 1, y: 0, duration: 1.2, ease: "expo.out" }, "-=1")
+        .to(btnRef.current, { opacity: 1, scale: 1, duration: 1, ease: "back.out(1.7)" }, "-=0.8")
+        .to(codeBoxRef.current, { opacity: 0.4, duration: 1.5 }, "-=0.5");
 
-      // Hero Pinning & Parallax
-      gsap.fromTo('.bracket.left', 
-        { x: -50, rotate: -10, opacity: 0.05 },
-        { 
-          x: 200, rotate: 15, opacity: 0.2, 
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1
-          }
-        }
-      );
-      
-      gsap.fromTo('.bracket.right', 
-        { x: 50, rotate: 10, opacity: 0.05 },
-        { 
-          x: -200, rotate: -15, opacity: 0.2, 
-          scrollTrigger: {
-            trigger: heroRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1
-          }
-        }
-      );
+      // Floating doodles animation
+      gsap.to('.bracket', {
+          y: "random(-20, 20)",
+          rotate: "random(-5, 5)",
+          duration: "random(2, 4)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut"
+      });
+
+      // Hero Parallax
+      gsap.to('.bracket.left', { 
+          x: 100, 
+          scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
+      });
+      gsap.to('.bracket.right', { 
+          x: -100, 
+          scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
+      });
+
     }, heroRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="hero" ref={heroRef} style={{ overflow: 'hidden' }}>
-      <div className="bracket left" style={{ position: 'absolute', top: '20%', left: '5%', fontSize: 'min(20vw, 300px)', opacity: 0.1, zIndex: -1 }}>&#123;</div>
-      <div className="bracket right" style={{ position: 'absolute', bottom: '20%', right: '5%', fontSize: 'min(20vw, 300px)', opacity: 0.1, zIndex: -1 }}>&#125;</div>
+    <section id="hero" ref={heroRef} className="section hero">
+      <div className="bracket left" aria-hidden="true" style={{ position: 'absolute', top: '25%', left: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#123;</div>
+      <div className="bracket right" aria-hidden="true" style={{ position: 'absolute', bottom: '25%', right: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#125;</div>
       
-      <div className="hero-content" style={{ zIndex: 1, position: 'relative' }}>
-        <span className="hero-badge" ref={badgeRef} style={{ opacity: 0, transform: 'translateY(30px)' }}>The Developer's Journey</span>
-        <h1 ref={titleRef} style={{ opacity: 0, transform: 'translateY(40px)' }}>
-          From <span className="hl" style={{ color: 'var(--accent-blue)', textShadow: '0 0 30px var(--accent-blue-glow)' }}>Hello World</span> to <span className="hl" style={{ color: 'var(--accent-blue)' }}>Shipped</span>
-        </h1>
-        <p ref={pRef} style={{ opacity: 0, transform: 'translateY(20px)', maxWidth: '600px', margin: '0 auto 40px', color: 'var(--text-secondary)' }}>
-          A developer's journey is not just about code. It's about curiosity, frustration, breakthroughs, and the moment it all finally works.
-        </p>
-        <button 
-          className="cta-btn" 
-          ref={btnRef} 
-          onClick={onStartClick} 
-          style={{ 
-            opacity: 0, transform: 'scale(0.8)', background: 'var(--accent-blue)', 
-            color: 'var(--bg-dark)', padding: '16px 40px', borderRadius: '50px', 
-            fontSize: '18px', fontWeight: '700', transition: 'all 0.3s' 
-          }}
-        >
-          Start Coding →
-        </button>
+      {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '30%', left: '15%', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '4px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: PARALLAX_EFFECT_1]</div>}
+
+      <div className="section-inner" style={{ textAlign: 'center' }}>
+        <header className="section-header">
+           <span className="pill active" ref={badgeRef} style={{ opacity: 0, transform: 'translateY(40px)', marginBottom: 'var(--space-2)' }}>
+              <span role="img" aria-label="Rocket">🚀</span> {hero.badge}
+           </span>
+          <h1 className="section-title" ref={titleRef} style={{ opacity: 0, transform: 'translateY(50px)', fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}>
+            <span style={{ color: 'var(--accent-blue)', textShadow: '0 0 30px var(--accent-blue-glow)' }}>{hero.headline.split(' ').slice(0, 1)}</span> {hero.headline.split(' ').slice(1).join(' ')}
+          </h1>
+          <p className="section-subtitle" ref={pRef} style={{ opacity: 0, transform: 'translateY(30px)', maxWidth: '600px', margin: '0 auto var(--space-4)' }}>
+            {hero.subtitle}
+          </p>
+        </header>
+        
+        <div ref={btnRef} style={{ opacity: 0, transform: 'scale(0.8)' }}>
+            <button 
+                className="cta-btn" 
+                onClick={onStartClick} 
+                aria-label="Embark on the Developer Journey"
+                style={{ 
+                    background: 'var(--accent-blue)', 
+                    color: 'var(--bg-primary)', padding: '18px 48px', borderRadius: 'var(--radius-full)', 
+                    fontSize: 'var(--font-md)', fontWeight: '800', transition: 'all 0.4s cubic-bezier(0.23, 1, 0.32, 1)',
+                    boxShadow: '0 10px 40px rgba(0, 209, 255, 0.3)',
+                    border: 'none', cursor: 'pointer'
+                }}
+            >
+                {hero.cta}
+            </button>
+        </div>
       </div>
 
-      <div className="grid-bg" style={{ position: 'absolute', inset: 0, opacity: 0.05, zIndex: -2 }}></div>
+      <div className="grid-bg" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.03, zIndex: -2 }}></div>
       <div 
         ref={codeBoxRef} 
+        className="mono"
         onClick={() => {
-            const jokes = [
-                "// Why do programmers wear glasses? Because they don't C#.",
-                "// Real programmers count from 0.",
-                "// I'd like to tell you a joke about UDP, but you might not get it.",
-                "// !false - It's funny because it's true."
-            ];
-            gsap.to(codeBoxRef.current, { text: { value: jokes[Math.floor(Math.random() * jokes.length)], delimiter: "" }, duration: 0.5 });
+            const jokes = hero.jokes;
+            gsap.to(codeBoxRef.current, { text: { value: jokes[Math.floor(Math.random() * jokes.length)], delimiter: "" }, duration: 0.8, ease: "power2.out" });
         }}
+        onKeyPress={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                const jokes = hero.jokes;
+                gsap.to(codeBoxRef.current, { text: { value: jokes[Math.floor(Math.random() * jokes.length)], delimiter: "" }, duration: 0.8, ease: "power2.out" });
+            }
+        }}
+        role="button"
+        tabIndex="0"
+        aria-label="Interactive code quote. Press enter to see another."
         style={{ 
           position: 'absolute', bottom: '10%', left: '50%', transform: 'translateX(-50%)', 
-          opacity: 0, fontSize: '12px', fontFamily: 'var(--font-code)', color: 'var(--text-muted)', 
-          textAlign: 'left', whiteSpace: 'pre', cursor: 'help', pointerEvents: 'auto', zIndex: 10
+          opacity: 0, fontSize: 'var(--font-xs)', color: 'var(--text-muted)', 
+          textAlign: 'center', cursor: 'help', pointerEvents: 'auto', zIndex: 10, width: '100%',
+          padding: '10px'
         }}
       >
-        {`// Initializing life...\nconst developer = new Human();\ndeveloper.startCoding();`}
+        {judgeMode && <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', whiteSpace: 'nowrap' }}>[REQ: INTERACTIVE_ELEMENT_1]</div>}
+        {hero.initCode}
       </div>
     </section>
   );

@@ -48,5 +48,16 @@ Unlike typical technical showcases, this is a **human story**. Every section rep
 ✅ Responsiveness (15%) - Tested on 5+ device sizes
 ✅ Code Quality (10%) - Clean React architecture, no heavy external libraries
 
+
+## 🗺️ Implementation Map
+
+| Requirement | Implementation | Location |
+| :--- | :--- | :--- |
+| **5+ Sections Narrative** | 9-Act story: Hero -> Learning -> Bugs -> Eureka -> Deadline -> Caffeine -> Shipping -> Production -> Loop. | `App.jsx`, `src/components/` |
+| **2+ Scroll Effects** | Global Progress, Section Batch Reveals, BG Gradient Shifts, Pinning/Parallax, Scroll-Linked Logs. | `App.jsx`, `LearningPhase.jsx`, `DeadlineSection.jsx`, `ShippingPhaseSection.jsx` |
+| **3+ Interactive Elements** | Bug Smasher (Canvas), Code Runner (Eval), Caffeine Fueler, Debug Mode, Production "Ship" Button. | `BugsSection.jsx`, `LearningPhase.jsx`, `CaffeineCommitsSection.jsx`, `EurekaSection.jsx`, `ShippingPhaseSection.jsx` |
+| **3+ Animations** | GSAP Timelines, Sequential Story Reveals, Canvas Particle Physics, Real-time Stats, Rotating Loop Icons. | `App.jsx`, `HeroSection.jsx`, `DeadlineSection.jsx`, `ShippingPhaseSection.jsx`, `ProductionDeployedSection.jsx`, `LoopSection.jsx` |
+| **Responsive Design** | Fluid typography (clamp), CSS Flex/Grid, Media Query layout shifts (1024px, 768px). | `index.css`, `App.jsx` |
+
 ---
 *Built with passion by a developer for developers*

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { devLifeStory } from '../content/devLifeStory';
+
+const { production } = devLifeStory;
 
 const ProductionDeployedSection = ({ onShipAgain }) => {
   const sectionRef = useRef(null);
@@ -17,13 +20,12 @@ const ProductionDeployedSection = ({ onShipAgain }) => {
             }
         });
 
-        // Metrics cards stagger
-        gsap.from(".stat-item", {
+        // Cards stagger
+        gsap.from(".card", {
             opacity: 0,
             y: 30,
-            scale: 0.9,
-            stagger: 0.2,
-            duration: 1,
+            stagger: 0.1,
+            duration: 0.8,
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top 70%",
@@ -48,41 +50,47 @@ const ProductionDeployedSection = ({ onShipAgain }) => {
   };
 
   return (
-    <section id="production" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <h2 className="section-title success" style={{ textAlign: 'center' }}>Production Deployed!</h2>
-      <p style={{ maxWidth: '600px', margin: '0 auto var(--s5)', textAlign: 'center', opacity: 0.8, fontSize: '18px' }}>Your application is now globally distributed and serving live traffic.</p>
-      
-      <div className="stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--s3)', maxWidth: '900px', width: '100%', marginBottom: 'var(--s5)' }}>
-          <div className="stat-item premium-card" style={{ padding: 'var(--s3)', textAlign: 'center', border: '1px solid rgba(34, 255, 34, 0.2)' }}>
-              <span className="stat-num stat-users" style={{ display: 'block', fontSize: '32px', fontWeight: '800', color: 'var(--success-green)' }}>{usersOnline}</span>
-              <span className="stat-label" style={{ fontSize: '12px', opacity: 0.5, textTransform: 'uppercase' }}>Users Online</span>
-          </div>
-          <div className="stat-item premium-card" style={{ padding: 'var(--s3)', textAlign: 'center', border: '1px solid rgba(34, 255, 34, 0.2)' }}>
-              <span className="stat-num" style={{ display: 'block', fontSize: '32px', fontWeight: '800', color: 'var(--success-green)' }}>99.9%</span>
-              <span className="stat-label" style={{ fontSize: '12px', opacity: 0.5, textTransform: 'uppercase' }}>Uptime</span>
-          </div>
-          <div className="stat-item premium-card" style={{ padding: 'var(--s3)', textAlign: 'center', border: '1px solid rgba(34, 255, 34, 0.2)' }}>
-              <span className="stat-num" style={{ display: 'block', fontSize: '32px', fontWeight: '800', color: 'var(--success-green)' }}>23s</span>
-              <span className="stat-label" style={{ fontSize: '12px', opacity: 0.5, textTransform: 'uppercase' }}>Deploy Time</span>
-          </div>
-      </div>
+    <section id="production" ref={sectionRef} className="section">
+      <div className="section-inner">
+        <div className="section-header">
+            <h2 className="section-title" style={{ color: 'var(--success-green)' }}>{production.headline}</h2>
+            <p className="section-subtitle">{production.subtitle} <span className="pill active" style={{ marginLeft: '10px', fontSize: '10px', background: 'var(--success-green-glow)', color: 'var(--success-green)', borderColor: 'var(--success-green)' }}>LIVE</span></p>
+        </div>
+        
+        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--space-4)' }}>
+            <div className="card" style={{ textAlign: 'center', borderColor: 'var(--success-green)' }}>
+                <span className="mono stat-users" style={{ display: 'block', fontSize: 'var(--font-xl)', fontWeight: '800', color: 'var(--success-green)' }}>{usersOnline}</span>
+                <span style={{ fontSize: 'var(--font-xs)', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px' }}>{production.metrics[0].label}</span>
+            </div>
+            <div className="card" style={{ textAlign: 'center' }}>
+                <span className="mono" style={{ display: 'block', fontSize: 'var(--font-xl)', fontWeight: '800' }}>{production.metrics[1].val}</span>
+                <span style={{ fontSize: 'var(--font-xs)', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px' }}>{production.metrics[1].label}</span>
+            </div>
+            <div className="card" style={{ textAlign: 'center' }}>
+                <span className="mono" style={{ display: 'block', fontSize: 'var(--font-xl)', fontWeight: '800' }}>{production.metrics[2].val}</span>
+                <span style={{ fontSize: 'var(--font-xs)', opacity: 0.5, textTransform: 'uppercase', letterSpacing: '1px' }}>{production.metrics[2].label}</span>
+            </div>
+        </div>
 
-      <div className="next-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--s4)', maxWidth: '1000px', width: '100%' }}>
-          <div className="next-card premium-card" style={{ padding: '30px', textAlign: 'center' }}>
-              <div style={{ fontSize: '30px', marginBottom: '15px' }}>📊</div>
-              <h4 style={{ marginBottom: '10px' }}>Monitor</h4>
-              <p style={{ fontSize: '13px', opacity: 0.6 }}>Tracking performance and health in real-time.</p>
-          </div>
-          <div className="next-card premium-card" style={{ padding: '30px', textAlign: 'center' }}>
-              <div style={{ fontSize: '30px', marginBottom: '15px' }}>📈</div>
-              <h4 style={{ marginBottom: '10px' }}>Scale</h4>
-              <p style={{ fontSize: '13px', opacity: 0.6 }}>Preparing for the next million users seamlessly.</p>
-          </div>
-          <div className="next-card premium-card" onClick={onShipAgain} style={{ padding: '30px', textAlign: 'center', cursor: 'pointer', border: '1px solid var(--accent-blue)' }}>
-              <div style={{ fontSize: '30px', marginBottom: '15px' }}>🚀</div>
-              <h4 style={{ marginBottom: '10px' }}>Ship Again</h4>
-              <p style={{ fontSize: '13px', opacity: 0.6 }}>Building the future, one commit at a time.</p>
-          </div>
+        <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+            {production.cards.map((c, i) => (
+                <div 
+                    key={i} 
+                    className="card" 
+                    onClick={i === 2 ? onShipAgain : null}
+                    style={{ 
+                        textAlign: 'center', cursor: i === 2 ? 'pointer' : 'default',
+                        borderColor: i === 2 ? 'var(--accent-blue)' : 'var(--border-color)',
+                        background: i === 2 ? 'rgba(0,209,255,0.02)' : 'var(--bg-card)'
+                    }}
+                >
+                    <div style={{ fontSize: '40px', marginBottom: '15px' }}>{c.icon}</div>
+                    <h4 style={{ marginBottom: '8px' }}>{c.title}</h4>
+                    <p style={{ fontSize: 'var(--font-sm)', opacity: 0.6 }}>{c.desc}</p>
+                    {i === 2 && <span className="pill" style={{ marginTop: '15px', display: 'inline-block', fontSize: '9px' }}>START OVER</span>}
+                </div>
+            ))}
+        </div>
       </div>
     </section>
   );

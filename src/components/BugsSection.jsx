@@ -1,18 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { devLifeStory } from '../content/devLifeStory';
 
-const BugsSection = ({ onAllSmashed }) => {
+const { bugs } = devLifeStory;
+
+const BugsSection = ({ onAllSmashed, judgeMode }) => {
   const sectionRef = useRef(null);
   const canvasRef = useRef(null);
   const [bugsSmashed, setBugsSmashed] = useState(0);
-  const [isBugAnimating, setIsBugAnimating] = useState(false);
   const bugsRef = useRef([]);
+  const bugIcons = ['🐛', '🪲', '🐜', '🕷️', '🦗'];
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationId;
+
+    const isMobile = window.innerWidth < 768;
 
     class Bug {
       constructor() {
@@ -21,33 +26,39 @@ const BugsSection = ({ onAllSmashed }) => {
       reset() {
         this.x = Math.random() * canvas.width;
         this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 5 + 3;
-        this.speedX = (Math.random() - 0.5) * 3;
-        this.speedY = (Math.random() - 0.5) * 3;
+        this.icon = bugIcons[Math.floor(Math.random() * bugIcons.length)];
+        this.size = Math.random() * 10 + (isMobile ? 30 : 20);
+        this.speedX = (Math.random() - 0.5) * (isMobile ? 2 : 4);
+        this.speedY = (Math.random() - 0.5) * (isMobile ? 2 : 4);
         this.opacity = 1;
         this.isSmashed = false;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.squashScale = 1;
       }
       update() {
         if (this.isSmashed) return;
         this.x += this.speedX;
         this.y += this.speedY;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+        this.rotation += 0.05;
+        if (this.x < 20 || this.x > canvas.width - 20) this.speedX *= -1;
+        if (this.y < 20 || this.y > canvas.height - 20) this.speedY *= -1;
       }
       draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = this.isSmashed ? 'transparent' : `rgba(255, 85, 85, ${this.opacity})`;
-        ctx.fill();
-        if (!this.isSmashed) {
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(255, 85, 85, 0.5)';
-        }
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.scale(this.squashScale, this.squashScale);
+        ctx.globalAlpha = this.opacity;
+        ctx.font = `${this.size}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.icon, 0, 0);
+        ctx.restore();
       }
     }
 
     const initBugs = () => {
-      bugsRef.current = Array.from({ length: 20 }, () => new Bug());
+      bugsRef.current = Array.from({ length: 15 }, () => new Bug());
     };
 
     const animate = () => {
@@ -60,6 +71,7 @@ const BugsSection = ({ onAllSmashed }) => {
     };
 
     const handleResize = () => {
+      if (!canvas.parentElement) return;
       canvas.width = canvas.parentElement.clientWidth;
       canvas.height = canvas.parentElement.clientHeight;
     };
@@ -69,72 +81,108 @@ const BugsSection = ({ onAllSmashed }) => {
     initBugs();
     animate();
 
-    // GSAP Scroll effect: Bugs drift up when scrolling
-    gsap.to(bugsRef.current, {
-        y: "-=200",
-        scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top center",
-            end: "bottom top",
-            scrub: 1
-        }
-    });
-
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
 
-  const handleCanvasClick = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const mx = e.clientX - rect.left;
-    const my = e.clientY - rect.top;
+  const handleInput = (e) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const isTouch = e.type === 'touchstart';
+    const clientX = isTouch ? e.touches[0].clientX : e.clientX;
+    const clientY = isTouch ? e.touches[0].clientY : e.clientY;
+    
+    const mx = clientX - rect.left;
+    const my = clientY - rect.top;
+    const hitRadius = isTouch ? 40 : 30;
 
     bugsRef.current.forEach(bug => {
-      if (!bug.isSmashed && Math.hypot(bug.x - mx, bug.y - my) < 20) {
+      if (!bug.isSmashed && Math.hypot(bug.x - mx, bug.y - my) < hitRadius) {
         bug.isSmashed = true;
         setBugsSmashed(prev => {
             const next = prev + 1;
-            if (next === 15) onAllSmashed();
+            if (next === 15) {
+                setTimeout(() => onAllSmashed && onAllSmashed(), 1200);
+            }
             return next;
         });
-        // Smashed effect
-        gsap.to(bug, { opacity: 0, size: 20, duration: 0.3 });
+        
+        gsap.to(bug, { 
+            squashScale: 2.5, 
+            opacity: 0, 
+            duration: 0.5, 
+            ease: "expo.out"
+        });
       }
     });
+
+    if (isTouch) {
+        // Prevent scrolling while squashing bugs
+        if (e.cancelable) e.preventDefault();
+    }
   };
 
   return (
-    <section id="bugs" ref={sectionRef} style={{ padding: 'var(--s5) var(--s4)', background: 'linear-gradient(180deg, rgba(255,85,85,0.05), transparent)' }}>
-      <h2 className="section-title danger" style={{ textAlign: 'center' }}>THEN CAME THE BUGS...</h2>
-      
-      <div className="debug-container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--s3)', maxWidth: '1200px', margin: '0 auto' }}>
-        <div className="left-panel">
-            <div className="code-header danger" style={{ background: 'var(--danger-red)', color: '#000', padding: '10px', borderRadius: '8px 8px 0 0', fontSize: '12px', fontWeight: '700' }}>APP.JS — BROKEN</div>
-            <div className="premium-card" style={{ padding: '20px', borderRadius: '0 0 8px 8px', minHeight: '300px', fontFamily: 'var(--font-code)', fontSize: '13px', borderTop: 'none' }}>
-{`function calculateTotal(price, tax) {
-  const total = price + ta; // SyntaxError: ta is not defined
-  return total.toFixd(2);  // TypeError: toFixd is not a fn
-}`}
-            </div>
+    <section id="bugs" ref={sectionRef} className="section" style={{ background: 'linear-gradient(180deg, rgba(255,75,75,0.03), transparent)' }}>
+      <div className="section-inner">
+        <div className="section-header">
+            <h2 className="section-title" style={{ color: 'var(--warning-red)' }}>{bugs.headline}</h2>
+            <p className="section-subtitle">{bugs.subtitle}</p>
         </div>
-
-        <div className="right-panel">
-            <div className="console-header" style={{ padding: '10px', fontSize: '12px', color: 'var(--text-muted)' }}>Console</div>
-            <div className="premium-card" style={{ padding: '20px', height: '300px', color: 'var(--danger-red)', fontFamily: 'var(--font-code)', fontSize: '12px' }}>
-                <div style={{ animation: 'glitch 0.5s infinite' }}>[ERROR] ReferenceError: ta is not defined</div>
-                <div style={{ opacity: 0.5, marginTop: '10px' }}>{'>'} Stack trace: line 2, line 15, line 42...</div>
+        
+        <div className="section-grid" style={{ position: 'relative' }}>
+            {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-30px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: INTERACTIVE_GAME_1]</div>}
+            <div className="bug-game card" style={{ padding: 0, borderStyle: 'dashed', borderColor: 'var(--warning-red)', background: 'rgba(255,75,75,0.01)' }}>
+                <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }} aria-live="polite">
+                        <span className="pill active" style={{ borderColor: 'var(--warning-red)', color: 'var(--warning-red)', background: 'var(--warning-red-glow)', fontSize: '10px' }}>
+                            BUGS: <span aria-label={`${15 - bugsSmashed} bugs remaining`}>{15 - bugsSmashed}</span>
+                        </span>
+                        <span className="pill" style={{ fontSize: '9px', opacity: 0.5 }}>Tap to Squash</span>
+                    </div>
+                    {bugsSmashed > 0 && bugsSmashed < 15 && (
+                        <button 
+                            className="mono touch-target" 
+                            onClick={() => setBugsSmashed(15)}
+                            style={{ fontSize: '9px', color: 'var(--accent-blue)', textDecoration: 'underline', border: 'none', background: 'none' }}
+                            aria-label="Squash all bugs automatically"
+                        >
+                            [AUTO_CLEAN]
+                        </button>
+                    )}
+                </div>
+                <div style={{ height: 'clamp(300px, 50vh, 400px)', position: 'relative', overflow: 'hidden' }}>
+                    {bugsSmashed >= 15 && (
+                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(5,7,10,0.95)', zIndex: 10, backdropFilter: 'blur(8px)', textAlign: 'center', padding: '20px' }}>
+                            <h3 className="mono" style={{ color: 'var(--success-green)', marginBottom: '10px' }}>BUILD SUCCESSFUL</h3>
+                            <span className="pill active" style={{ background: 'var(--success-green)', color: '#000', borderColor: 'var(--success-green)', fontSize: '10px' }}>EUREKA MOMENT INBOUND</span>
+                        </div>
+                    )}
+                    <canvas 
+                        ref={canvasRef} 
+                        onClick={handleInput} 
+                        onTouchStart={handleInput} 
+                        aria-label="Bug Squash Mini-game. Click or tap bug icons to stabilize the build."
+                        role="img"
+                        style={{ cursor: 'crosshair', display: 'block', width: '100%', height: '100%', touchAction: 'none' }} 
+                    />
+                </div>
             </div>
-        </div>
-      </div>
 
-      <div style={{ textAlign: 'center', marginTop: 'var(--s4)' }}>
-        <h3 style={{ marginBottom: '10px', color: 'var(--danger-red)' }}>CATCH THE BUGS TO SQUASH THEM!</h3>
-        <p className="bug-counter" style={{ fontFamily: 'var(--font-code)', opacity: 0.6 }}>Bugs Smashed: <span style={{ color: 'var(--danger-red)', fontWeight: '700' }}>{bugsSmashed}</span> / 15</p>
-        {bugsSmashed >= 15 && <div className="eureka-hint success" style={{ marginTop: '10px', fontSize: '12px', animation: 'pulse 1s infinite' }}>All bugs squashed! Eureka section unlocked. Scroll down!</div>}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '800px', height: '300px', margin: '20px auto', borderRadius: '12px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-            <canvas ref={canvasRef} onClick={handleCanvasClick} style={{ cursor: 'crosshair', display: 'block' }} />
+            <div className="console-panel card" style={{ padding: 0, background: '#000' }}>
+                <div style={{ background: 'var(--bg-tertiary)', padding: '12px 20px', fontSize: '11px', borderBottom: '1px solid var(--border-color)', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+                    <span>Deployment Errors</span>
+                </div>
+                <div className="mono" style={{ padding: '20px', fontSize: '11px', color: '#FF7B7B', height: 'clamp(200px, 30vh, 400px)', overflowY: 'auto' }}>
+                    {bugs.consoleErrors.map((err, i) => (
+                        <div key={i} style={{ marginBottom: '8px', opacity: 0.9 }}>▶ {err}</div>
+                    ))}
+                    <div className="cursor" style={{ width: '8px', height: '14px', background: 'var(--warning-red)', animation: 'blink 1s step-end infinite', display: 'inline-block' }} />
+                </div>
+            </div>
         </div>
       </div>
     </section>
