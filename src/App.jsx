@@ -217,19 +217,17 @@ function App() {
     );
 
     // EMERGENCY FAIL-SAFE REVEAL
-    // If GSAP context fails to trigger reveal after loading screen, force reveal after 7s.
+    // If for some reason the app feels stuck, force visibility
     const failSafeReveal = setTimeout(() => {
         const app = scrollRef.current;
-        if (app && !app.classList.contains('app-visible')) {
-            app.classList.add('app-visible');
+        if (app) {
             app.style.opacity = "1";
             app.style.visibility = "visible";
-            if (debugMode) console.log("Fail-Safe: Reveal forced via emergency timer.");
         }
-    }, 7000); // Wait 4.5s (loading) + 2.5s (reveal buffer)
+    }, 7000); 
 
     return () => clearTimeout(failSafeReveal);
-  }, [debugMode]);
+  }, []);
 
   // Easter egg: unlock legend mode when all 9 sections visited
   useEffect(() => {
@@ -315,39 +313,29 @@ function App() {
                 const app = scrollRef.current;
                 if (!app) return;
 
-                // Force layout recalculation and reveal via class list
-                app.classList.add('app-visible');
-                
-                // Reveal Sequence via GSAP too for smooth transition override
-                gsap.to(app, { 
-                    opacity: 1, 
-                    duration: 1.2,
-                    ease: "power2.out"
+            // Centralize global progress tracking
+            const progress = document.querySelector('.progress-bar');
+            if (progress) {
+                gsap.to(progress, {
+                    width: "100%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: document.body,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 0.2
+                    }
                 });
+            }
 
-                // Centralize global progress tracking
-                const progress = document.querySelector('.progress-bar');
-                if (progress) {
-                    gsap.to(progress, {
-                        width: "100%",
-                        ease: "none",
-                        scrollTrigger: {
-                            trigger: document.body,
-                            start: "top top",
-                            end: "bottom bottom",
-                            scrub: 0.2
-                        }
-                    });
-                }
-
-                // Scoped Section Batch Reveals - check for items before batching
-                const sectionTarget = self.selector(".section");
-                if (sectionTarget && sectionTarget.length > 0) {
-                    ScrollTrigger.batch(sectionTarget, {
-                        onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
-                        onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
-                    });
-                }
+            // Reveal Sequence: Smooth reveal staggered sections
+            const sectionTarget = self.selector(".section");
+            if (sectionTarget && sectionTarget.length > 0) {
+                ScrollTrigger.batch(sectionTarget, {
+                    onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
+                    onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
+                });
+            }
 
                 // Dynamic Body Background/Emotion Transitions
                 sections.forEach((section) => {
@@ -463,7 +451,7 @@ function App() {
   ];
 
   return (
-    <div ref={scrollRef} className={`app-container level-${caffeineLevel} ${zenMode ? 'zen-mode' : ''}`} style={{ opacity: 0, visibility: 'hidden' }}>
+    <div ref={scrollRef} className={`app-container level-${caffeineLevel} ${zenMode ? 'zen-mode' : ''}`}>
       {/* Loading Overlay - Fixed over content */}
       {loading && (
           <div ref={loaderRef} className="loading-screen" style={{ position: 'fixed', inset: 0, background: 'var(--bg-primary, #0A0E14)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 100000 }}>
