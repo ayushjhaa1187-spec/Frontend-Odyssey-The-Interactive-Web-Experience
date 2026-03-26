@@ -57,8 +57,11 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
       }
     }
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const bugCountVal = (isMobile || prefersReducedMotion) ? 8 : 15;
+
     const initBugs = () => {
-      bugsRef.current = Array.from({ length: 15 }, () => new Bug());
+      bugsRef.current = Array.from({ length: bugCountVal }, () => new Bug());
     };
 
     const animate = () => {
@@ -104,7 +107,7 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
         bug.isSmashed = true;
         setBugsSmashed(prev => {
             const next = prev + 1;
-            if (next === 15) {
+            if (next === bugsRef.current.length) {
                 setTimeout(() => onAllSmashed && onAllSmashed(), 1200);
             }
             return next;
@@ -139,14 +142,14 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
                 <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }} aria-live="polite">
                         <span className="pill active" style={{ borderColor: 'var(--warning-red)', color: 'var(--warning-red)', background: 'var(--warning-red-glow)', fontSize: '10px' }}>
-                            BUGS: <span aria-label={`${15 - bugsSmashed} bugs remaining`}>{15 - bugsSmashed}</span>
+                            BUGS: <span aria-label={`${bugsRef.current.length - bugsSmashed} bugs remaining`}>{bugsRef.current.length - bugsSmashed}</span>
                         </span>
                         <span className="pill" style={{ fontSize: '9px', opacity: 0.5 }}>Tap to Squash</span>
                     </div>
-                    {bugsSmashed > 0 && bugsSmashed < 15 && (
+                    {bugsSmashed > 0 && bugsSmashed < bugsRef.current.length && (
                         <button 
                             className="mono touch-target" 
-                            onClick={() => setBugsSmashed(15)}
+                            onClick={() => setBugsSmashed(bugsRef.current.length)}
                             style={{ fontSize: '9px', color: 'var(--accent-blue)', textDecoration: 'underline', border: 'none', background: 'none' }}
                             aria-label="Squash all bugs automatically"
                         >
@@ -155,7 +158,7 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
                     )}
                 </div>
                 <div style={{ height: 'clamp(300px, 50vh, 400px)', position: 'relative', overflow: 'hidden' }}>
-                    {bugsSmashed >= 15 && (
+                    {bugsSmashed >= (bugsRef.current.length || 1) && (
                         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(5,7,10,0.95)', zIndex: 10, backdropFilter: 'blur(8px)', textAlign: 'center', padding: '20px' }}>
                             <h3 className="mono" style={{ color: 'var(--success-green)', marginBottom: '10px' }}>BUILD SUCCESSFUL</h3>
                             <span className="pill active" style={{ background: 'var(--success-green)', color: '#000', borderColor: 'var(--success-green)', fontSize: '10px' }}>EUREKA MOMENT INBOUND</span>

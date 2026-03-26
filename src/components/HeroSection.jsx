@@ -28,7 +28,7 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
         .to(codeBoxRef.current, { opacity: 0.4, duration: 1.5 }, "-=0.5");
 
       // Floating doodles animation
-      gsap.to('.bracket', {
+      gsap.to(self.selector('.bracket'), {
           y: "random(-20, 20)",
           rotate: "random(-5, 5)",
           duration: "random(2, 4)",
@@ -37,15 +37,17 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
           ease: "sine.inOut"
       });
 
-      // Hero Parallax
-      gsap.to('.bracket.left', { 
-          x: 100, 
-          scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
-      });
-      gsap.to('.bracket.right', { 
-          x: -100, 
-          scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
-      });
+      // Hero Parallax - only on desktop for performance
+      if (window.innerWidth >= 768) {
+        gsap.to(self.selector('.bracket.left'), { 
+            x: 100, 
+            scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
+        });
+        gsap.to(self.selector('.bracket.right'), { 
+            x: -100, 
+            scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
+        });
+      }
 
     }, heroRef);
 
@@ -54,6 +56,7 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
 
   return (
     <section id="hero" ref={heroRef} className="section hero">
+      <div className="grid-bg" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.03, zIndex: -2 }}></div>
       <div className="bracket left" aria-hidden="true" style={{ position: 'absolute', top: '25%', left: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#123;</div>
       <div className="bracket right" aria-hidden="true" style={{ position: 'absolute', bottom: '25%', right: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#125;</div>
       
@@ -90,7 +93,6 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
         </div>
       </div>
 
-      <div className="grid-bg" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.03, zIndex: -2 }}></div>
       <div 
         ref={codeBoxRef} 
         className="mono"
@@ -114,9 +116,9 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
           padding: '10px'
         }}
       >
-        {judgeMode && <div style={{ position: 'absolute', top: '-25px', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', whiteSpace: 'nowrap' }}>[REQ: INTERACTIVE_ELEMENT_1]</div>}
         {hero.initCode}
       </div>
+      {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 20 }}>[REQ: INTERACTIVE_ELEMENT_1]</div>}
     </section>
   );
 };

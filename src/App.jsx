@@ -140,31 +140,36 @@ function App() {
             });
         });
 
+        const isMobile = window.innerWidth < 768;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Background Blobs Floating - only on desktop and if motion is preferred
+        if (!isMobile && !prefersReducedMotion) {
+            gsap.to(self.selector('.blob-1'), {
+                x: "random(-100, 100)",
+                y: "random(-100, 100)",
+                duration: "random(10, 20)",
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+            gsap.to(self.selector('.blob-2'), {
+                x: "random(-100, 100)",
+                y: "random(-100, 100)",
+                duration: "random(10, 20)",
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut"
+            });
+        }
+
         // Bobbing Scroll Indicator
-        gsap.to('.mouse', {
+        gsap.to(self.selector('.mouse'), {
             y: 8,
             duration: 1.5,
             repeat: -1,
             yoyo: true,
             ease: "power1.inOut"
-        });
-
-        // Background Blobs Floating
-        gsap.to('.blob-1', {
-            x: "random(-100, 100)",
-            y: "random(-100, 100)",
-            duration: "random(10, 20)",
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
-        });
-        gsap.to('.blob-2', {
-            x: "random(-100, 100)",
-            y: "random(-100, 100)",
-            duration: "random(10, 20)",
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut"
         });
 
         // Hide scroll indicator on scroll

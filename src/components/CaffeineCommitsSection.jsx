@@ -31,22 +31,32 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
             }
         });
 
-        // Jitter logic
+        // Jitter logic - tuned for performance/a11y
+        const isMobile = window.innerWidth < 768;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
         if (level === 3) {
+            // Simplified jitter for a11y or mobile
+            const amp = prefersReducedMotion ? 1 : (isMobile ? 2 : 4);
+            const dur = prefersReducedMotion ? 0.3 : 0.05;
+
             gsap.to(avatarRef.current, {
-                x: "random(-4, 4)",
-                y: "random(-4, 4)",
-                duration: 0.05,
+                x: `random(-${amp}, ${amp})`,
+                y: `random(-${amp}, ${amp})`,
+                duration: dur,
                 repeat: -1,
                 yoyo: true,
                 ease: "none"
             });
-            gsap.to(self.selector(".section-inner"), {
-                x: "random(-1, 1)",
-                duration: 0.1,
-                repeat: -1,
-                yoyo: true
-            });
+
+            if (!isMobile && !prefersReducedMotion) {
+                gsap.to(self.selector(".section-inner"), {
+                    x: "random(-1, 1)",
+                    duration: 0.1,
+                    repeat: -1,
+                    yoyo: true
+                });
+            }
         } else {
             gsap.killTweensOf(avatarRef.current);
             gsap.killTweensOf(self.selector(".section-inner"));
