@@ -125,7 +125,6 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
         {hero.initCode}
       </div>
       {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', bottom: '15%', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 20 }} aria-hidden="true">[REQ: INTERACTIVE_ELEMENT_1]</div>}
-      <div className="scroll-indicator" aria-hidden="true" />
     </section>
   );
 };

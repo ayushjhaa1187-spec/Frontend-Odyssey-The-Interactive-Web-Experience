@@ -264,3 +264,22 @@ input:focus-visible {
   background: transparent !important;
   color: var(--accent-blue) !important;
 }
+.main-scroll-indicator {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 100;
+  opacity: 0; /* JS reveals this */
+}
+
+/* Visibility fail-safe */
+.app-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: opacity 1.5s ease;
+}
