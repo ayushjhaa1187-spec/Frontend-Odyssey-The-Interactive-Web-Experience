@@ -7,7 +7,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 const { deadline } = devLifeStory;
 
-// ... (keep previous code)
+const developerWisdom = [
+  { quote: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+  { quote: "Make it work, make it right, make it fast — in that order.", author: "Kent Beck" },
+  { quote: "There are two hard things in computer science: cache invalidation, naming things, and off-by-one errors.", author: "Phil Karlton" },
+  { quote: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" }
+];
 
 const DeadlineSection = ({ judgeMode }) => {
   const sectionRef = useRef(null);
