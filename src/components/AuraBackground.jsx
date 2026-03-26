@@ -47,7 +47,8 @@ const AuraBackground = ({ activeSection, emotionColor }) => {
         className="aura-container" 
         style={{ 
             position: 'fixed', inset: 0, zIndex: -1, 
-            background: 'var(--bg-black)', overflow: 'hidden',
+            background: '#05070a', // Solid foundation for the aura
+            overflow: 'hidden',
             pointerEvents: 'none' 
         }}
     >

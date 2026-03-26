@@ -286,21 +286,24 @@ function App() {
   }, [typedChars, announce]);
 
   useLayoutEffect(() => {
-    if (loading) return;
-
     let ctx;
-    // Small delay to ensure all child components have been fully hydrated and mounted in the DOM
-    const timer = setTimeout(() => {
+    
+    // Once loading is false, the app-container is guaranteed to be in the DOM
+    if (!loading) {
         ctx = gsap.context((self) => {
-            // Force visibility of the main app container immediately
             const app = scrollRef.current;
-            if (app) {
-                gsap.set(app, { 
-                  opacity: 1, 
-                  visibility: 'visible',
-                  clearProps: "all" // Ensure it doesn't get stuck at opacity 0
-                });
-            }
+            if (!app) return;
+
+            // Reveal Sequence: Fade out loader (handled by React state anyway) + Fade in App
+            gsap.to(app, { 
+                opacity: 1, 
+                visibility: 'visible',
+                duration: 1,
+                ease: "power2.out",
+                onComplete: () => {
+                    gsap.set(app, { clearProps: "opacity,visibility" });
+                }
+            });
 
             // Centralize global progress tracking
             const progress = document.querySelector('.progress-bar');
@@ -328,7 +331,7 @@ function App() {
 
             // Dynamic Body Background/Emotion Transitions
             sections.forEach((section) => {
-                let bgColor = "var(--bg-primary)";
+                let bgColor = "var(--bg-primary, #0A0E14)";
                 if (section.id === 'bugs') bgColor = "#0A050F";
                 if (section.id === 'deadline') bgColor = "#0F0505";
                 if (section.id === 'production') bgColor = "#050F08";
@@ -398,11 +401,10 @@ function App() {
                 });
             }
 
-        }, scrollRef); // Scope strictly to app-container
-    }, 150);
+        }, scrollRef);
+    }
 
     return () => {
-        clearTimeout(timer);
         if (ctx) ctx.revert();
     };
   }, [loading, motionEnabled]);
@@ -442,31 +444,30 @@ function App() {
     }, 1200);
   };
 
-  if (loading) {
-    const jokes = [
-        "INITIALIZING ODYSSEY...",
-        "MINIFYING SPAGHETTI CODE...",
-        "IMPORTING STACKOVERFLOW...",
-        "CENTERING THE DIV...",
-        "REMOVING UNDEFINED...",
-        "UPDATING DEPS (3000 ERRORS)..."
-    ];
-
-    return (
-      <div className="loading-screen" style={{ height: '100vh', width: '100%', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 99999, position: 'fixed' }}>
-        <div ref={loaderRef} style={{ fontSize: '100px', marginBottom: '40px', filter: 'drop-shadow(0 0 20px var(--accent-blue-glow))' }}>🚀</div>
-        <div style={{ width: '240px', height: '2px', background: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', borderRadius: '4px' }}>
-            <div style={{ position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%', background: 'var(--accent-blue)', animation: 'loading 1.5s infinite linear' }} />
-        </div>
-        <div ref={jokeRef} className="mono" style={{ marginTop: '24px', fontSize: '10px', color: 'var(--accent-blue)', letterSpacing: '2px', textTransform: 'uppercase', height: '14px', textAlign: 'center' }}>
-            {jokes[0]}
-        </div>
-      </div>
-    );
-  }
+  const loadingJokes = [
+    "INITIALIZING ODYSSEY...",
+    "MINIFYING SPAGHETTI CODE...",
+    "IMPORTING STACKOVERFLOW...",
+    "CENTERING THE DIV...",
+    "REMOVING UNDEFINED...",
+    "UPDATING DEPS (3000 ERRORS)..."
+  ];
 
   return (
-    <div className={`app-container level-${caffeineLevel}`} ref={scrollRef}>
+    <div ref={scrollRef} className={`app-container level-${caffeineLevel} ${zenMode ? 'zen-mode' : ''}`} style={{ opacity: 0, visibility: 'hidden' }}>
+      {/* Loading Overlay - Fixed over content */}
+      {loading && (
+          <div ref={loaderRef} className="loading-screen" style={{ position: 'fixed', inset: 0, background: 'var(--bg-primary, #0A0E14)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 100000 }}>
+             <div style={{ fontSize: '100px', marginBottom: '40px', filter: 'drop-shadow(0 0 20px var(--accent-blue-glow))' }}>🚀</div>
+             <div style={{ width: '240px', height: '2px', background: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', borderRadius: '4px' }}>
+                <div style={{ position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%', background: 'var(--accent-blue)', animation: 'loading 1.5s infinite linear' }} />
+             </div>
+             <div ref={jokeRef} className="mono" style={{ marginTop: '24px', fontSize: '10px', color: 'var(--accent-blue)', letterSpacing: '2px', textTransform: 'uppercase', height: '14px', textAlign: 'center' }}>
+                {loadingJokes[0]}
+             </div>
+          </div>
+      )}
+
       {/* Caffeine Global Effects Layer */}
       <div 
         className="caffeine-overlay" 
