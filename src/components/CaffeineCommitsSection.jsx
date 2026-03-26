@@ -90,7 +90,8 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
                     {level === 0 ? '😴' : (level === 3 ? '🤪' : '👨‍💻')}
                 </div>
                 
-                <h4 className="mono" id="caffeine-heading" style={{ textTransform: 'uppercase', fontSize: 'var(--font-xs)', letterSpacing: '2px', opacity: 0.6, marginBottom: '20px' }}>CAFFEINE PROTOCOL</h4>
+                <h4 className="mono" id="caffeine-heading" style={{ textTransform: 'uppercase', fontSize: 'var(--font-xs)', letterSpacing: '2px', opacity: 0.6 }}>CAFFEINE PROTOCOL</h4>
+                <div className="mono" style={{ fontSize: '9px', opacity: 0.5, marginBottom: '20px', letterSpacing: '1px' }}>{caffeine.instructions}</div>
                 <div style={{ position: 'relative' }}>
                     <div className="fuel-buttons" role="radiogroup" aria-labelledby="caffeine-heading" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
                         {levels.map((l, i) => (

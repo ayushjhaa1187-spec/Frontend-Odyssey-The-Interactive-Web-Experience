@@ -59,10 +59,13 @@ const DeadlineSection = ({ judgeMode }) => {
             <h2 className="section-title" style={{ color: '#FF4B4B', textShadow: `0 0 ${panicLevel/2}px rgba(255,75,75,0.4)` }}>{deadline.headline}</h2>
             
             <div className="panic-slider-wrapper card" style={{ maxWidth: '350px', margin: '20px auto 0', padding: '12px 20px', background: 'rgba(255,0,0,0.05)', borderStyle: 'dotted' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', position: 'relative' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>
                     {judgeMode && <div style={{ position: 'absolute', top: '-25px', right: 0, color: 'var(--accent-pink)', fontSize: '8px' }}>[REQ: INTERACTIVE_ELEMENT_2]</div>}
-                    <label htmlFor="panic-slider" className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }}>PANITY LEVEL:</label>
-                    <span className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }} aria-live="polite">{panicLevel}%</span>
+                    <div className="mono" style={{ fontSize: '9px', opacity: 0.5, textAlign: 'center', letterSpacing: '1px', marginBottom: '4px' }}>{deadline.instructions}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <label htmlFor="panic-slider" className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }}>PANIC LEVEL:</label>
+                        <span className="mono" style={{ fontSize: '10px', color: 'var(--warning-red)' }} aria-live="polite">{panicLevel}%</span>
+                    </div>
                 </div>
                 <input 
                     id="panic-slider"

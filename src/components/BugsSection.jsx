@@ -140,11 +140,11 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
             {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-30px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: INTERACTIVE_GAME_1]</div>}
             <div className="bug-game card" style={{ padding: 0, borderStyle: 'dashed', borderColor: 'var(--warning-red)', background: 'rgba(255,75,75,0.01)' }}>
                 <div style={{ padding: '15px 20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }} aria-live="polite">
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }} aria-live="polite">
                         <span className="pill active" style={{ borderColor: 'var(--warning-red)', color: 'var(--warning-red)', background: 'var(--warning-red-glow)', fontSize: '10px' }}>
                             BUGS: <span aria-label={`${bugsRef.current.length - bugsSmashed} bugs remaining`}>{bugsRef.current.length - bugsSmashed}</span>
                         </span>
-                        <span className="pill" style={{ fontSize: '9px', opacity: 0.5 }}>Tap to Squash</span>
+                        <div className="mono" style={{ fontSize: '10px', opacity: 0.6, letterSpacing: '1px' }}>{bugs.instructions}</div>
                     </div>
                     {bugsSmashed > 0 && bugsSmashed < bugsRef.current.length && (
                         <button 

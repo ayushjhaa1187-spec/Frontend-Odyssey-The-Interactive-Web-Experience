@@ -1,9 +1,9 @@
 export const devLifeStory = {
   hero: {
     badge: "The Developer's Journey",
-    headline: "From hello-world to sudo shipping",
-    subtitle: "A humorous, scroll-driven odyssey through caffeine, chaos, and the occasional breakthrough that keeps us sane.",
-    cta: "Start Your Story →",
+    headline: "From Hello World to Production Zen",
+    subtitle: "A humorous, scroll-driven odyssey through the caffeine, chaos, and occasional breakthroughs of building for the web.",
+    cta: "Begin the Journey →",
     jokes: [
         "// Why do programmers wear glasses? Because they don't C#.",
         "// Real programmers count from 0.",
@@ -14,7 +14,7 @@ export const devLifeStory = {
     initCode: `// Initializing life...\nconst developer = new Human();\ndeveloper.startCoding();`
   },
   learning: {
-    headline: "Phase 1: The Tutorial Hell",
+    headline: "PHASE 1: TUTORIAL HELL",
     subtitle: "I have 47 tabs open, and I've never felt more alive—nor more confused. Documentation is the enemy.",
     milestones: [
         { id: 0, icon: '💻', title: 'Day 1: Hello World', desc: 'Simple, elegant, life-changing. You think you’re a god already.', stats: 'Confidence: 100%\nActual Skill: 1%' },
@@ -25,14 +25,14 @@ export const devLifeStory = {
     ],
     modal: {
         title: "The Spark of Creation",
-        text: "Every developer remembers their first line of code. It's the moment the computer first spoke back to you and you realized you could build anything... given enough StackOverflow answers.",
+        text: "Every developer remembers their first line of code. It's the moment the computer first spoke back and you realized you could build anything.",
         btn: "ENGAGE GRIND MODE"
     }
   },
   bugs: {
-    headline: "THEN CAME THE BUGS...",
+    headline: "PHASE 2: THE BUG INFESTATION",
     subtitle: "It worked on my machine™. Now it's a living nightmare of undefined variables and broken dreams.",
-    instructions: "SQUASH 15 BUGS TO RESTORE SANITY!",
+    instructions: "TAP ANY BUG TO SQUASH IT!",
     consoleErrors: [
         "[ERROR] ReferenceError: commonSense is not defined",
         "[ERROR] TypeError: 'productivity' is read-only",
@@ -42,19 +42,20 @@ export const devLifeStory = {
     ]
   },
   eureka: {
-    headline: "Eureka! It (barely) works! 🎉",
-    subtitle: "The bug wasn't the code. It was a missing semicolon and my own hubris. Let's optimize.",
+    headline: "PHASE 3: THE EUREKA MOMENT",
+    subtitle: "The bug wasn't the code. It was a missing semicolon and my own hubris. Relief at last.",
     messages: [
         "Optimization: 40% less memory (by removing the UI)",
         "Refactoring: Making it pretty before I break it again",
         "Pride: Increased by 1000% until next commit",
         "Confidence: Successfully copied from a 2014 blog post"
     ],
-    hint: "Hint: Toggle Debug Mode for visual therapy"
+    hint: "TOGGLE DEBUG MODE FOR VISUAL THERAPY"
   },
   deadline: {
-    headline: "THE DEADLINE IS APPROACHING...",
-    subtitle: "Panic sets in. The feature list is shrinking, but the bug count is growing. 3 days left to ship.",
+    headline: "PHASE 4: THE COUNTDOWN",
+    subtitle: "Panic sets in. The feature list is shrinking, but the bug count is growing. Time to ship or die.",
+    instructions: "DRAG SLIDER TO SEE PANIC INTENSIFY",
     steps: [
         { title: 'Day -3', sub: 'Merge features (Prayers sent)', icon: '🙏', id: 0 },
         { title: 'Day -2', sub: 'Review: 400 comments on one PR', icon: '📝', id: 1 },
@@ -64,8 +65,9 @@ export const devLifeStory = {
     ]
   },
   caffeine: {
-    headline: "Coping Mechanisms",
-    subtitle: "Turning expensive roasted beans into lines of complex, unmaintainable logic since [STARDATE].",
+    headline: "PHASE 5: CAFFEINE PROTOCOL",
+    subtitle: "Turning expensive roasted beans into lines of complex, unmaintainable logic. Persistence is key.",
+    instructions: "SELECT DOSAGE TO REGULATE JITTER",
     commits: [
         { id: 1, message: "fix: resolved issue with logic (don't ask)", time: "1h ago" },
         { id: 2, message: "style: added more glassmorphism because why not", time: "3h ago" },
@@ -75,9 +77,9 @@ export const devLifeStory = {
     ]
   },
   shipping: {
-    headline: "THE SHIPPING PHASE",
-    subtitle: "The build is green. The tests are (mostly) passing. Time to release this chaotic masterpiece into the world.",
-    btn: "SHIP IT 🚀",
+    headline: "PHASE 6: DEPLOYMENT STRESS",
+    subtitle: "The build is green. The tests are (mostly) passing. Adrenaline peaks as you hit the button.",
+    btn: "PRESS TO SHIP 🚀",
     logs: [
         "[INFO] Initializing production build...",
         "[INFO] Minifying spaghetti code...",
@@ -90,28 +92,35 @@ export const devLifeStory = {
     ]
   },
   production: {
-    headline: "Production Deployed!",
-    subtitle: "Your application is now globally distributed. You are a digital architect. You are also very tired.",
+    headline: "PHASE 7: PRODUCTION LIVE",
+    subtitle: "The world is using your code. Satisfaction at 99%. Anxiety at 100%. You are the architect.",
     metrics: [
         { label: "Users Online", val: 1 },
         { label: "Uptime", val: "99.9%" },
         { label: "Coffee Consumed", val: "∞" }
     ],
     cards: [
-        { icon: "📊", title: "Monitor", desc: "Watching the logs for the inevitable crash." },
-        { icon: "📈", title: "Scale", desc: "Preparing for the 3 users we expect total." },
-        { icon: "🚀", title: "Ship Again", desc: "The cycle calls. Answer the call." }
+        { icon: "📊", title: "Monitor", desc: "Watching logs for the crash." },
+        { icon: "📈", title: "Scale", desc: "Preparing for the 3 users total." },
+        { icon: "🚀", title: "Ship Again", desc: "The cycle calls. Answer it." }
     ]
   },
   loop: {
-    headline: "And Then... It All Begins Again",
-    subtitle: "This isn't the end. It's just the beginning of Version 2.0. New features, new challenges, new reasons to cry at 3 AM.",
+    headline: "PHASE ∞: THE DEVELOPER'S LOOP",
+    subtitle: "This isn't the end. It's just the beginning of Version 2.0. The cycle of creation and regret.",
     tiles: [
         { label: "LEARN", text: "New frameworks every Tuesday", icon: "📚" },
         { label: "BUILD", text: "Turning bugs into features", icon: "🛠️" },
         { label: "SHIP", text: "Release, regret, repeat", icon: "🚀" },
         { label: "SLEEP", text: "Error 404: Not Found", icon: "🛌" }
     ],
-    btn: "Reload the Journey ↻"
+    btn: "RELOAD REALITY ↻",
+    footerMsg: "And Then... It All Begins Again",
+    jokes: [
+        "// Code written at 3 AM is actually poetry.",
+        "// A developer's true home is the console.log() output.",
+        "// I have no idea why this works. Do not touch.",
+        "// It's not a bug, it's an undocumented feature."
+    ]
   }
 };
