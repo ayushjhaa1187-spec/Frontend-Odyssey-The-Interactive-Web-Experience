@@ -50,12 +50,12 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode }) => {
   };
 
   return (
-    <section id="production" ref={sectionRef} className="section">
+    <section id="production" ref={sectionRef} className="section theme-green">
       <div className="section-inner" style={{ position: 'relative' }}>
         {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: LIVE_STAT_COUNTER]</div>}
         <div className="section-header">
-            <h2 className="section-title" style={{ color: 'var(--success-green)' }}>{production.headline}</h2>
-            <p className="section-subtitle">{production.subtitle} <span className="pill active" style={{ marginLeft: '10px', fontSize: '10px', background: 'var(--success-green-glow)', color: 'var(--success-green)', borderColor: 'var(--success-green)' }}>LIVE</span></p>
+            <h2 className="section-title">{production.headline}</h2>
+            <p className="section-subtitle">{production.subtitle} <span className="pill active" style={{ marginLeft: '10px' }}>LIVE</span></p>
         </div>
         
         <div className="section-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginBottom: 'var(--space-4)' }}>

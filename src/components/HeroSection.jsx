@@ -55,7 +55,7 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
   }, []);
 
   return (
-    <section id="hero" ref={heroRef} className="section hero">
+    <section id="hero" ref={heroRef} className="section hero theme-blue">
       <div className="grid-bg" aria-hidden="true" style={{ position: 'absolute', inset: 0, opacity: 0.03, zIndex: -2 }}></div>
       <div className="bracket left" aria-hidden="true" style={{ position: 'absolute', top: '25%', left: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#123;</div>
       <div className="bracket right" aria-hidden="true" style={{ position: 'absolute', bottom: '25%', right: '8%', fontSize: 'min(15vw, 250px)', opacity: 0.05, zIndex: -1, userSelect: 'none' }}>&#125;</div>
@@ -68,7 +68,7 @@ const HeroSection = ({ onStartClick, judgeMode }) => {
               <span role="img" aria-label="Rocket">🚀</span> {hero.badge}
            </span>
           <h1 className="section-title" ref={titleRef} style={{ opacity: 0, transform: 'translateY(50px)', fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}>
-            <span style={{ color: 'var(--accent-blue)', textShadow: '0 0 30px var(--accent-blue-glow)' }}>{hero.headline.split(' ').slice(0, 1)}</span> {hero.headline.split(' ').slice(1).join(' ')}
+            <span style={{ color: 'var(--accent-blue)' }}>{hero.headline.split(' ').slice(0, 1)}</span> {hero.headline.split(' ').slice(1).join(' ')}
           </h1>
           <p className="section-subtitle" ref={pRef} style={{ opacity: 0, transform: 'translateY(30px)', maxWidth: '600px', margin: '0 auto var(--space-4)' }}>
             {hero.subtitle}

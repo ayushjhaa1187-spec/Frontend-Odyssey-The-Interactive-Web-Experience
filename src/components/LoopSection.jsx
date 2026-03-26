@@ -37,11 +37,11 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
   }, []);
 
   return (
-    <section id="loop" ref={sectionRef} className="section" style={{ background: 'var(--bg-primary)' }}>
+    <section id="loop" ref={sectionRef} className="section theme-pink">
       <div className="section-inner" style={{ textAlign: 'center', position: 'relative' }}>
         {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-20px', right: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: NARRATIVE_STORY_LOOP]</div>}
         <div className="section-header">
-            <h2 className="section-title" style={{ color: 'var(--accent-pink)' }}>{loop.headline}</h2>
+            <h2 className="section-title">{loop.headline}</h2>
             <p className="section-subtitle">{loop.subtitle}</p>
         </div>
 

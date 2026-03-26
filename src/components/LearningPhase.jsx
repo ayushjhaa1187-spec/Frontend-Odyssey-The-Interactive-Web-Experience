@@ -82,7 +82,7 @@ const LearningPhase = ({ judgeMode }) => {
   }, [expandedIndex]);
 
   return (
-    <section id="learning" ref={sectionRef} className="section" style={{ overflow: 'hidden', paddingBottom: '30vh' }}>
+    <section id="learning" ref={sectionRef} className="section theme-blue" style={{ overflow: 'hidden', paddingBottom: '30vh' }}>
       {/* Parallax Background */}
       <div 
         ref={bgCodeRef} 

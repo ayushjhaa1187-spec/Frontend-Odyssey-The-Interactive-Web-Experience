@@ -75,10 +75,10 @@ const ShippingPhaseSection = ({ onShip, judgeMode }) => {
   };
 
   return (
-    <section id="shipping" ref={sectionRef} className="section" style={{ border: 'none' }}>
+    <section id="shipping" ref={sectionRef} className="section theme-green" style={{ border: 'none' }}>
       <div className="section-inner">
         <div className="section-header">
-            <h2 className="section-title" style={{ color: 'var(--success-green)' }}>{shipping.headline}</h2>
+            <h2 className="section-title">{shipping.headline}</h2>
             <p className="section-subtitle">{shipping.subtitle}</p>
         </div>
         

@@ -52,11 +52,11 @@ const DeadlineSection = ({ judgeMode }) => {
   }, [steps.length, panicLevel]);
 
   return (
-    <section id="deadline" ref={sectionRef} className="section" style={{ border: 'none', background: 'transparent' }}>
+    <section id="deadline" ref={sectionRef} className="section theme-red" style={{ border: 'none', background: 'transparent' }}>
       <div className="section-inner" ref={containerRef} style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
         <div className="section-header" style={{ position: 'absolute', top: '10vh', left: '0', right: '0', zIndex: 10 }}>
             {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px' }}>[REQ: PINNED_SCROLLYTELLING]</div>}
-            <h2 className="section-title" style={{ color: '#FF4B4B', textShadow: `0 0 ${panicLevel/2}px rgba(255,75,75,0.4)` }}>{deadline.headline}</h2>
+            <h2 className="section-title">{deadline.headline}</h2>
             
             <div className="panic-slider-wrapper card" style={{ maxWidth: '350px', margin: '20px auto 0', padding: '12px 20px', background: 'rgba(255,0,0,0.05)', borderStyle: 'dotted' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', position: 'relative' }}>

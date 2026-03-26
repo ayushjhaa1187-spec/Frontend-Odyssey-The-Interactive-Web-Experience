@@ -56,11 +56,11 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode }) => {
   };
 
   return (
-    <section id="eureka" ref={sectionRef} className="section" style={{ background: 'linear-gradient(180deg, transparent, rgba(0,255,148,0.03))' }}>
+    <section id="eureka" ref={sectionRef} className="section theme-green">
       <div className="section-inner" style={{ position: 'relative' }}>
         {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: DEBUG_MODE_TOGGLE]</div>}
         <div className="section-header">
-            <h2 className="section-title" style={{ color: 'var(--success-green)', textShadow: '0 0 20px rgba(0,255,148,0.2)' }}>{eureka.headline}</h2>
+            <h2 className="section-title">{eureka.headline}</h2>
             <p className="section-subtitle">{eureka.subtitle}</p>
         </div>
         

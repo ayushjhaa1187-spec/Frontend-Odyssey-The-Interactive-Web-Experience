@@ -129,10 +129,10 @@ const BugsSection = ({ onAllSmashed, judgeMode }) => {
   };
 
   return (
-    <section id="bugs" ref={sectionRef} className="section" style={{ background: 'linear-gradient(180deg, rgba(255,75,75,0.03), transparent)' }}>
+    <section id="bugs" ref={sectionRef} className="section theme-red">
       <div className="section-inner">
         <div className="section-header">
-            <h2 className="section-title" style={{ color: 'var(--warning-red)' }}>{bugs.headline}</h2>
+            <h2 className="section-title">{bugs.headline}</h2>
             <p className="section-subtitle">{bugs.subtitle}</p>
         </div>
         

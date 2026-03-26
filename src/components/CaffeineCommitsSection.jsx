@@ -69,11 +69,11 @@ const CaffeineCommitsSection = ({ judgeMode }) => {
   }, [level]);
 
   return (
-    <section id="caffeine" ref={sectionRef} className="section" style={{ background: level === 3 ? 'rgba(0,209,255,0.02)' : 'transparent', border: 'none' }}>
+    <section id="caffeine" ref={sectionRef} className="section theme-blue" style={{ border: 'none' }}>
       <div className="section-inner" style={{ position: 'relative' }}>
         {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: DYNAMIC_CAFFEINE_METER]</div>}
         <div className="section-header">
-            <h2 className="section-title" style={{ transition: 'color 0.4s' }}>{caffeine.headline}</h2>
+            <h2 className="section-title">{caffeine.headline}</h2>
             <p className="section-subtitle">{caffeine.subtitle}</p>
         </div>
 
