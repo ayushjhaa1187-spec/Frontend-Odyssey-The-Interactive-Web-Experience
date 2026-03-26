@@ -23,6 +23,12 @@ import LoopSection from './components/LoopSection';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, TextPlugin);
 
+// Defensive Check: Ensure plugins are registered before any hooks run
+if (typeof window !== 'undefined') {
+    if (!ScrollTrigger) console.error("FATAL: ScrollTrigger failed to register.");
+    if (!ScrollToPlugin) console.error("FATAL: ScrollToPlugin failed to register.");
+}
+
 const sections = [
     { id: 'hero', label: 'Dream' },
     { id: 'learning', label: 'Grind' },
@@ -309,33 +315,35 @@ function App() {
     if (!loading) {
         // 300ms delay is safe for production hydration/mounting stabilization
         const timer = setTimeout(() => {
-            ctx = gsap.context((self) => {
-                const app = scrollRef.current;
-                if (!app) return;
+            const app = scrollRef.current;
+            if (!app) return;
 
-            // Centralize global progress tracking
-            const progress = document.querySelector('.progress-bar');
-            if (progress) {
-                gsap.to(progress, {
-                    width: "100%",
-                    ease: "none",
-                    scrollTrigger: {
-                        trigger: document.body,
-                        start: "top top",
-                        end: "bottom bottom",
-                        scrub: 0.2
-                    }
-                });
-            }
+            ctx = gsap.context(() => {
+                const q = gsap.utils.selector(app);
 
-            // Reveal Sequence: Smooth reveal staggered sections
-            const sectionTarget = self.selector(".section");
-            if (sectionTarget && sectionTarget.length > 0) {
-                ScrollTrigger.batch(sectionTarget, {
-                    onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
-                    onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
-                });
-            }
+                // Centralize global progress tracking
+                const progress = document.querySelector('.progress-bar');
+                if (progress) {
+                    gsap.to(progress, {
+                        width: "100%",
+                        ease: "none",
+                        scrollTrigger: {
+                            trigger: document.body,
+                            start: "top top",
+                            end: "bottom bottom",
+                            scrub: 0.2
+                        }
+                    });
+                }
+
+                // Reveal Sequence: Smooth reveal staggered sections
+                const sectionTarget = q(".section");
+                if (sectionTarget && sectionTarget.length > 0) {
+                    ScrollTrigger.batch(sectionTarget, {
+                        onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
+                        onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
+                    });
+                }
 
                 // Dynamic Body Background/Emotion Transitions
                 sections.forEach((section) => {
@@ -364,15 +372,15 @@ function App() {
 
                 // Background Atmospheric Effects
                 if (!isMobile && !prefersReducedMotion && motionEnabled) {
-                    const b1 = self.selector('.blob-1');
-                    const b2 = self.selector('.blob-2');
+                    const b1 = q('.blob-1');
+                    const b2 = q('.blob-2');
                     if (b1.length) gsap.to(b1, { x: "random(-100, 100)", y: "random(-100, 100)", duration: "random(10, 20)", repeat: -1, yoyo: true, ease: "sine.inOut" });
                     if (b2.length) gsap.to(b2, { x: "random(-100, 100)", y: "random(-100, 100)", duration: "random(10, 20)", repeat: -1, yoyo: true, ease: "sine.inOut" });
                 }
 
                 // Interactive Indicators
                 if (motionEnabled && !prefersReducedMotion) {
-                    const mouseEl = self.selector('.mouse');
+                    const mouseEl = q('.mouse');
                     if (mouseEl.length) {
                         gsap.to(mouseEl, {
                             y: 8,
