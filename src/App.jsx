@@ -288,97 +288,115 @@ function App() {
   useEffect(() => {
     if (loading) return;
 
-    let ctx = gsap.context(() => {
-        // Initial reveal
-        gsap.set('.app-container', { opacity: 1 });
-        // Global Progress Bar
-        gsap.to('.progress-bar', {
-            width: "100%",
-            ease: "none",
-            scrollTrigger: {
-                trigger: "body",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.2
+    // Use a small timeout to ensure DOM is fully rendered before GSAP scans the page
+    const timer = setTimeout(() => {
+        let ctx = gsap.context((self) => {
+            // Reveal App with safety guard
+            const app = document.querySelector('.app-container');
+            if (app) gsap.set(app, { opacity: 1, visibility: 'visible' });
+
+            const progress = document.querySelector('.progress-bar');
+            if (progress) {
+                gsap.to(progress, {
+                    width: "100%",
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: document.body,
+                        start: "top top",
+                        end: "bottom bottom",
+                        scrub: 0.2
+                    }
+                });
             }
-        });
 
-        // Section Reveal Batch
-        ScrollTrigger.batch(".section", {
-            onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
-            onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
-        });
+            // Section Reveal Batch
+            const sectionTarget = document.querySelectorAll(".section");
+            if (sectionTarget.length > 0) {
+                ScrollTrigger.batch(sectionTarget, {
+                    onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
+                    onLeaveBack: batch => gsap.to(batch, { opacity: 0.1, y: 40, overwrite: true })
+                });
+            }
 
-        // Body Background & Active Section Tracking
-        sections.forEach((section) => {
-            let bgColor = "var(--bg-primary)";
-            if (section.id === 'bugs') bgColor = "#0A050F";
-            if (section.id === 'deadline') bgColor = "#0F0505";
-            if (section.id === 'production') bgColor = "#050F08";
+            // Body Background & Active Section Tracking
+            sections.forEach((section) => {
+                let bgColor = "var(--bg-primary)";
+                if (section.id === 'bugs') bgColor = "#0A050F";
+                if (section.id === 'deadline') bgColor = "#0F0505";
+                if (section.id === 'production') bgColor = "#050F08";
 
-            ScrollTrigger.create({
-                trigger: `#${section.id}`,
-                start: "top center",
-                end: "bottom center",
-                onEnter: () => {
-                    setActiveSection(section.id);
-                    gsap.to("body", { backgroundColor: bgColor, duration: 2, ease: "power2.inOut" });
-                },
-                onEnterBack: () => {
-                    setActiveSection(section.id);
-                    gsap.to("body", { backgroundColor: bgColor, duration: 2, ease: "power2.inOut" });
+                ScrollTrigger.create({
+                    trigger: `#${section.id}`,
+                    start: "top center",
+                    end: "bottom center",
+                    onEnter: () => {
+                        setActiveSection(section.id);
+                        gsap.to(document.body, { backgroundColor: bgColor, duration: 2, ease: "power2.inOut" });
+                    },
+                    onEnterBack: () => {
+                        setActiveSection(section.id);
+                        gsap.to(document.body, { backgroundColor: bgColor, duration: 2, ease: "power2.inOut" });
+                    }
+                });
+            });
+
+            const isMobile = window.innerWidth < 768;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // Background Blobs Floating
+            if (!isMobile && !prefersReducedMotion && motionEnabled) {
+                gsap.to(self.selector('.blob-1'), {
+                    x: "random(-100, 100)",
+                    y: "random(-100, 100)",
+                    duration: "random(10, 20)",
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+                gsap.to(self.selector('.blob-2'), {
+                    x: "random(-100, 100)",
+                    y: "random(-100, 100)",
+                    duration: "random(10, 20)",
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut"
+                });
+            }
+
+            // Bobbing Scroll Indicator
+            if (motionEnabled && !prefersReducedMotion) {
+                const mouseEl = self.selector('.mouse');
+                if (mouseEl.length) {
+                    gsap.to(mouseEl, {
+                        y: 8,
+                        duration: 1.5,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "power1.inOut"
+                    });
                 }
-            });
-        });
-
-        const isMobile = window.innerWidth < 768;
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-        // Background Blobs Floating - only on desktop and if motion is enabled
-        if (!isMobile && !prefersReducedMotion && motionEnabled) {
-            gsap.to(self.selector('.blob-1'), {
-                x: "random(-100, 100)",
-                y: "random(-100, 100)",
-                duration: "random(10, 20)",
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
-            });
-            gsap.to(self.selector('.blob-2'), {
-                x: "random(-100, 100)",
-                y: "random(-100, 100)",
-                duration: "random(10, 20)",
-                repeat: -1,
-                yoyo: true,
-                ease: "sine.inOut"
-            });
-        }
-
-        // Bobbing Scroll Indicator
-        if (motionEnabled && !prefersReducedMotion) {
-            gsap.to(self.selector('.mouse'), {
-                y: 8,
-                duration: 1.5,
-                repeat: -1,
-                yoyo: true,
-                ease: "power1.inOut"
-            });
-        }
-
-        // Hide scroll indicator on scroll
-        gsap.to('.scroll-indicator', {
-            opacity: 0,
-            y: 20,
-            scrollTrigger: {
-                trigger: "body",
-                start: "150 top",
-                toggleActions: "play none none reverse"
             }
-        });
 
-    }, scrollRef);
+            // Hide scroll indicator on scroll
+            const scrollInd = document.querySelector('.scroll-indicator');
+            if (scrollInd) {
+                gsap.to(scrollInd, {
+                    opacity: 0,
+                    y: 20,
+                    scrollTrigger: {
+                        trigger: document.body,
+                        start: "150 top",
+                        toggleActions: "play none none reverse"
+                    }
+                });
+            }
 
-    return () => ctx.revert();
+        }, scrollRef);
+
+        return () => ctx.revert();
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, [loading, motionEnabled]);
 
   const scrollTo = useCallback((target) => {
