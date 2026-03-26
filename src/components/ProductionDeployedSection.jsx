@@ -4,24 +4,24 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { production } = devLifeStory;
 
-const ProductionDeployedSection = ({ onShipAgain }) => {
+const ProductionDeployedSection = ({ onShipAgain, judgeMode }) => {
   const sectionRef = useRef(null);
   const [usersOnline, setUsersOnline] = useState(0);
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    let ctx = gsap.context((self) => {
         // Count up online users
         gsap.to(sectionRef.current, {
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top center",
-                onEnter: () => startCounting(),
+                onEnter: () => startCounting(self),
                 once: true
             }
         });
 
         // Cards stagger
-        gsap.from(".card", {
+        gsap.from(self.selector(".card"), {
             opacity: 0,
             y: 30,
             stagger: 0.1,
@@ -37,8 +37,8 @@ const ProductionDeployedSection = ({ onShipAgain }) => {
     return () => ctx.revert();
   }, []);
 
-  const startCounting = () => {
-    gsap.to(".stat-users", {
+  const startCounting = (self) => {
+    gsap.to(self.selector(".stat-users"), {
         innerText: 1247,
         duration: 2.5,
         snap: { innerText: 1 },
@@ -51,7 +51,8 @@ const ProductionDeployedSection = ({ onShipAgain }) => {
 
   return (
     <section id="production" ref={sectionRef} className="section">
-      <div className="section-inner">
+      <div className="section-inner" style={{ position: 'relative' }}>
+        {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: LIVE_STAT_COUNTER]</div>}
         <div className="section-header">
             <h2 className="section-title" style={{ color: 'var(--success-green)' }}>{production.headline}</h2>
             <p className="section-subtitle">{production.subtitle} <span className="pill active" style={{ marginLeft: '10px', fontSize: '10px', background: 'var(--success-green-glow)', color: 'var(--success-green)', borderColor: 'var(--success-green)' }}>LIVE</span></p>

@@ -8,9 +8,9 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    let ctx = gsap.context((self) => {
         // Tile stagger animation
-        gsap.from(".loop-tile", {
+        gsap.from(self.selector(".loop-tile"), {
             opacity: 0,
             scale: 0.8,
             stagger: 0.1,
@@ -24,7 +24,7 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode }) => {
         });
 
         // Loop animation on icons
-        gsap.to(".loop-icon", {
+        gsap.to(self.selector(".loop-icon"), {
             rotate: 360,
             duration: 10,
             repeat: -1,

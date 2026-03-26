@@ -39,6 +39,8 @@ const loadingJokes = [
     "Resolving merge conflicts from 2024..."
 ];
 
+import { initGlobalShortcuts, checkUrlParams } from './utils/shortcuts';
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [debugMode, setDebugMode] = useState(false);
@@ -48,43 +50,28 @@ function App() {
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
 
+  // Initialize modes from URL params
   useEffect(() => {
-    // Check for Judge Mode in URL
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('judge') === 'true') {
-        setJudgeMode(true);
-    }
+    const params = checkUrlParams();
+    if (params.judge) setJudgeMode(true);
+    if (params.debug) setDebugMode(true);
+  }, []);
 
-    // Konami Code sequence
-    const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let konamiIdx = 0;
+  // Handle Global Shortcuts
+  useEffect(() => {
+    const cleanupShortcuts = initGlobalShortcuts({
+      onKonami: () => setInsaneMode(prev => !prev),
+      onEsc: () => {
+        setDebugMode(false);
+        setJudgeMode(false);
+        setInsaneMode(false);
+        document.body.classList.remove('terminal-override');
+      }
+    });
 
-    const handleKeyDown = (e) => {
-        // Esc: Disable special modes
-        if (e.key === 'Escape') {
-            setDebugMode(false);
-            setInsaneMode(false);
-            setJudgeMode(false);
-            return;
-        }
-
-        // Konami check
-        if (e.key === konamiCode[konamiIdx]) {
-            konamiIdx++;
-            if (konamiIdx === konamiCode.length) {
-                setInsaneMode(prev => !prev);
-                konamiIdx = 0;
-            }
-        } else {
-            konamiIdx = 0;
-        }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-
-    // Rotating Jokes during Loading
+    // Loading Screen Jokes
     let jokeIdx = 0;
-    const interval = setInterval(() => {
+    const jokeInterval = setInterval(() => {
         if (jokeRef.current) {
             gsap.to(jokeRef.current, {
                 text: loadingJokes[jokeIdx % loadingJokes.length],
@@ -95,15 +82,15 @@ function App() {
         }
     }, 1500);
 
-    const timer = setTimeout(() => {
+    const loadTimer = setTimeout(() => {
         setLoading(false);
-        clearInterval(interval);
+        clearInterval(jokeInterval);
     }, 4500);
 
     return () => {
-        clearTimeout(timer);
-        clearInterval(interval);
-        window.removeEventListener('keydown', handleKeyDown);
+        cleanupShortcuts();
+        clearInterval(jokeInterval);
+        clearTimeout(loadTimer);
     };
   }, []);
 

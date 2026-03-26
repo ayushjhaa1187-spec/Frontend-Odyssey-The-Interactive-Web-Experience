@@ -5,7 +5,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { learning } = devLifeStory;
 
-const LearningPhase = () => {
+const LearningPhase = ({ judgeMode }) => {
   const sectionRef = useRef(null);
   const codeBoxRef = useRef(null);
   const bgCodeRef = useRef(null);
@@ -22,10 +22,10 @@ const LearningPhase = () => {
   ];
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    let ctx = gsap.context((self) => {
       // IDE Panel Pinned
       ScrollTrigger.create({
-        trigger: ".ide-panel-wrapper",
+        trigger: self.selector(".ide-panel-wrapper"),
         start: "top 120px",
         endTrigger: sectionRef.current,
         end: "bottom 600px",
@@ -47,7 +47,7 @@ const LearningPhase = () => {
       // Highlight milestones
       milestones.forEach((_, i) => {
         ScrollTrigger.create({
-          trigger: `.milestone-${i}`,
+          trigger: self.selector(`.milestone-${i}`),
           start: "top center",
           onEnter: () => setExpandedIndex(i),
           onEnterBack: () => setExpandedIndex(i)
@@ -55,7 +55,7 @@ const LearningPhase = () => {
       });
 
       // Staggered reveal with Batch
-      ScrollTrigger.batch(".milestone", {
+      ScrollTrigger.batch(self.selector(".milestone"), {
         onEnter: (batch) => gsap.fromTo(batch, 
             { opacity: 0, y: 50, scale: 0.9 },
             { opacity: 1, y: 0, scale: 1, stagger: 0.15, duration: 1.2, ease: "expo.out", overwrite: true }
@@ -64,7 +64,7 @@ const LearningPhase = () => {
       });
 
       // IDE Cursor blink
-      gsap.to(".ide-cursor", { opacity: 0, duration: 0.5, repeat: -1, yoyo: true, ease: "steps(1)" });
+      gsap.to(self.selector(".ide-cursor"), { opacity: 0, duration: 0.5, repeat: -1, yoyo: true, ease: "steps(1)" });
 
     }, sectionRef);
 
@@ -97,7 +97,8 @@ const LearningPhase = () => {
       </div>
 
       <div className="section-inner" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="section-header">
+        <div className="section-header" style={{ position: 'relative' }}>
+            {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: SCROLLYTELLING_PINNED]</div>}
             <h2 className="section-title">{learning.headline}</h2>
             <p className="section-subtitle">{learning.subtitle}</p>
         </div>

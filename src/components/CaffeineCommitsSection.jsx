@@ -4,7 +4,7 @@ import { devLifeStory } from '../content/devLifeStory';
 
 const { caffeine } = devLifeStory;
 
-const CaffeineCommitsSection = () => {
+const CaffeineCommitsSection = ({ judgeMode }) => {
   const sectionRef = useRef(null);
   const avatarRef = useRef(null);
   const [level, setLevel] = useState(1); 
@@ -17,9 +17,9 @@ const CaffeineCommitsSection = () => {
   ];
 
   useEffect(() => {
-    let ctx = gsap.context(() => {
+    let ctx = gsap.context((self) => {
         // Commits stagger in
-        gsap.from(".commit-card", {
+        gsap.from(self.selector(".commit-card"), {
             opacity: 0,
             x: 30,
             stagger: 0.1,
@@ -31,7 +31,7 @@ const CaffeineCommitsSection = () => {
             }
         });
 
-        // Jitter logic - tuned down for performance
+        // Jitter logic
         if (level === 3) {
             gsap.to(avatarRef.current, {
                 x: "random(-4, 4)",
@@ -41,7 +41,7 @@ const CaffeineCommitsSection = () => {
                 yoyo: true,
                 ease: "none"
             });
-            gsap.to(".section-inner", {
+            gsap.to(self.selector(".section-inner"), {
                 x: "random(-1, 1)",
                 duration: 0.1,
                 repeat: -1,
@@ -49,9 +49,9 @@ const CaffeineCommitsSection = () => {
             });
         } else {
             gsap.killTweensOf(avatarRef.current);
-            gsap.killTweensOf(".section-inner");
+            gsap.killTweensOf(self.selector(".section-inner"));
             gsap.set(avatarRef.current, { x: 0, y: 0 });
-            gsap.set(".section-inner", { x: 0 });
+            gsap.set(self.selector(".section-inner"), { x: 0 });
         }
     }, sectionRef);
 
@@ -60,7 +60,8 @@ const CaffeineCommitsSection = () => {
 
   return (
     <section id="caffeine" ref={sectionRef} className="section" style={{ background: level === 3 ? 'rgba(0,209,255,0.02)' : 'transparent', border: 'none' }}>
-      <div className="section-inner">
+      <div className="section-inner" style={{ position: 'relative' }}>
+        {judgeMode && <div className="judge-badge mono" style={{ position: 'absolute', top: '-10px', left: '0', color: 'var(--accent-pink)', border: '1px solid var(--accent-pink)', padding: '2px 8px', fontSize: '9px', zIndex: 10 }}>[REQ: DYNAMIC_CAFFEINE_METER]</div>}
         <div className="section-header">
             <h2 className="section-title" style={{ transition: 'color 0.4s' }}>{caffeine.headline}</h2>
             <p className="section-subtitle">{caffeine.subtitle}</p>
