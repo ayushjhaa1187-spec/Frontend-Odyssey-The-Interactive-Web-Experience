@@ -49,6 +49,7 @@ function App() {
   const [activeSection, setActiveSection] = useState('hero');
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
+  const loaderRef = useRef(null);
 
   // Initialize modes from URL params
   useEffect(() => {
@@ -205,13 +206,23 @@ function App() {
   };
 
   if (loading) {
+    const jokes = [
+        "INITIALIZING ODYSSEY...",
+        "MINIFYING SPAGHETTI CODE...",
+        "IMPORTING STACKOVERFLOW...",
+        "CENTERING THE DIV...",
+        "REMOVING UNDEFINED...",
+        "UPDATING DEPS (3000 ERRORS)..."
+    ];
+
     return (
-      <div className="loading-screen" style={{ height: '100vh', width: '100%', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 9999, position: 'fixed' }}>
-        <div style={{ width: '200px', height: '1px', background: 'var(--border-color)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%', background: 'var(--accent-blue)', animation: 'loading 2s infinite' }} />
+      <div className="loading-screen" style={{ height: '100vh', width: '100%', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 99999, position: 'fixed' }}>
+        <div ref={loaderRef} style={{ fontSize: '100px', marginBottom: '40px', filter: 'drop-shadow(0 0 20px var(--accent-blue-glow))' }}>🚀</div>
+        <div style={{ width: '240px', height: '2px', background: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', borderRadius: '4px' }}>
+            <div style={{ position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%', background: 'var(--accent-blue)', animation: 'loading 1.5s infinite linear' }} />
         </div>
-        <div ref={jokeRef} className="mono" style={{ marginTop: '24px', fontSize: '11px', color: 'var(--accent-blue)', letterSpacing: '2px', textTransform: 'uppercase', height: '14px', textAlign: 'center' }}>
-            Initializing Odyssey...
+        <div ref={jokeRef} className="mono" style={{ marginTop: '24px', fontSize: '10px', color: 'var(--accent-blue)', letterSpacing: '2px', textTransform: 'uppercase', height: '14px', textAlign: 'center' }}>
+            {jokes[0]}
         </div>
       </div>
     );
@@ -279,6 +290,24 @@ function App() {
       <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} />
       <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} />
       <LoopSection onRestart={() => scrollTo("#hero")} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} />
+
+      <footer style={{ padding: 'var(--space-4) 0', borderTop: '1px solid var(--border-color)', textAlign: 'center', opacity: 0.6 }}>
+          <div className="container">
+              <div className="mono" style={{ fontSize: '10px', letterSpacing: '2px', marginBottom: '10px' }}>
+                  BUILT WITH COFFEE & REACT BY ANTIGRAVITY
+              </div>
+              <div style={{ fontSize: '11px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
+                  <span>© 2026 FRONTEND ODYSSEY</span>
+                  <button 
+                    onClick={() => alert("HINT: Try scrolling, dragging sliders, or clicking the floating bugs. If things look stuck, use the ?judge=true parameter for requirement labels.")}
+                    style={{ textDecoration: 'underline', cursor: 'help', color: 'var(--accent-blue)' }}
+                    className="mono"
+                  >
+                    [HAVING_TROUBLE?]
+                  </button>
+              </div>
+          </div>
+      </footer>
 
       {debugMode && (
           <div className="global-debug-grid" style={{ position: 'fixed', inset: 0, zIndex: 10000, pointerEvents: 'none', background: 'radial-gradient(circle, rgba(0,209,255,0.03) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
