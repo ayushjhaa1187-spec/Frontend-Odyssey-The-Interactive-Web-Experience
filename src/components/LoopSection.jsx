@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
 
 const { loop } = devLifeStory;
 
-const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce }) => {
+const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce, loopCount = 0 }) => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +38,7 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce }) => {
   }, []);
 
   const handleRestart = () => {
-    if (announce) announce("Restarting the journey. Moving back to hero section. The loop continues.");
+    if (announce) announce(narration.loopRestart(loopCount + 1));
     onRestart && onRestart();
   };
 

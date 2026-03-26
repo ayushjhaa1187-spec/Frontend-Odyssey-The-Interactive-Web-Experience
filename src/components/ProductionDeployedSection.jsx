@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
 
 const { production } = devLifeStory;
 
@@ -50,7 +51,7 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
         onComplete: () => {
             if (!hasCounted) {
                 setHasCounted(true);
-                if (announce) announce("Production is live! 1247 users online. System running at 99.9% uptime.");
+                if (announce) announce(narration.productionLive(1247));
             }
         }
     });

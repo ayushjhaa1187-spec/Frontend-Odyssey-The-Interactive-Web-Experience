@@ -129,6 +129,29 @@ button {
 :focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(0, 209, 255, 0.15);
+}
+
+/* Ensure focus ring is always above overlapping content */
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  position: relative;
+  z-index: 10;
+}
+
+/* Pill buttons get a glow when focused */
+.pill:focus-visible {
+  box-shadow: 0 0 0 4px rgba(0, 209, 255, 0.2), 0 0 15px var(--accent-blue-glow);
+}
+
+/* Interactive cards acting as buttons */
+.card[role="button"]:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(0, 209, 255, 0.15), var(--shadow-lg);
 }
 
 /* Base Utility Classes */

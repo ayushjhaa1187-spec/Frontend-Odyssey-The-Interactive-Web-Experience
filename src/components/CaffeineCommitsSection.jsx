@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
 
 const { caffeine } = devLifeStory;
 
@@ -19,7 +20,13 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
   const setLevelAndAnnounce = (i) => {
     setLevel(i);
     if (onLevelChange) onLevelChange(i);
-    if (announce) announce(`Caffeine level set to ${levels[i].label}. Efficiency boost: ${levels[i].boost * 20}%`);
+    if (announce) {
+      if (i === 3) {
+        announce(narration.caffeineLegendary);
+      } else {
+        announce(narration.caffeineChanged(levels[i].label, levels[i].boost));
+      }
+    }
   };
 
   const handleKeyDown = (e) => {

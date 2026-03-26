@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
 
 const { shipping } = devLifeStory;
 
@@ -40,7 +41,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
   const handleShipClick = (e) => {
     if (isShipping) return;
     setIsShipping(true);
-    if (announce) announce("Initiating production deployment. Launching codebase to live servers.");
+    if (announce) announce(narration.shipInitiated);
     
     // 1. Append final logs rapidly
     const finalLogs = ["[INFO] Initiating Final Handshake...", "[SYSTEM] Optimizing Bundles...", "[SUCCESS] Production Deploy Triggered!"];
@@ -59,7 +60,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
         duration: 1.5,
         ease: "expo.in",
         onComplete: () => {
-            if (announce) announce("Build shipped successfully! Rocket has reached orbit.");
+            if (announce) announce(narration.shipComplete);
             onShip && onShip();
             // Reset for next time (even though site restarts)
             setTimeout(() => {

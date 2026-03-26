@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
 
 const { eureka } = devLifeStory;
 
@@ -85,7 +86,7 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
           
           if (isColliding && !isFlipped) {
               setIsFlipped(true);
-              if (announce) announce("Eureka! Rubber duck explains the bug. Clean code applied!");
+              if (announce) announce(narration.duckCollision);
           }
       }
   };
@@ -97,7 +98,7 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
 
   const askDuck = () => {
       setIsFlipped(true);
-      if (announce) announce("Consulting rubber duck... explanation revealed.");
+      if (announce) announce(narration.duckConsulted);
   };
 
   return (
@@ -171,7 +172,10 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
                 <span className="text-secondary" style={{ fontSize: 'var(--font-sm)' }}>{eureka.hint}</span>
                 <button 
                   className={`pill active`} 
-                  onClick={() => setDebugMode(!debugMode)}
+                  onClick={() => {
+                    setDebugMode(!debugMode);
+                    if (announce) announce(narration.debugToggled(!debugMode));
+                  }}
                   style={{ background: debugMode ? 'var(--success-green)' : 'var(--bg-tertiary)', color: debugMode ? '#000' : 'inherit', border: 'none' }}
                 >
                     {debugMode ? 'DEBUGGER ACTIVE' : 'OPEN DEBUGGER'}

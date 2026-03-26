@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { TextPlugin } from 'gsap/TextPlugin';
 
 import './App.css';
+import narration from './content/narrationMessages';
 
 import HeroSection from './components/HeroSection';
 import LearningPhase from './components/LearningPhase';
@@ -41,6 +42,52 @@ const loadingJokes = [
 
 import { initGlobalShortcuts, checkUrlParams } from './utils/shortcuts';
 
+/** Focus-trapping Mentor dialog with ESC-to-close */
+const MentorDialog = ({ onClose }) => {
+  const closeBtnRef = useRef(null);
+
+  useEffect(() => {
+    // Auto-focus close button
+    closeBtnRef.current?.focus();
+
+    const handleKey = (e) => {
+      if (e.key === 'Escape') { onClose(); return; }
+      // Trap Tab inside dialog
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        closeBtnRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
+      role="dialog"
+      aria-labelledby="mentor-title"
+      aria-modal="true"
+    >
+        <div className="card mono" style={{ maxWidth: '400px', border: '1px solid var(--accent-blue)', background: '#05070a', padding: '30px', textAlign: 'center' }}>
+            <h3 id="mentor-title" style={{ color: 'var(--accent-blue)', marginBottom: '20px', fontSize: '14px' }}>[MENTOR_TERMINAL_V1.0]</h3>
+            <p style={{ fontSize: '13px', lineHeight: '1.8', marginBottom: '30px', color: 'var(--text-secondary)' }}>
+                "The code is but a shadow of your intent. Focus on the flow, and the bugs will dissipate like morning mist. Commit often, but think twice before merging. And always, always take a coffee break."
+            </p>
+            <button
+              ref={closeBtnRef}
+              className="pill active"
+              onClick={onClose}
+              aria-label="Close mentor terminal"
+              style={{ padding: '10px 30px', cursor: 'pointer' }}
+            >
+              CLOSE_TERMINAL
+            </button>
+        </div>
+    </div>
+  );
+};
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [debugMode, setDebugMode] = useState(false);
@@ -48,26 +95,29 @@ function App() {
   const [judgeMode, setJudgeMode] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const [liveMessage, setLiveMessage] = useState("");
-  const [motionEnabled, setMotionEnabled] = useState(true);
+  const [motionEnabled, setMotionEnabled] = useState(
+    () => !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
   const [caffeineLevel, setCaffeineLevel] = useState(1);
   const [showMentor, setShowMentor] = useState(false);
   const [typedChars, setTypedChars] = useState("");
+  const [loopCount, setLoopCount] = useState(0);
+  const mentorTriggerRef = useRef(null);
   const scrollRef = useRef(null);
   const jokeRef = useRef(null);
   const loaderRef = useRef(null);
 
-  const announce = (msg) => {
+  const announce = useCallback((msg) => {
     setLiveMessage(""); // Clear first to force re-announcement
     setTimeout(() => setLiveMessage(msg), 50);
-  };
+  }, []);
 
-  // Narrate section changes
+  // Narrate section changes using centralised copy
   useEffect(() => {
-    if (!loading) {
-        const section = sections.find(s => s.id === activeSection);
-        if (section) announce(`Entering ${section.label} section: ${section.id.toUpperCase()}`);
+    if (!loading && narration.sectionEnter[activeSection]) {
+        announce(narration.sectionEnter[activeSection]);
     }
-  }, [activeSection, loading]);
+  }, [activeSection, loading, announce]);
 
   // Initialize modes from URL params
   useEffect(() => {
@@ -122,14 +172,15 @@ function App() {
         setTypedChars(newTyped);
         
         if (newTyped.includes("mentor") || newTyped.slice(-4).includes("help")) {
+            mentorTriggerRef.current = document.activeElement; // save trigger
             setShowMentor(true);
-            announce("Mentor Terminal activated. Sage advice incoming.");
+            announce(narration.mentorOpened);
             setTypedChars(""); // reset
         }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [typedChars]);
+  }, [typedChars, announce]);
 
   useEffect(() => {
     if (loading) return;
@@ -348,39 +399,32 @@ function App() {
       <CaffeineCommitsSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} onLevelChange={setCaffeineLevel} />
       <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
       <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <LoopSection onRestart={() => scrollTo("#hero")} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+      <LoopSection onRestart={() => { setLoopCount(c => c + 1); scrollTo("#hero"); }} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} loopCount={loopCount} />
 
       {/* Mentor Terminal Easter Egg */}
       {showMentor && (
-          <div 
-            style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)' }}
-            role="dialog"
-            aria-labelledby="mentor-title"
-          >
-              <div className="card mono" style={{ maxWidth: '400px', border: '1px solid var(--accent-blue)', background: '#05070a', padding: '30px', textAlign: 'center' }}>
-                  <h3 id="mentor-title" style={{ color: 'var(--accent-blue)', marginBottom: '20px', fontSize: '14px' }}>[MENTOR_TERMINAL_V1.0]</h3>
-                  <p style={{ fontSize: '13px', lineHeight: '1.8', marginBottom: '30px', color: 'var(--text-secondary)' }}>
-                      "The code is but a shadow of your intent. Focus on the flow, and the bugs will dissipate like morning mist. Remember: Commit often, but think twice before merging. And always, always take a coffee break."
-                  </p>
-                  <button 
-                    className="pill active" 
-                    onClick={() => setShowMentor(false)}
-                    style={{ padding: '10px 30px', cursor: 'pointer' }}
-                  >
-                    CLOSE_TERMINAL
-                  </button>
-              </div>
-          </div>
+          <MentorDialog
+            onClose={() => {
+                setShowMentor(false);
+                announce(narration.mentorClosed);
+                // Return focus to the element that triggered the mentor
+                setTimeout(() => mentorTriggerRef.current?.focus(), 50);
+            }}
+          />
       )}
 
       {/* Motion Toggle */}
       <div style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 10006, display: 'flex', gap: '10px' }}>
           <button 
             onClick={() => {
-                setMotionEnabled(!motionEnabled);
-                announce(`Motion ${!motionEnabled ? 'enabled' : 'disabled'}`);
+                const next = !motionEnabled;
+                setMotionEnabled(next);
+                announce(narration.motionToggled(next));
             }}
             className="mono"
+            aria-pressed={motionEnabled}
+            aria-label="Toggle motion. Disables background bobbing and decorative animations."
+            title="Disables background bobbing and decorative motion"
             style={{ 
                 background: 'rgba(5,7,10,0.8)', color: motionEnabled ? 'var(--accent-blue)' : 'var(--text-secondary)',
                 border: `1px solid ${motionEnabled ? 'var(--accent-blue)' : 'var(--border-color)'}`,

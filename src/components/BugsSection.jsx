@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
 import { devLifeStory } from '../content/devLifeStory';
+import narration from '../content/narrationMessages';
+import { useFocusRestore } from '../hooks/useFocusRestore';
 
 const { bugs } = devLifeStory;
 
@@ -17,9 +19,13 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
         bug.isSmashed = true;
         setBugsSmashed(prev => {
             const next = prev + 1;
+            const remaining = bugsRef.current.length - next;
             if (next === bugsRef.current.length) {
-                if (announce) announce("All bugs squashed! Build stabilization complete.");
+                if (announce) announce(narration.allBugsCleared);
                 setTimeout(() => onAllSmashed && onAllSmashed(), 1200);
+            } else if (next % 3 === 0) {
+                // Announce progress every 3 bugs
+                if (announce) announce(narration.bugSquashed(remaining));
             }
             return next;
         });
@@ -114,13 +120,8 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
   }, []);
 
   const overlayBtnRef = useRef(null);
-
-  useEffect(() => {
-    if (bugsSmashed === bugsRef.current.length && bugsSmashed > 0) {
-        // Move focus to overlay button for accessibility
-        setTimeout(() => overlayBtnRef.current?.focus(), 100);
-    }
-  }, [bugsSmashed]);
+  const isOverlayOpen = bugsSmashed === bugsRef.current.length && bugsSmashed > 0;
+  useFocusRestore(isOverlayOpen, overlayBtnRef);
 
   const handleInput = (e) => {
     const canvas = canvasRef.current;
@@ -147,7 +148,7 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
   };
 
   const handleAutoClean = () => {
-    if (announce) announce("Executing AUTO_CLEAN. Eliminating all detected anomalies.");
+    if (announce) announce(narration.autoCleaned);
     bugsRef.current.forEach((_, i) => smashBug(i));
   };
 
@@ -225,13 +226,29 @@ const BugsSection = ({ onAllSmashed, judgeMode, announce }) => {
                         )}
                     </div>
                     {bugsSmashed >= (bugsRef.current.length || 1) && (
-                        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(5,7,10,0.95)', zIndex: 10, backdropFilter: 'blur(8px)', textAlign: 'center', padding: '20px' }} role="dialog" aria-labelledby="build-success-title">
+                        <div 
+                            style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'rgba(5,7,10,0.95)', zIndex: 10, backdropFilter: 'blur(8px)', textAlign: 'center', padding: '20px' }} 
+                            role="dialog" 
+                            aria-labelledby="build-success-title"
+                            aria-modal="true"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Escape' || e.key === 'Enter') {
+                                    e.preventDefault();
+                                    onAllSmashed && onAllSmashed();
+                                }
+                                if (e.key === 'Tab') {
+                                    e.preventDefault();
+                                    overlayBtnRef.current?.focus();
+                                }
+                            }}
+                        >
                             <h3 id="build-success-title" className="mono" style={{ color: 'var(--success-green)', marginBottom: '10px' }}>BUILD SUCCESSFUL</h3>
                             <span className="pill active" style={{ background: 'var(--success-green)', color: '#000', borderColor: 'var(--success-green)', fontSize: '10px' }}>EUREKA MOMENT INBOUND</span>
                             <button 
                                 ref={overlayBtnRef}
                                 className="mono" 
                                 onClick={onAllSmashed}
+                                aria-label="Continue to Eureka section"
                                 style={{ marginTop: '20px', background: 'transparent', border: '1px solid var(--success-green)', color: 'var(--success-green)', padding: '8px 16px', fontSize: '11px', cursor: 'pointer' }}
                             >
                                 [CONTINUE_TO_EUREKA]
