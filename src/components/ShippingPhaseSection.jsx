@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 import narration from '../content/narrationMessages';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { shipping } = devLifeStory;
 
 const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {

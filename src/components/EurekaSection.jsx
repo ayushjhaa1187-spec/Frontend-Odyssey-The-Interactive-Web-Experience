@@ -1,9 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 import narration from '../content/narrationMessages';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { eureka } = devLifeStory;
+
+// ... (keep props)
 
 const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
   const sectionRef = useRef(null);
@@ -15,8 +20,9 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
   const [debugChoice, setDebugChoice] = useState(null);
 
   useEffect(() => {
-    let ctx = gsap.context((self) => {
-        gsap.from(self.selector(".diff-card"), {
+    let ctx = gsap.context(() => {
+        const q = gsap.utils.selector(sectionRef);
+        gsap.from(q(".diff-card"), {
             y: 50,
             opacity: 0,
             stagger: 0.2,

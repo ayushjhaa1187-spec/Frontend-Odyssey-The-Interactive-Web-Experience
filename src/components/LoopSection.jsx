@@ -1,17 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 import narration from '../content/narrationMessages';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { loop } = devLifeStory;
+
+// ... (keep props)
 
 const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce, loopCount = 0 }) => {
   const sectionRef = useRef(null);
 
   useEffect(() => {
-    let ctx = gsap.context((self) => {
+    let ctx = gsap.context(() => {
+        const q = gsap.utils.selector(sectionRef);
         // Tile stagger animation
-        gsap.from(self.selector(".loop-tile"), {
+        gsap.from(q(".loop-tile"), {
             opacity: 0,
             scale: 0.8,
             stagger: 0.1,
@@ -25,7 +31,7 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce, loopCount = 
         });
 
         // Loop animation on icons
-        gsap.to(self.selector(".loop-icon"), {
+        gsap.to(q(".loop-icon"), {
             rotate: 360,
             duration: 10,
             repeat: -1,

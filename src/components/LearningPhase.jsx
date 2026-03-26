@@ -3,6 +3,8 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { learning } = devLifeStory;
 
 const LearningPhase = ({ judgeMode }) => {
@@ -22,10 +24,11 @@ const LearningPhase = ({ judgeMode }) => {
   ];
 
   useEffect(() => {
-    let ctx = gsap.context((self) => {
+    let ctx = gsap.context(() => {
+      const q = gsap.utils.selector(sectionRef);
       // IDE Panel Pinned
       ScrollTrigger.create({
-        trigger: self.selector(".ide-panel-wrapper"),
+        trigger: q(".ide-panel-wrapper"),
         start: "top 120px",
         endTrigger: sectionRef.current,
         end: "bottom 600px",
@@ -47,7 +50,7 @@ const LearningPhase = ({ judgeMode }) => {
       // Highlight milestones
       milestones.forEach((_, i) => {
         ScrollTrigger.create({
-          trigger: self.selector(`.milestone-${i}`),
+          trigger: q(`.milestone-${i}`),
           start: "top center",
           onEnter: () => setExpandedIndex(i),
           onEnterBack: () => setExpandedIndex(i)
@@ -55,7 +58,7 @@ const LearningPhase = ({ judgeMode }) => {
       });
 
       // Staggered reveal with Batch
-      ScrollTrigger.batch(self.selector(".milestone"), {
+      ScrollTrigger.batch(q(".milestone"), {
         onEnter: (batch) => gsap.fromTo(batch, 
             { opacity: 0, y: 50, scale: 0.9 },
             { opacity: 1, y: 0, scale: 1, stagger: 0.15, duration: 1.2, ease: "expo.out", overwrite: true }
@@ -64,7 +67,7 @@ const LearningPhase = ({ judgeMode }) => {
       });
 
       // IDE Cursor blink
-      gsap.to(self.selector(".ide-cursor"), { opacity: 0, duration: 0.5, repeat: -1, yoyo: true, ease: "steps(1)" });
+      gsap.to(q(".ide-cursor"), { opacity: 0, duration: 0.5, repeat: -1, yoyo: true, ease: "steps(1)" });
 
     }, sectionRef);
 

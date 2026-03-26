@@ -1,6 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { devLifeStory } from '../content/devLifeStory';
+
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const { hero } = devLifeStory;
 
@@ -14,6 +18,7 @@ const HeroSection = ({ onStartClick, judgeMode, announce, motionEnabled }) => {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
+      const q = gsap.utils.selector(heroRef);
       const tl = gsap.timeline({
         delay: 0.5,
         onComplete: () => {
@@ -30,7 +35,7 @@ const HeroSection = ({ onStartClick, judgeMode, announce, motionEnabled }) => {
         .to(codeBoxRef.current, { opacity: 0.4, duration: 1.5 }, "-=0.5");
 
       // Floating doodles animation
-      gsap.to(self.selector('.bracket'), {
+      gsap.to(q('.bracket'), {
           y: "random(-20, 20)",
           rotate: "random(-5, 5)",
           duration: "random(2, 4)",
@@ -40,12 +45,12 @@ const HeroSection = ({ onStartClick, judgeMode, announce, motionEnabled }) => {
       });
 
       // Hero Parallax - only on desktop for performance
-      if (window.innerWidth >= 768) {
-        gsap.to(self.selector('.bracket.left'), { 
+      if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+        gsap.to(q('.bracket.left'), { 
             x: 100, 
             scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
         });
-        gsap.to(self.selector('.bracket.right'), { 
+        gsap.to(q('.bracket.right'), { 
             x: -100, 
             scrollTrigger: { trigger: heroRef.current, start: "top top", end: "bottom top", scrub: 1.5 }
         });

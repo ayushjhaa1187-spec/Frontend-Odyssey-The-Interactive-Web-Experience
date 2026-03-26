@@ -1,15 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const { deadline } = devLifeStory;
 
-const developerWisdom = [
-  { quote: "First, solve the problem. Then, write the code.", author: "John Johnson" },
-  { quote: "Make it work, make it right, make it fast — in that order.", author: "Kent Beck" },
-  { quote: "There are two hard things in computer science: cache invalidation, naming things, and off-by-one errors.", author: "Phil Karlton" },
-  { quote: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" }
-];
+// ... (keep previous code)
 
 const DeadlineSection = ({ judgeMode }) => {
   const sectionRef = useRef(null);
@@ -21,7 +19,8 @@ const DeadlineSection = ({ judgeMode }) => {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      const isMobile = window.innerWidth < 768;
+      const q = gsap.utils.selector(sectionRef);
+      const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
       
       // Pin the section
       ScrollTrigger.create({
@@ -31,14 +30,14 @@ const DeadlineSection = ({ judgeMode }) => {
           pin: true,
           scrub: 1,
           onUpdate: (self) => {
-            const index = Math.floor(self.progress * (steps.length - 0.01));
+            const index = Math.min(Math.floor(self.progress * steps.length), steps.length - 1);
             setActiveStep(index);
           }
       });
 
       // Panic Shake Animation
       if (panicLevel > 50) {
-          gsap.to(".scrolly-card-container", {
+          gsap.to(q(".scrolly-card-container"), {
               x: `random(${-panicLevel/12}, ${panicLevel/12})`,
               y: `random(${-panicLevel/12}, ${panicLevel/12})`,
               rotate: `random(${-panicLevel/80}, ${panicLevel/80})`,

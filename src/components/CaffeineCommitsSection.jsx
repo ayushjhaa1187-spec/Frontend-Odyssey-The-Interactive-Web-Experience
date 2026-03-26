@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 import narration from '../content/narrationMessages';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { caffeine } = devLifeStory;
+
+// ... (keep props)
 
 const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
   const sectionRef = useRef(null);
@@ -42,9 +47,10 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
   };
 
   useEffect(() => {
-    let ctx = gsap.context((self) => {
+    let ctx = gsap.context(() => {
+        const q = gsap.utils.selector(sectionRef);
         // Commits stagger in
-        gsap.from(self.selector(".commit-card"), {
+        gsap.from(q(".commit-card"), {
             opacity: 0,
             x: 30,
             stagger: 0.1,
@@ -57,8 +63,8 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
         });
 
         // Jitter logic - tuned for performance/a11y
-        const isMobile = window.innerWidth < 768;
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const isMobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+        const prefersReducedMotion = typeof window !== 'undefined' ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false;
 
         if (level === 3) {
             // Simplified jitter for a11y or mobile
@@ -75,7 +81,7 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
             });
 
             if (!isMobile && !prefersReducedMotion) {
-                gsap.to(self.selector(".section-inner"), {
+                gsap.to(q(".section-inner"), {
                     x: "random(-1, 1)",
                     duration: 0.1,
                     repeat: -1,
@@ -84,9 +90,9 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
             }
         } else {
             gsap.killTweensOf(avatarRef.current);
-            gsap.killTweensOf(self.selector(".section-inner"));
+            gsap.killTweensOf(q(".section-inner"));
             gsap.set(avatarRef.current, { x: 0, y: 0 });
-            gsap.set(self.selector(".section-inner"), { x: 0 });
+            gsap.set(q(".section-inner"), { x: 0 });
         }
     }, sectionRef);
 

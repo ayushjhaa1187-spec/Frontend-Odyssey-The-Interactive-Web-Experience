@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { devLifeStory } from '../content/devLifeStory';
 import narration from '../content/narrationMessages';
 
+gsap.registerPlugin(ScrollTrigger);
+
 const { production } = devLifeStory;
+
+// ... (keep props)
 
 const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
   const sectionRef = useRef(null);
@@ -11,19 +16,20 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
   const [hasCounted, setHasCounted] = useState(false);
 
   useEffect(() => {
-    let ctx = gsap.context((self) => {
+    let ctx = gsap.context(() => {
+        const q = gsap.utils.selector(sectionRef);
         // Count up online users
         gsap.to(sectionRef.current, {
             scrollTrigger: {
                 trigger: sectionRef.current,
                 start: "top center",
-                onEnter: () => startCounting(self),
+                onEnter: () => startCounting(q),
                 once: true
             }
         });
 
         // Cards stagger
-        gsap.from(self.selector(".card"), {
+        gsap.from(q(".card"), {
             opacity: 0,
             y: 30,
             stagger: 0.1,
@@ -39,8 +45,11 @@ const ProductionDeployedSection = ({ onShipAgain, judgeMode, announce }) => {
     return () => ctx.revert();
   }, []);
 
-  const startCounting = (self) => {
-    gsap.to(self.selector(".stat-users"), {
+  const startCounting = (q) => {
+    const target = q(".stat-users")[0];
+    if (!target) return;
+    
+    gsap.to(target, {
         innerText: 1247,
         duration: 2.5,
         snap: { innerText: 1 },
