@@ -7,9 +7,12 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-gsap': ['gsap'],
-          'vendor-react': ['react', 'react-dom'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('gsap')) return 'vendor-gsap';
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor-react';
+            return 'vendor';
+          }
         }
       }
     },
