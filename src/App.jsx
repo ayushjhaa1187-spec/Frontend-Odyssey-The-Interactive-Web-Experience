@@ -52,9 +52,11 @@ function App() {
 
   // Initialize modes from URL params
   useEffect(() => {
-    const params = checkUrlParams();
-    if (params.judge) setJudgeMode(true);
-    if (params.debug) setDebugMode(true);
+    const urlParams = new URLSearchParams(window.location.search);
+    const isJudge = urlParams.get('judge') === 'true';
+    const isDebug = urlParams.get('debug') === 'true';
+    if (isJudge) setJudgeMode(true);
+    if (isDebug) setDebugMode(true);
   }, []);
 
   // Handle Global Shortcuts
