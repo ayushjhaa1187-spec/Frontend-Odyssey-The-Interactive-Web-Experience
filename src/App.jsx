@@ -6,6 +6,7 @@ import { TextPlugin } from 'gsap/TextPlugin';
 
 import './App.css';
 import narration from './content/narrationMessages';
+import { safeGetItem, safeSetItem } from './utils/storage';
 import { useKeyboardNavigation, useGestureNavigation } from './hooks/useNavigation';
 import { useNarrator } from './hooks/useNarrator';
 import AuraBackground from './components/AuraBackground';
@@ -125,14 +126,18 @@ function App() {
   const [typedChars, setTypedChars] = useState("");
   const [zenMode, setZenMode] = useState(false);
   const [loopCount, setLoopCount] = useState(() => {
-    return parseInt(localStorage.getItem('odyssey-loop-count') || '0');
+    return parseInt(safeGetItem('odyssey-loop-count', '0'));
   });
   const [sectionsVisited, setSectionsVisited] = useState(() => {
-    const saved = localStorage.getItem('odyssey-sections-visited');
-    return saved ? new Set(JSON.parse(saved)) : new Set(['hero']);
+    const saved = safeGetItem('odyssey-sections-visited', '["hero"]');
+    try {
+        return new Set(JSON.parse(saved));
+    } catch {
+        return new Set(['hero']);
+    }
   });
   const [legendUnlocked, setLegendUnlocked] = useState(() => {
-    return localStorage.getItem('odyssey-legend-unlocked') === 'true';
+    return safeGetItem('odyssey-legend-unlocked', 'false') === 'true';
   });
   const mentorTriggerRef = useRef(null);
   const scrollRef = useRef(null);
@@ -141,10 +146,10 @@ function App() {
 
   // Persistence Effect
   useEffect(() => {
-     localStorage.setItem('odyssey-loop-count', loopCount);
-     localStorage.setItem('odyssey-sections-visited', JSON.stringify(Array.from(sectionsVisited)));
-     localStorage.setItem('odyssey-legend-unlocked', legendUnlocked);
-     localStorage.setItem('odyssey-zen-mode', zenMode);
+     safeSetItem('odyssey-loop-count', loopCount.toString());
+     safeSetItem('odyssey-sections-visited', JSON.stringify(Array.from(sectionsVisited)));
+     safeSetItem('odyssey-legend-unlocked', legendUnlocked.toString());
+     safeSetItem('odyssey-zen-mode', zenMode.toString());
   }, [loopCount, sectionsVisited, legendUnlocked, zenMode]);
 
   const { speak, enabled: narrationEnabled, toggle: toggleNarration } = useNarrator();
@@ -202,7 +207,7 @@ function App() {
     }
   }, [activeSection, loading]);
 
-  // Meta console log
+  // Meta console log + Fail-Safe Reveal
   useEffect(() => {
     console.log(
       `%c🚀 Frontend Odyssey v2.0 - Character: ${CHARACTER.name}\n%cYou are inside a developer's journey.\nEvery scroll triggers their memories…\n%cTry: type "mentor" or "help" anywhere.`,
@@ -210,7 +215,21 @@ function App() {
       'font-size: 12px; color: #B0BEC5;',
       'font-size: 11px; color: #90A4AE; font-style: italic;'
     );
-  }, []);
+
+    // EMERGENCY FAIL-SAFE REVEAL
+    // If GSAP context fails to trigger reveal after loading screen, force reveal after 7s.
+    const failSafeReveal = setTimeout(() => {
+        const app = scrollRef.current;
+        if (app && !app.classList.contains('app-visible')) {
+            app.classList.add('app-visible');
+            app.style.opacity = "1";
+            app.style.visibility = "visible";
+            if (debugMode) console.log("Fail-Safe: Reveal forced via emergency timer.");
+        }
+    }, 7000); // Wait 4.5s (loading) + 2.5s (reveal buffer)
+
+    return () => clearTimeout(failSafeReveal);
+  }, [debugMode]);
 
   // Easter egg: unlock legend mode when all 9 sections visited
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { safeGetItem, safeSetItem } from '../utils/storage';
 
 /**
  * useNarrator
@@ -8,13 +9,14 @@ import { useState, useCallback, useEffect } from 'react';
 export function useNarrator() {
   const [enabled, setEnabled] = useState(() => {
     // Default to off, but check local storage
-    return localStorage.getItem('odyssey-narrator-enabled') === 'true';
+    return safeGetItem('odyssey-narrator-enabled', 'false') === 'true';
   });
   
   const [voice, setVoice] = useState(null);
 
   useEffect(() => {
-    const synth = window.speechSynthesis;
+    const synth = typeof window !== 'undefined' ? window.speechSynthesis : null;
+    if (!synth) return;
     
     const loadVoices = () => {
       const voices = synth.getVoices();
@@ -30,7 +32,7 @@ export function useNarrator() {
     }
     loadVoices();
     
-    localStorage.setItem('odyssey-narrator-enabled', enabled);
+    safeSetItem('odyssey-narrator-enabled', enabled.toString());
   }, [enabled]);
 
   const speak = useCallback((text) => {
