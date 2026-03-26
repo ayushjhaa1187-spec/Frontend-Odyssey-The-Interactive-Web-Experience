@@ -285,16 +285,24 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [typedChars, announce]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (loading) return;
 
-    // Use a small timeout to ensure DOM is fully rendered before GSAP scans the page
+    let ctx;
+    // Small delay to ensure all child components have been fully hydrated and mounted in the DOM
     const timer = setTimeout(() => {
-        let ctx = gsap.context((self) => {
-            // Reveal App with safety guard
-            const app = document.querySelector('.app-container');
-            if (app) gsap.set(app, { opacity: 1, visibility: 'visible' });
+        ctx = gsap.context((self) => {
+            // Force visibility of the main app container immediately
+            const app = scrollRef.current;
+            if (app) {
+                gsap.set(app, { 
+                  opacity: 1, 
+                  visibility: 'visible',
+                  clearProps: "all" // Ensure it doesn't get stuck at opacity 0
+                });
+            }
 
+            // Centralize global progress tracking
             const progress = document.querySelector('.progress-bar');
             if (progress) {
                 gsap.to(progress, {
@@ -309,8 +317,8 @@ function App() {
                 });
             }
 
-            // Section Reveal Batch
-            const sectionTarget = document.querySelectorAll(".section");
+            // Scoped Section Batch Reveals
+            const sectionTarget = self.selector(".section");
             if (sectionTarget.length > 0) {
                 ScrollTrigger.batch(sectionTarget, {
                     onEnter: batch => gsap.to(batch, { opacity: 1, y: 0, stagger: 0.1, overwrite: true, duration: 1.5, ease: "expo.out" }),
@@ -318,7 +326,7 @@ function App() {
                 });
             }
 
-            // Body Background & Active Section Tracking
+            // Dynamic Body Background/Emotion Transitions
             sections.forEach((section) => {
                 let bgColor = "var(--bg-primary)";
                 if (section.id === 'bugs') bgColor = "#0A050F";
@@ -343,7 +351,7 @@ function App() {
             const isMobile = window.innerWidth < 768;
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            // Background Blobs Floating
+            // Background Atmospheric Effects
             if (!isMobile && !prefersReducedMotion && motionEnabled) {
                 gsap.to(self.selector('.blob-1'), {
                     x: "random(-100, 100)",
@@ -363,7 +371,7 @@ function App() {
                 });
             }
 
-            // Bobbing Scroll Indicator
+            // Interactive Indicators
             if (motionEnabled && !prefersReducedMotion) {
                 const mouseEl = self.selector('.mouse');
                 if (mouseEl.length) {
@@ -377,7 +385,6 @@ function App() {
                 }
             }
 
-            // Hide scroll indicator on scroll
             const scrollInd = document.querySelector('.scroll-indicator');
             if (scrollInd) {
                 gsap.to(scrollInd, {
@@ -391,12 +398,13 @@ function App() {
                 });
             }
 
-        }, scrollRef);
+        }, scrollRef); // Scope strictly to app-container
+    }, 150);
 
-        return () => ctx.revert();
-    }, 100);
-
-    return () => clearTimeout(timer);
+    return () => {
+        clearTimeout(timer);
+        if (ctx) ctx.revert();
+    };
   }, [loading, motionEnabled]);
 
   const scrollTo = useCallback((target) => {
