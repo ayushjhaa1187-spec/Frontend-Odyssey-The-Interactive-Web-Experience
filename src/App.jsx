@@ -453,12 +453,16 @@ function App() {
   const toggleZen = useCallback(() => {
     const next = !zenMode;
     setZenMode(next);
+    // Mutually exclusive: If Zen is ON, Dynamic Motion should be OFF
+    if (next) setMotionEnabled(false);
     announce(narration.zenToggled(next));
   }, [zenMode, announce]);
 
   const toggleMotion = useCallback(() => {
     const next = !motionEnabled;
     setMotionEnabled(next);
+    // Mutually exclusive: If Dynamic Motion is ON, Zen should be OFF
+    if (next) setZenMode(false);
     announce(narration.motionToggled(next));
   }, [motionEnabled, announce]);
 
@@ -486,11 +490,37 @@ function App() {
 
   return (
     <div ref={scrollRef} className={`app-container level-${caffeineLevel} ${zenMode ? 'zen-mode' : ''}`}>
-      {/* Loading Overlay - Fixed over content */}
+      {/* Loading Overlay - Upgraded Rocket & Stars */}
       {loading && (
           <div ref={loaderRef} className="loading-screen" style={{ position: 'fixed', inset: 0, background: 'var(--bg-primary, #0A0E14)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 100000 }}>
-             <div style={{ fontSize: '100px', marginBottom: '40px', filter: 'drop-shadow(0 0 20px var(--accent-blue-glow))' }}>🚀</div>
-             <div style={{ width: '240px', height: '2px', background: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', borderRadius: '4px' }}>
+             <div className="star-field">
+                {[...Array(30)].map((_, i) => (
+                    <div 
+                        key={i} 
+                        className="star" 
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            width: `${1 + Math.random() * 2}px`,
+                            height: `${1 + Math.random() * 2}px`,
+                            animationDuration: `${0.5 + Math.random() * 1.5}s`,
+                            animationDelay: `${Math.random() * 2}s`
+                        }}
+                    />
+                ))}
+             </div>
+
+             <div className="loading-rocket-container">
+                <svg className="rocket-svg" viewBox="0 0 100 100">
+                    <path className="rocket-flame" d="M50 70 Q45 85 50 95 Q55 85 50 70" />
+                    <path className="rocket-body" d="M50 10 C30 40 30 70 50 80 C70 70 70 40 50 10" />
+                    <circle className="rocket-window" cx="50" cy="40" r="8" />
+                    <path className="rocket-fin" d="M35 60 Q20 75 30 80 L35 70" />
+                    <path className="rocket-fin" d="M65 60 Q80 75 70 80 L65 70" />
+                </svg>
+             </div>
+
+             <div style={{ width: '240px', height: '2px', background: 'rgba(255,255,255,0.05)', position: 'relative', overflow: 'hidden', borderRadius: '4px', marginTop: '40px' }}>
                 <div style={{ position: 'absolute', top: 0, left: '-100%', width: '100%', height: '100%', background: 'var(--accent-blue)', animation: 'loading 1.5s infinite linear' }} />
              </div>
              <div ref={jokeRef} className="mono" style={{ marginTop: '24px', fontSize: '10px', color: 'var(--accent-blue)', letterSpacing: '2px', textTransform: 'uppercase', height: '14px', textAlign: 'center' }}>
