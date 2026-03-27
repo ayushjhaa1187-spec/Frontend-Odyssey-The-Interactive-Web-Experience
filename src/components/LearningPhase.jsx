@@ -33,7 +33,7 @@ const LearningPhase = ({ judgeMode }) => {
         endTrigger: sectionRef.current,
         end: "bottom 600px",
         pin: true,
-        pinSpacing: false
+        pinSpacing: true
       });
 
       // Background code parallax
@@ -92,8 +92,8 @@ const LearningPhase = ({ judgeMode }) => {
         className="mono"
         style={{ 
             position: 'absolute', top: 0, right: '-5%', width: '40%', height: '150%', 
-            fontSize: '11px', lineHeight: '2.5', opacity: 0.04, color: 'var(--accent-blue)', 
-            whiteSpace: 'pre', pointerEvents: 'none', zIndex: 0 
+            fontSize: '11px', lineHeight: '2.5', opacity: 0.015, color: 'var(--accent-blue)', 
+            whiteSpace: 'pre', pointerEvents: 'none', zIndex: -1 
         }}
       >
         {`const learn = () => {\n  const skill = fetch('wisdom');\n  return skill.json();\n};\n`.repeat(100)}

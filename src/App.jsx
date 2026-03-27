@@ -132,6 +132,8 @@ function App() {
   const [showMentor, setShowMentor] = useState(false);
   const [typedChars, setTypedChars] = useState("");
   const [zenMode, setZenMode] = useState(false);
+  // Radio-like behavior: One must be ON. If Zen is ON, Motion is OFF.
+  // Default: Motion (Dynamic) is ON.
   const [loopCount, setLoopCount] = useState(() => {
     return parseInt(safeGetItem('odyssey-loop-count', '0'));
   });
@@ -451,19 +453,21 @@ function App() {
   }, [narrationEnabled, toggleNarration, announce]);
 
   const toggleZen = useCallback(() => {
-    const next = !zenMode;
-    setZenMode(next);
-    // Mutually exclusive: If Zen is ON, Dynamic Motion should be OFF
-    if (next) setMotionEnabled(false);
-    announce(narration.zenToggled(next));
+    // Radio behavior: Enable Zen, Disable Motion.
+    // If Zen is already ON, do nothing (user must click Motion to switch back).
+    if (zenMode) return;
+    setZenMode(true);
+    setMotionEnabled(false);
+    announce(narration.zenToggled(true));
   }, [zenMode, announce]);
 
   const toggleMotion = useCallback(() => {
-    const next = !motionEnabled;
-    setMotionEnabled(next);
-    // Mutually exclusive: If Dynamic Motion is ON, Zen should be OFF
-    if (next) setZenMode(false);
-    announce(narration.motionToggled(next));
+    // Radio behavior: Enable Motion, Disable Zen.
+    // If Motion is already ON, do nothing.
+    if (motionEnabled) return;
+    setMotionEnabled(true);
+    setZenMode(false);
+    announce(narration.motionToggled(true));
   }, [motionEnabled, announce]);
 
   const openHelp = useCallback(() => {
@@ -529,17 +533,6 @@ function App() {
           </div>
       )}
 
-      {/* Caffeine Global Effects Layer - Moved to background for cleaner UI */}
-      <div 
-        className="caffeine-overlay" 
-        style={{ 
-            position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: -1,
-            transition: 'all 0.5s ease',
-            opacity: caffeineLevel >= 3 ? 0.15 : 0,
-            background: 'radial-gradient(circle, transparent 40%, rgba(255, 77, 168, 0.05) 100%)',
-            boxShadow: caffeineLevel >= 4 ? 'inset 0 0 150px var(--accent-pink-glow)' : 'none'
-        }} 
-      />
       <a href="#main-story-content" className="skip-link">Skip to main content</a>
       <div 
         className="sr-only" 
@@ -600,11 +593,12 @@ function App() {
           </div>
       )}
 
-      {/* Aura Background - Generative & Emotional */}
+      {/* Aura Background - Redesigned as "River of Code" */}
       <AuraBackground 
         activeSection={activeSection} 
         emotionColor={emotionalArc[activeSection]?.color || '#00B8D4'} 
         caffeineLevel={caffeineLevel}
+        motionEnabled={motionEnabled}
       />
 
       {/* Unified Experience Control System */}
@@ -619,15 +613,18 @@ function App() {
       />
 
       {/* ... Existing Section Layout ... */}
-      <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <LearningPhase judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <DeadlineSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <CaffeineCommitsSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} onLevelChange={setCaffeineLevel} />
-      <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-      <LoopSection onRestart={() => { setLoopCount(c => c + 1); scrollTo("#hero"); }} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} loopCount={loopCount} />
+      {/* Narrative Journey - Components handle their own layout-safe containers */}
+      <main id="main-story-content" className="main-content">
+        <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <LearningPhase judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <DeadlineSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <CaffeineCommitsSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} onLevelChange={setCaffeineLevel} />
+        <ShippingPhaseSection onShip={handleShip} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <ProductionDeployedSection onShipAgain={() => scrollTo("#shipping")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <LoopSection onRestart={() => { setLoopCount(c => c + 1); scrollTo("#hero"); }} onBackToTop={() => scrollTo("#hero")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} loopCount={loopCount} />
+      </main>
 
       {/* Mentor Terminal Easter Egg */}
       {showMentor && (

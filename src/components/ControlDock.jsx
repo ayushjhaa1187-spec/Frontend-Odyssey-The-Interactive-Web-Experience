@@ -7,13 +7,15 @@ import React from 'react';
  */
 /**
  * ElectronAura
- * A moving particle design that orbits the button when active.
+ * A vibrant, multi-particle orbital design for high-visibility active state.
  */
 const ElectronAura = () => (
     <svg className="electron-aura" viewBox="0 0 100 100" aria-hidden="true">
-        <circle className="electron-path" cx="50" cy="50" r="45" />
-        <circle className="electron-particle" cx="50" cy="5" r="3" />
-        <circle className="electron-particle" cx="5" cy="50" r="2" />
+        <circle className="electron-path" cx="50" cy="50" r="46" />
+        <circle className="electron-particle" cx="50" cy="4" r="4" fill="#00e5ff" />
+        <circle className="electron-particle" cx="4" cy="50" r="3" fill="#fff" />
+        <circle className="electron-particle" cx="50" cy="96" r="2.5" fill="#00e5ff" />
+        <circle className="electron-particle" cx="96" cy="50" r="3.5" fill="#fff" />
     </svg>
 );
 
