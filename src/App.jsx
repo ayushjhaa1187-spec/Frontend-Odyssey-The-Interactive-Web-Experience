@@ -14,6 +14,7 @@ import AuraBackground from './components/AuraBackground';
 import HeroSection from './components/HeroSection';
 import LearningPhase from './components/LearningPhase';
 import BugsSection from './components/BugsSection';
+import NeuralLabSection from './components/NeuralLabSection';
 import EurekaSection from './components/EurekaSection';
 import DeadlineSection from './components/DeadlineSection';
 import CaffeineCommitsSection from './components/CaffeineCommitsSection';
@@ -34,6 +35,7 @@ const sections = [
     { id: 'hero', label: 'Dream' },
     { id: 'learning', label: 'Grind' },
     { id: 'bugs', label: 'Chaos' },
+    { id: 'neural-lab', label: 'Neural' },
     { id: 'eureka', label: 'Hope' },
     { id: 'deadline', label: 'Panic' },
     { id: 'caffeine', label: 'Drive' },
@@ -46,6 +48,7 @@ const emotionalArc = {
   hero: { emotion: 'hope', color: '#00B8D4' },
   learning: { emotion: 'overwhelm', color: '#FFD600' },
   bugs: { emotion: 'frustration', color: '#FF6B6B' },
+  'neural-lab': { emotion: 'intelligence', color: '#00E5FF' },
   eureka: { emotion: 'triumph', color: '#00E676' },
   deadline: { emotion: 'panic', color: '#FF5CB8' },
   caffeine: { emotion: 'determination', color: '#00B8D4' },
@@ -617,7 +620,8 @@ function App() {
       <main id="main-story-content" className="main-content">
         <HeroSection onStartClick={() => scrollTo("#learning")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
         <LearningPhase judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
-        <BugsSection onAllSmashed={() => scrollTo("#eureka")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <BugsSection onAllSmashed={() => scrollTo("#neural-lab")} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
+        <NeuralLabSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
         <EurekaSection debugMode={debugMode} setDebugMode={setDebugMode} judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
         <DeadlineSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} />
         <CaffeineCommitsSection judgeMode={judgeMode} announce={announce} motionEnabled={motionEnabled} onLevelChange={setCaffeineLevel} />

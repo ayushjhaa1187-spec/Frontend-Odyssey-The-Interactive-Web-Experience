@@ -9,6 +9,7 @@ const narrationMessages = {
     hero:       "Dream phase. The journey begins.",
     learning:   "Grind phase. Time to level up.",
     bugs:       "Chaos phase. Bugs detected in production.",
+    'neural-lab': "Neural phase. The data begins to speak.",
     eureka:     "Hope phase. Eureka moment incoming.",
     deadline:   "Panic phase. The deadline approaches.",
     caffeine:   "Drive phase. Fuel the commit streak.",

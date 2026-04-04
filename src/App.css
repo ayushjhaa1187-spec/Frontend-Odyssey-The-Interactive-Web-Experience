@@ -697,3 +697,45 @@ body {
     gap: 4px;
     font-weight: 800;
 }
+
+/* --- Neural Lab Section --- */
+.neural-lab-section {
+    background: #05070a;
+    position: relative;
+    z-index: 1;
+}
+
+.neural-lab-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.neural-lab-section .card {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(0, 229, 255, 0.1);
+}
+
+.neural-lab-section .card:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 10px 40px rgba(0, 229, 255, 0.15);
+}
+
+.neural-lab-section h2 {
+    text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+}
+
+.neural-lab-section p {
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+}
+
+@media (max-width: 768px) {
+    .neural-lab-section h2 {
+        font-size: 3rem;
+    }
+    .neural-lab-section .grid {
+        grid-template-columns: 1fr;
+    }
+}
