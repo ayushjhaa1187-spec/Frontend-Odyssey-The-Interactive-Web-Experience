@@ -66,22 +66,25 @@ const NeuralLabSection = () => {
         drawParticles();
         window.addEventListener('resize', handleResize);
 
-        // GSAP Text Animation
-        gsap.fromTo(textRef.current, 
-            { opacity: 0, y: 50 }, 
-            { 
-                opacity: 1, y: 0, duration: 1.5, ease: "power4.out",
-                scrollTrigger: {
-                    trigger: sectionRef.current,
-                    start: "top center",
-                    toggleActions: "play none none reverse"
+        // GSAP Context for memory safety
+        const ctx_gsap = gsap.context(() => {
+            gsap.fromTo(textRef.current, 
+                { opacity: 0, y: 50 }, 
+                { 
+                    opacity: 1, y: 0, duration: 1.5, ease: "power4.out",
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top center",
+                        toggleActions: "play none none reverse"
+                    }
                 }
-            }
-        );
+            );
+        }, sectionRef);
 
         return () => {
             cancelAnimationFrame(animationFrame);
             window.removeEventListener('resize', handleResize);
+            ctx_gsap.revert(); // Standardized GSAP cleanup
         };
     }, []);
 
