@@ -12,6 +12,7 @@ const { loop } = devLifeStory;
 
 const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce, loopCount = 0 }) => {
   const sectionRef = useRef(null);
+  const [jokeIndex] = React.useState(() => Math.floor(Math.random() * loop.jokes.length));
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -113,7 +114,7 @@ const LoopSection = ({ onRestart, onBackToTop, judgeMode, announce, loopCount = 
                     </button>
                 </div>
                 <div style={{ marginTop: '30px', opacity: 0.4, fontSize: 'var(--font-xs)' }} className="mono" aria-hidden="true">
-                    {loop.jokes[Math.floor(Math.random() * loop.jokes.length)]}
+                    {loop.jokes[jokeIndex]}
                 </div>
             </div>
           </>

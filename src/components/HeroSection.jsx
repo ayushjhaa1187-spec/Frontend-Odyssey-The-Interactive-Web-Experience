@@ -8,7 +8,7 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const { hero } = devLifeStory;
 
-const HeroSection = ({ onStartClick, judgeMode, announce, motionEnabled }) => {
+const HeroSection = ({ onStartClick, judgeMode }) => {
   const heroRef = useRef(null);
   const badgeRef = useRef(null);
   const titleRef = useRef(null);

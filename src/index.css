@@ -1,18 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
 :root {
-  /* Colors - Premium Dark Theme (AAA-compliant on #0A0E14) */
-  --bg-primary: #0A0E14;
-  --bg-secondary: #121820;
-  --bg-tertiary: #1A222C;
-  --bg-card: rgba(26, 34, 44, 0.7);
-  
-  /* AAA-checked accent colors (≥7:1 contrast on --bg-primary) */
-  --accent-blue: #00B8D4;
-  --accent-blue-glow: rgba(0, 184, 212, 0.3);
+  /* Colors - Dark Theme (default) */
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1a1a1a;
+  --bg-tertiary: #252525;
+  --bg-card: rgba(30, 30, 30, 0.7);
+
+  --accent-blue: #4f98a3;
+  --accent-blue-glow: rgba(79, 152, 163, 0.3);
   --accent-pink: #FF5CB8;
   --accent-pink-glow: rgba(255, 92, 184, 0.3);
-  
+
   --warning-red: #FF6B6B;
   --warning-red-glow: rgba(255, 107, 107, 0.3);
   --success-green: #00E676;
@@ -34,7 +33,7 @@
   --font-xl: clamp(1.75rem, 5vw, 2.25rem);
   --font-xxl: clamp(2.5rem, 8vw, 4rem);
   
-  --font-primary: 'Outfit', sans-serif;
+  --font-primary: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Spacing Scale */
@@ -282,4 +281,61 @@ input:focus-visible {
   opacity: 1 !important;
   visibility: visible !important;
   transition: opacity 1.5s ease;
+}
+
+/* --- Light Theme --- */
+[data-theme="light"] {
+  --bg-primary: #f7f6f2;
+  --bg-secondary: #eeede8;
+  --bg-tertiary: #e4e3de;
+  --bg-card: rgba(255, 255, 255, 0.85);
+
+  --accent-blue: #01696f;
+  --accent-blue-glow: rgba(1, 105, 111, 0.2);
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #6b6b6b;
+  --border-color: rgba(0, 0, 0, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+}
+
+[data-theme="light"] .section-title {
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .skip-link {
+  color: #fff;
+}
+
+[data-theme="light"] .ide-panel,
+[data-theme="light"] .terminal {
+  background: #1e1e2e !important;
+}
+
+[data-theme="light"] .ide-content,
+[data-theme="light"] .terminal .mono {
+  color: #C9D1D9;
+}
+
+[data-theme="light"] .console-panel {
+  background: #1e1e2e !important;
 }

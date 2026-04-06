@@ -1,146 +1,135 @@
-# Frontend Odyssey — The Developer's Journey 🚀
+# Frontend Odyssey
 
-> *A humorous, scroll-driven interactive story about the life of a developer — from writing the first `<html>` tag to surviving production at 2 AM.*
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed-Vercel-black?logo=vercel)](https://frontend-odyssey-the-interactive-we.vercel.app/)
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite)](https://vite.dev/)
+[![GSAP](https://img.shields.io/badge/GSAP-3-88ce02)](https://greensock.com/gsap/)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Theme 5 · IIT Frontend Hackathon Submission**
+An interactive, scroll-driven web experience that follows **Alex Chen** -- a junior full-stack engineer -- through the ten emotional phases every developer lives through: the spark of writing Hello World, the spiral of tutorial hell, hunting mysterious bugs, the eureka of clean code, deadline panic, caffeine-fueled commits, the anxiety of deploying, the pride of a live product, and the acceptance that the loop never ends.
 
----
+Each phase is a full-screen chapter with its own color palette, interactive element, and GSAP-powered animation. Squash physics-based bugs on a canvas, drag a rubber duck to debug legacy code, crank a caffeine meter that shakes the entire page, or hit the giant SHIP IT button and watch a rocket launch with confetti.
 
-## 🌐 Live Experience
-
-| Link | Purpose |
-|------|---------|
-| [🔗 Live Site](https://frontend-odyssey-the-interactive-we.vercel.app/) | Main production build |
-| [🐛 Debug Mode](https://frontend-odyssey-the-interactive-we.vercel.app/?debug=true) | Enables visual debug grid and system overlays |
-
----
-
-## 📖 Project Description
-
-*"The Life of a Developer"* is a humorous, scroll-driven interactive story that follows Alex Chen — a junior full-stack engineer — through every phase a real developer lives through: the naïve excitement of writing a first Hello World, the spiral of tutorial hell, the chaos of hunting mysterious bugs, the eureka moment of clean code, the adrenaline of a pending deadline, the caffeine-fuelled grind, the anxiety of hitting Deploy, the quiet pride of a live product, and finally the acceptance that the loop never ends.
-
-The experience is structured as 9 full-screen chapters, each with a distinct emotional mood, color palette, and interactive element. GSAP with ScrollTrigger powers cinematic scroll transitions: a pinned IDE panel in the Learning chapter, parallax backgrounds, staggered milestone reveals, scroll-scrubbed progress, and scroll-linked background color shifts that physically represent the developer’s emotional state. Every chapter has something to *do* — squash physics-based bugs on a canvas, brew coffee and watch the page react to caffeine level, drag a rubber duck over legacy code to debug it, or hit the giant SHIP IT button and watch a 400-particle confetti engine celebrate the deploy.
-
-Accessibility is first-class: all interactions are keyboard-navigable, an `aria-live` narrator region announces every chapter transition and mini-game result, a manual Motion toggle serves users with vestibular disorders, and focus is managed correctly for every overlay and modal. The design system uses CSS custom properties, fluid `clamp()` typography, and a mobile-first responsive layout that works from 320 px to 1920 px.
+**Live**: [frontend-odyssey-the-interactive-we.vercel.app](https://frontend-odyssey-the-interactive-we.vercel.app/)
 
 ---
 
-## ✨ Story Flow — The Developer’s Arc
+## Features
+
+**Storytelling Engine**
+- 10 scroll-driven chapters with distinct emotional arcs and dynamic background colors
+- GSAP ScrollTrigger with pinned scenes, parallax layers, and scrubbed progress
+- Emotional color system that shifts the entire palette per chapter
+
+**Interactive Elements**
+- Canvas bug-squash mini-game with physics-based movement and mouse repulsion
+- Rubber duck debugger: drag the duck over legacy code to reveal the fix
+- Caffeine meter with four levels that affect the entire page aesthetic
+- Ship-it deploy button with rocket launch and terminal log simulation
+- Branching narrative choices in the Eureka section
+
+**UI System**
+- Light and dark themes with persistent preference via localStorage
+- Sticky navbar with section navigation, mobile hamburger menu, and theme toggle
+- AI storytelling assistant chat widget (Odyssey Guide) with context-aware responses
+- Error boundary with graceful fallback UI
+- Skeleton loading component
+
+**Accessibility (WCAG AA)**
+- `aria-live` narrator announces every chapter transition and game outcome
+- Full keyboard navigation: Tab, Enter, Space, Arrow keys, number keys 1-9
+- Manual motion toggle independent of OS `prefers-reduced-motion`
+- Focus management with trap and restore for all overlays
+- `aria-hidden` on all decorative elements
+
+**Easter Eggs**
+- Konami code (`Up Up Down Down Left Right Left Right B A`) activates INSANE MODE
+- Type `mentor` or `help` anywhere for senior developer wisdom
+- Debug mode via `?debug=true` URL parameter
+- Legend mode unlocks after visiting all 10 sections
+
+---
+
+## Story Flow
 
 ```mermaid
 flowchart TD
-    A(['💡 DREAM\nThe Spark']) --> B{First Decision}
-    B -->|Tutorial Path| C['💻 GRIND\nLearning Phase']
-    B -->|Jump In| D['🐛 CHAOS\nBug Hunt']
-    C --> D
-    D --> E(['✨ TRIUMPH\nEureka Moment'])
-    E --> F['⏳ PANIC\nDeadline Mode']
-    F --> G['☕ DRIVE\nCaffeine & Commits']
-    G --> H{Ship or Spiral?}
-    H -->|Ship It!| I(['🚀 ANXIETY\nDeploy Phase'])
-    H -->|One More Fix| F
-    I --> J(['🌟 PRIDE\nProduction Live'])
-    J --> K{Loop Back?}
-    K -->|New Project| A
-    K -->|Rest... jk| L(['🔄 ACCEPTANCE\nThe Loop'])
-    L --> A
-
-    style A fill:#00B8D4,color:#000,stroke:none
-    style B fill:#FFD600,color:#000,stroke:none
-    style C fill:#4A90D9,color:#fff,stroke:none
-    style D fill:#FF6B6B,color:#fff,stroke:none
-    style E fill:#00E676,color:#000,stroke:none
-    style F fill:#FF5CB8,color:#fff,stroke:none
-    style G fill:#00B8D4,color:#000,stroke:none
-    style H fill:#FFD600,color:#000,stroke:none
-    style I fill:#FF5CB8,color:#fff,stroke:none
-    style J fill:#00E676,color:#000,stroke:none
-    style K fill:#FFD600,color:#000,stroke:none
-    style L fill:#B0BEC5,color:#000,stroke:none
+    A["Dream: The Spark"] --> B["Grind: Tutorial Hell"]
+    B --> C["Chaos: Bug Infestation"]
+    C --> D["Neural: Data Intelligence"]
+    D --> E["Hope: Eureka Moment"]
+    E --> F["Panic: Deadline Mode"]
+    F --> G["Drive: Caffeine Protocol"]
+    G --> H["Deploy: Ship It"]
+    H --> I["Life: Production Live"]
+    I --> J["Repeat: The Loop"]
+    J --> A
 ```
 
 ---
 
-## 🎮 Key Features
-
-- **Scroll Storytelling** — GSAP ScrollTrigger with pinned scenes, parallax layers, scrubbed progress bar, and scroll-linked chapter navigation dots
-- **Physics Bug Mini-Game** — Canvas-rendered bugs with realistic movement; squash them by click/tap or keyboard (`SMASH_NEXT` / `AUTO_CLEAN`)
-- **Rubber Duck Debugger** — Drag the duck over legacy code in the Eureka section to reveal the fix; keyboard-accessible via `ASK RUBBER DUCK`
-- **Caffeine Global Feedback** — Changing caffeine level shifts background vignette and mentor commentary for the entire page
-- **Confetti Deploy Engine** — 400-particle physics engine fires on ship
-- **Emotional Aura Backgrounds** — Generative radial gradient layers shift hue per chapter (blue → yellow → red → green → neutral)
-- **Mentor Terminal** — Type `mentor` or `help` anywhere on the keyboard to summon senior dev wisdom
-- **Konami Code Easter Egg** — `↑↑↓↓←→←→BA` triggers full INSANE MODE
-- **Journey Persistence** — Caffeine level, Zen Mode, and narrative preferences saved via `localStorage`
-
----
-
-## ♿ Accessibility
-
-- **WCAG AA Compliant** — 4.5:1+ contrast ratios across all interactive states
-- **`aria-live` Narrator** — Announces every chapter transition and mini-game outcome for screen reader users
-- **Full Keyboard Parity** — Every mini-game, toggle, and CTA reachable via `Tab` / `Enter` / `Space` / Arrow keys
-- **Manual Motion Toggle** — Disables decorative GSAP animations independently of OS `prefers-reduced-motion`
-- **Focus Management** — All overlays (bug success, mentor dialog) trap and restore focus correctly
-- **`aria-hidden` Decoratives** — All emoji/icon decorations are hidden from the accessibility tree
-
----
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | React 18 + Vite 6 |
+| Framework | React 19 + Vite 8 |
 | Animation | GSAP 3 (ScrollTrigger, TextPlugin, ScrollToPlugin) |
 | Canvas | Vanilla Canvas 2D API |
-| Styling | Plain CSS with custom properties + fluid `clamp()` |
-| Typography | Outfit + JetBrains Mono (Google Fonts) |
+| Styling | CSS custom properties, fluid clamp() typography, light/dark themes |
+| Typography | Space Grotesk + JetBrains Mono (Google Fonts) |
 | Deployment | Vercel |
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── AuraBackground.jsx        # Generative mood-linked background
-│   ├── BugsSection.jsx           # Canvas bug mini-game
-│   ├── CaffeineCommitsSection.jsx
-│   ├── ControlDock.jsx           # Floating control system (Voice, Zen, Motion)
-│   ├── DeadlineSection.jsx
-│   ├── EurekaSection.jsx         # Rubber duck debugger
-│   ├── HeroSection.jsx
-│   ├── LearningPhase.jsx         # Pinned IDE + milestone scrollytelling
-│   ├── LoopSection.jsx
+│   ├── AuraBackground.jsx          # Generative mood-linked background
+│   ├── BugsSection.jsx             # Canvas bug-squash mini-game
+│   ├── CaffeineCommitsSection.jsx  # Caffeine meter + commit feed
+│   ├── ChatWidget.jsx              # AI storytelling assistant
+│   ├── ControlDock.jsx             # Voice, Zen, Motion toggles
+│   ├── DeadlineSection.jsx         # Pinned deadline countdown
+│   ├── ErrorBoundary.jsx           # Graceful error fallback
+│   ├── EurekaSection.jsx           # Rubber duck debugger
+│   ├── Footer.jsx                  # Site footer
+│   ├── HeroSection.jsx             # Opening parallax scene
+│   ├── LearningPhase.jsx           # Pinned IDE + milestones
+│   ├── LoadingSkeleton.jsx         # Skeleton loading state
+│   ├── LoopSection.jsx             # Final loop + credits
+│   ├── Navbar.jsx                  # Sticky navigation bar
+│   ├── NeuralLabSection.jsx        # Neural network visualization
 │   ├── ProductionDeployedSection.jsx
-│   └── ShippingPhaseSection.jsx
+│   └── ShippingPhaseSection.jsx    # Deploy terminal + rocket
 ├── content/
-│   ├── devLifeStory.js           # All narrative copy centralized
-│   └── narrationMessages.js      # Screen reader narration strings
+│   ├── devLifeStory.js             # All narrative copy
+│   └── narrationMessages.js        # Screen reader narration
 ├── hooks/
-│   ├── useFocusRestore.js        # Focus trap/restore for overlays
-│   ├── useNarrator.js            # aria-live announce helper
-│   └── useNavigation.js          # Keyboard + gesture navigation
+│   ├── useFocusRestore.js          # Focus trap/restore
+│   ├── useNarrator.js              # Web Speech API
+│   └── useNavigation.js            # Keyboard + gesture nav
 ├── utils/
-│   └── shortcuts.js              # Konami, ESC, URL param handlers
-├── App.jsx
-├── App.css
-└── index.css
+│   ├── shortcuts.js                # Konami code + URL params
+│   └── storage.js                  # Safe localStorage wrapper
+├── App.jsx                         # Main orchestrator
+├── App.css                         # Component styles
+└── index.css                       # Design system + themes
 ```
 
 ---
 
-## 🚀 Run Locally
+## Setup
 
 ```bash
-git clone https://github.com/ayushjhaa1187-spec/Frontend-Odyssey-The-Interactive-Web-Experience.git
+git clone <repository-url>
 cd Frontend-Odyssey-The-Interactive-Web-Experience
 npm install
 npm run dev
 ```
 
-Production build:
+**Production build:**
 
 ```bash
 npm run build
@@ -149,16 +138,23 @@ npm run preview
 
 ---
 
-## 🔑 Keyboard Shortcuts
+## Environment Variables
 
-| Key | Action |
-|-----|--------|
-| `1` – `9` | Jump directly to any chapter |
-| `PageDown` / `PageUp` | Navigate to next / previous chapter |
-| Type `mentor` or `help` | Open Mentor Terminal |
-| `↑↑↓↓←→←→BA` (Konami Code) | Activate INSANE MODE |
-| `Esc` | Exit all special modes |
+No environment variables are required. The app runs entirely client-side. See `.env.example` for reference.
 
 ---
 
-*Built with passion, caffeine, and exactly one rubber duck 🐤*
+## Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `1` - `9` | Jump to chapter |
+| `PageDown` / `PageUp` | Next / previous chapter |
+| `Home` / `End` | First / last chapter |
+| Type `mentor` or `help` | Open mentor terminal |
+| Konami code | Activate INSANE MODE |
+| `Esc` | Exit special modes |
+
+---
+
+Built by **Ayush Kumar Jha**.

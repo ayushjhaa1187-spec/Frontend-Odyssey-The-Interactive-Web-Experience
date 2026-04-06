@@ -41,10 +41,6 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
   const triggerSparkle = (e) => {
     setIsFlipped(!isFlipped);
     
-    // Sparkle burst effect
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    
     for (let i = 0; i < 15; i++) {
         const sparkle = document.createElement('div');
         sparkle.innerHTML = '✨';
@@ -148,7 +144,7 @@ const EurekaSection = ({ debugMode, setDebugMode, judgeMode, announce }) => {
                     <span>MODERN.JS (OPTIMIZED)</span>
                 </div>
                 <div style={{ padding: '24px', fontSize: '13px' }}>
-                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`const calculate = (price, tax) => {\n  const res = (price + tax).toFixed(2);\n  return \`Total: \$\\{res\\}\`;\n};`}</pre>
+                    <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{`const calculate = (price, tax) => {\n  const res = (price + tax).toFixed(2);\n  return \`Total: $\{res}\`;\n};`}</pre>
                 </div>
                 <div style={{ position: 'absolute', top: '10px', right: '10px', animation: 'float 3s infinite ease-in-out' }} aria-hidden="true">⭐</div>
             </div>

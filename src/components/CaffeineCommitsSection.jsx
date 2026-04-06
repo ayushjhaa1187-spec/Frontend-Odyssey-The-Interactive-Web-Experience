@@ -174,7 +174,7 @@ const CaffeineCommitsSection = ({ judgeMode, announce, onLevelChange }) => {
             </div>
 
             <div className="commit-stream" aria-label="Recent Commits Feed" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)', width: '100%' }}>
-                {caffeine.commits.map((c, i) => (
+                {caffeine.commits.map((c) => (
                     <div 
                         key={c.id} 
                         className="commit-card card" 

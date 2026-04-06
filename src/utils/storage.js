@@ -16,8 +16,7 @@ export const safeGetItem = (key, defaultValue) => {
   try {
     const val = localStorage.getItem(key);
     return val !== null ? val : defaultValue;
-  } catch (e) {
-    if (debugMode()) console.warn(`Storage access blocked for key: ${key}. Using memory fallback.`);
+  } catch {
     return memoryStorage[key] !== undefined ? memoryStorage[key] : defaultValue;
   }
 };
@@ -30,13 +29,7 @@ export const safeGetItem = (key, defaultValue) => {
 export const safeSetItem = (key, value) => {
   try {
     localStorage.setItem(key, value);
-  } catch (e) {
+  } catch {
     memoryStorage[key] = value;
   }
-};
-
-/** Internal check for debug mode in URL */
-const debugMode = () => {
-    if (typeof window === 'undefined') return false;
-    return new URLSearchParams(window.location.search).get('debug') === 'true';
 };
