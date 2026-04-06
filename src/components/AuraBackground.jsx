@@ -6,7 +6,7 @@ import { gsap } from 'gsap';
  * A subtle, flowing background with waves and moving "electron" particles.
  * Ensures 100% visibility of content while providing a premium, dynamic feel.
  */
-const AuraBackground = ({ activeSection, emotionColor, caffeineLevel = 1, motionEnabled = true }) => {
+const AuraBackground = ({ emotionColor, caffeineLevel = 1, motionEnabled = true }) => {
   const containerRef = useRef(null);
   const wave1Ref = useRef(null);
   const wave2Ref = useRef(null);

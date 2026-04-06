@@ -11,7 +11,7 @@ const { shipping } = devLifeStory;
 const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
   const sectionRef = useRef(null);
   const rocketRef = useRef(null);
-  const [logs, setLogs] = useState(shipping.logs);
+  const [logs] = useState(shipping.logs);
   const [isShipping, setIsShipping] = useState(false);
   const [terminalLogs, setTerminalLogs] = useState([]);
 
@@ -40,7 +40,7 @@ const ShippingPhaseSection = ({ onShip, judgeMode, announce }) => {
     return () => ctx.revert();
   }, [logs]);
 
-  const handleShipClick = (e) => {
+  const handleShipClick = () => {
     if (isShipping) return;
     setIsShipping(true);
     if (announce) announce(narration.shipInitiated);

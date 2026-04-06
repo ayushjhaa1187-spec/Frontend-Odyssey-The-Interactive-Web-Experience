@@ -10,6 +10,11 @@ import { safeGetItem, safeSetItem } from './utils/storage';
 import { useKeyboardNavigation, useGestureNavigation } from './hooks/useNavigation';
 import { useNarrator } from './hooks/useNarrator';
 import AuraBackground from './components/AuraBackground';
+import Navbar from './components/Navbar';
+import ChatWidget from './components/ChatWidget';
+import ErrorBoundary from './components/ErrorBoundary';
+import LoadingSkeleton from './components/LoadingSkeleton';
+import Footer from './components/Footer';
 
 import HeroSection from './components/HeroSection';
 import LearningPhase from './components/LearningPhase';
@@ -25,11 +30,6 @@ import ControlDock from './components/ControlDock';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, TextPlugin);
 
-// Defensive Check: Ensure plugins are registered before any hooks run
-if (typeof window !== 'undefined') {
-    if (!ScrollTrigger) console.error("FATAL: ScrollTrigger failed to register.");
-    if (!ScrollToPlugin) console.error("FATAL: ScrollToPlugin failed to register.");
-}
 
 const sections = [
     { id: 'hero', label: 'Dream' },
@@ -45,13 +45,13 @@ const sections = [
 ];
 
 const emotionalArc = {
-  hero: { emotion: 'hope', color: '#00B8D4' },
+  hero: { emotion: 'hope', color: '#4f98a3' },
   learning: { emotion: 'overwhelm', color: '#FFD600' },
   bugs: { emotion: 'frustration', color: '#FF6B6B' },
   'neural-lab': { emotion: 'intelligence', color: '#00E5FF' },
   eureka: { emotion: 'triumph', color: '#00E676' },
   deadline: { emotion: 'panic', color: '#FF5CB8' },
-  caffeine: { emotion: 'determination', color: '#00B8D4' },
+  caffeine: { emotion: 'determination', color: '#4f98a3' },
   shipping: { emotion: 'anxiety', color: '#FF5CB8' },
   production: { emotion: 'pride', color: '#00E676' },
   loop: { emotion: 'acceptance', color: '#B0BEC5' }
@@ -71,7 +71,7 @@ const loadingJokes = [
     "Resolving merge conflicts from 2024..."
 ];
 
-import { initGlobalShortcuts, checkUrlParams } from './utils/shortcuts';
+import { initGlobalShortcuts } from './utils/shortcuts';
 
 /** Focus-trapping Mentor dialog with ESC-to-close */
 const MentorDialog = ({ onClose }) => {
@@ -135,8 +135,17 @@ function App() {
   const [showMentor, setShowMentor] = useState(false);
   const [typedChars, setTypedChars] = useState("");
   const [zenMode, setZenMode] = useState(false);
-  // Radio-like behavior: One must be ON. If Zen is ON, Motion is OFF.
-  // Default: Motion (Dynamic) is ON.
+  const [theme, setTheme] = useState(() => safeGetItem('odyssey-theme', 'dark'));
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    safeSetItem('odyssey-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
   const [loopCount, setLoopCount] = useState(() => {
     return parseInt(safeGetItem('odyssey-loop-count', '0'));
   });
@@ -219,15 +228,8 @@ function App() {
     }
   }, [activeSection, loading]);
 
-  // Meta console log + Fail-Safe Reveal
+  // Fail-Safe Reveal
   useEffect(() => {
-    console.log(
-      `%c🚀 Frontend Odyssey v2.0 - Character: ${CHARACTER.name}\n%cYou are inside a developer's journey.\nEvery scroll triggers their memories…\n%cTry: type "mentor" or "help" anywhere.`,
-      'font-size: 18px; color: #00B8D4; font-weight: bold;',
-      'font-size: 12px; color: #B0BEC5;',
-      'font-size: 11px; color: #90A4AE; font-style: italic;'
-    );
-
     // EMERGENCY FAIL-SAFE REVEAL
     // If for some reason the app feels stuck, force visibility
     const failSafeReveal = setTimeout(() => {
@@ -246,7 +248,6 @@ function App() {
     if (sectionsVisited.size === sections.length && !legendUnlocked) {
       setLegendUnlocked(true);
       announce("Secret unlocked: Legend Mode. You visited every section.");
-      console.log('%c🔓 LEGEND MODE ACTIVATED', 'color: #00E676; font-size: 16px; font-weight: bold;');
       document.body.classList.add('legend-mode');
     }
   }, [sectionsVisited, legendUnlocked, announce]);
@@ -316,11 +317,12 @@ function App() {
 
   useLayoutEffect(() => {
     let ctx;
-    
+    let setupTimer;
+
     // Once loading is false, the app-container is guaranteed to be in the DOM
     if (!loading) {
         // 300ms delay is safe for production hydration/mounting stabilization
-        const timer = setTimeout(() => {
+        setupTimer = setTimeout(() => {
             const app = scrollRef.current;
             if (!app) return;
 
@@ -416,6 +418,7 @@ function App() {
     }
 
     return () => {
+        clearTimeout(setupTimer);
         if (ctx) ctx.revert();
     };
   }, [loading, motionEnabled]);
@@ -479,21 +482,12 @@ function App() {
   }, [announce]);
 
   const handleShip = () => {
-    if (debugMode) console.log("SHIP IT! Executing production deploy...");
+    // Ship triggered
     // The ShippingPhaseSection will call this, but we'll add a short delay for its internal animation
     setTimeout(() => {
         scrollTo("#production");
     }, 1200);
   };
-
-  const loadingJokes = [
-    "INITIALIZING ODYSSEY...",
-    "MINIFYING SPAGHETTI CODE...",
-    "IMPORTING STACKOVERFLOW...",
-    "CENTERING THE DIV...",
-    "REMOVING UNDEFINED...",
-    "UPDATING DEPS (3000 ERRORS)..."
-  ];
 
   return (
     <div ref={scrollRef} className={`app-container level-${caffeineLevel} ${zenMode ? 'zen-mode' : ''}`}>
@@ -537,6 +531,14 @@ function App() {
       )}
 
       <a href="#main-story-content" className="skip-link">Skip to main content</a>
+
+      <Navbar
+        sections={sections}
+        activeSection={activeSection}
+        onNavigate={scrollTo}
+        onToggleTheme={toggleTheme}
+        theme={theme}
+      />
       <div 
         className="sr-only" 
         aria-live="polite" 
@@ -597,9 +599,8 @@ function App() {
       )}
 
       {/* Aura Background - Redesigned as "River of Code" */}
-      <AuraBackground 
-        activeSection={activeSection} 
-        emotionColor={emotionalArc[activeSection]?.color || '#00B8D4'} 
+      <AuraBackground
+        emotionColor={emotionalArc[activeSection]?.color || '#4f98a3'}
         caffeineLevel={caffeineLevel}
         motionEnabled={motionEnabled}
       />
@@ -642,21 +643,9 @@ function App() {
           />
       )}
 
-      {/* Motion Toggle removed - now in ControlDock */}
+      <Footer onBackToTop={() => scrollTo('#hero')} />
 
-      <footer style={{ padding: 'var(--space-4) 0', borderTop: '1px solid var(--border-color)', textAlign: 'center', opacity: 0.6 }}>
-          <div className="container">
-              <div className="mono" style={{ fontSize: '10px', letterSpacing: '2px', marginBottom: '10px' }}>
-                  BUILT WITH COFFEE & REACT BY ANTIGRAVITY
-              </div>
-              <div style={{ fontSize: '11px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
-                  <span>© 2026 FRONTEND ODYSSEY</span>
-                  <span className="mono" style={{ opacity: 0.5 }}>
-                      [SUPPORT_READY]
-                  </span>
-              </div>
-          </div>
-      </footer>
+      <ChatWidget />
 
       {debugMode && (
           <div className="global-debug-grid" style={{ position: 'fixed', inset: 0, zIndex: 10000, pointerEvents: 'none', background: 'radial-gradient(circle, rgba(0,209,255,0.03) 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>

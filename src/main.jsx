@@ -2,34 +2,26 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 
-// Robust Error Handling for Production Diagnostics
 window.addEventListener('error', (event) => {
-    console.error('GLOBAL_ERROR:', event.error);
     const root = document.getElementById('root');
     if (root && root.innerHTML === "") {
-        root.innerHTML = `<div style="padding:40px; color:#FF6B6B; font-family:monospace; background:#000; height:100vh;">
-            <h2>[RUNTIME_CRASH]</h2>
-            <p>${event.error?.message || 'Unknown fatal error'}</p>
-            <p style="opacity:0.5; font-size:12px;">Check console for stack trace. Odyssey failed to launch.</p>
+        root.innerHTML = `<div style="padding:40px; color:#FF6B6B; font-family:monospace; background:#0f0f0f; height:100vh;">
+            <h2>Something went wrong</h2>
+            <p>${event.error?.message || 'Unknown error'}</p>
+            <p style="opacity:0.5; font-size:12px;">Reload the page to try again.</p>
         </div>`;
     }
 });
 
-window.addEventListener('unhandledrejection', (event) => {
-    console.error('UNHANDLED_PROMISE:', event.reason);
-});
-
-try {
-    const rootEl = document.getElementById('root');
-    if (!rootEl) throw new Error("Root element not found in HTML.");
-    
+const rootEl = document.getElementById('root');
+if (rootEl) {
     createRoot(rootEl).render(
       <StrictMode>
-        <App />
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
       </StrictMode>
     );
-} catch (err) {
-    console.error('MOUNT_ERROR:', err);
 }
-
